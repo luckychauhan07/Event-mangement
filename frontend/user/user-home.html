@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Event Ease — Home (Student)</title>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+
+		<style>
+			:root {
+				--header-h: 64px;
+			}
+			body {
+				font-family: Inter, system-ui, Arial;
+				background: var(--bg-light);
+				color: var(--text-dark);
+			}
+			.topbar {
+				height: var(--header-h);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 20px;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+				position: sticky;
+				top: 0;
+				z-index: 20;
+			}
+			.app-shell {
+				display: flex;
+				min-height: calc(100vh - var(--header-h));
+			}
+			.app-sidebar {
+				width: 220px;
+				background: linear-gradient(180deg, #0b1220, #071028);
+				color: #fff;
+				padding: 18px;
+				display: flex;
+				flex-direction: column;
+			}
+			.app-main {
+				flex: 1;
+				padding: 22px;
+			}
+			.card-compact {
+				background: var(--bg-surface);
+				border-radius: 10px;
+				padding: 16px;
+				border: 1px solid var(--border);
+			}
+			.muted {
+				color: var(--text-muted);
+			}
+			.small-gap {
+				gap: 8px;
+				display: flex;
+				align-items: center;
+			}
+			@media (max-width: 900px) {
+				.app-sidebar {
+					display: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header class="topbar">
+			<a
+				href="user-home.html"
+				class="d-flex align-items-center text-decoration-none"
+			>
+				<div
+					class="logo-mark"
+					style="
+						width: 36px;
+						height: 36px;
+						border-radius: 8px;
+						background: linear-gradient(180deg, #3b82f6, #2b6ee6);
+						display: grid;
+						place-items: center;
+						color: #fff;
+					"
+				>
+					EE
+				</div>
+				<div style="margin-left: 10px; font-weight: 700">
+					Event Ease
+				</div>
+			</a>
+
+			<div class="d-flex align-items-center gap-3">
+				<input
+					id="searchUserTop"
+					class="form-control form-control-sm d-none d-md-block"
+					placeholder="Search events..."
+					style="min-width: 260px"
+				/>
+				<div class="dropdown">
+					<button
+						class="btn d-flex align-items-center gap-2"
+						data-bs-toggle="dropdown"
+					>
+						<div
+							class="rounded-circle bg-primary text-white"
+							style="
+								width: 36px;
+								height: 36px;
+								display: grid;
+								place-items: center;
+							"
+						>
+							ST
+						</div>
+						<div class="d-none d-md-block text-start">
+							<div style="font-weight: 600">Student</div>
+							<div class="muted">you@college.edu</div>
+						</div>
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li>
+							<a class="dropdown-item" href="user-profile.html"
+								>Profile</a
+							>
+						</li>
+						<li>
+							<a
+								class="dropdown-item"
+								href="user-registrations.html"
+								>My Registrations</a
+							>
+						</li>
+						<li><hr class="dropdown-divider" /></li>
+						<li>
+							<button
+								class="dropdown-item text-danger"
+								id="userLogout"
+							>
+								Logout
+							</button>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</header>
+
+		<div class="app-shell">
+			<aside class="app-sidebar d-none d-lg-flex">
+				<nav style="display: flex; flex-direction: column; gap: 10px">
+					<a
+						href="user-home.html"
+						class="text-white-95 p-2 rounded active"
+						>🏠 Home</a
+					>
+					<a href="user-events.html" class="text-white-95 p-2 rounded"
+						>📅 Browse Events</a
+					>
+					<a
+						href="user-registrations.html"
+						class="text-white-95 p-2 rounded"
+						>📋 My Registrations</a
+					>
+					<a
+						href="user-profile.html"
+						class="text-white-95 p-2 rounded"
+						>👤 Profile</a
+					>
+				</nav>
+				<div style="margin-top: auto">
+					<div class="small text-white-75">
+						© <span id="userYear"></span> Event Ease
+					</div>
+				</div>
+			</aside>
+
+			<main class="app-main">
+				<div
+					class="d-flex justify-content-between align-items-center mb-3"
+				>
+					<div>
+						<h4 class="mb-0">Welcome — Student</h4>
+						<div class="muted">
+							Browse events, request participation and track your
+							registrations.
+						</div>
+					</div>
+					<div class="small-gap">
+						<button id="btnMyRegs" class="btn btn-outline btn-sm">
+							My Registrations
+						</button>
+						<a
+							href="user-events.html"
+							class="btn btn-primary btn-sm"
+							>Browse Events</a
+						>
+					</div>
+				</div>
+
+				<!-- Spotlight: next upcoming event (public view) -->
+				<div class="card-compact mb-3">
+					<div class="d-flex justify-content-between">
+						<div>
+							<div class="muted">Next public event</div>
+							<h3 id="spotTitle">Hackathon — Open Track</h3>
+							<div class="muted small" id="spotMeta">
+								Dec 05, 2025 · Auditorium A
+							</div>
+							<p class="muted mt-2" id="spotDesc">
+								Open 24-hour coding event. Teams allowed.
+								Teacher approval required for some team
+								registrations.
+							</p>
+
+							<div class="mt-2">
+								<button
+									id="spotRegister"
+									class="btn btn-primary"
+								>
+									Request to Join
+								</button>
+								<button
+									id="spotDetails"
+									class="btn btn-outline"
+								>
+									View Details
+								</button>
+							</div>
+						</div>
+
+						<div style="text-align: right; min-width: 140px">
+							<div class="muted">Participants</div>
+							<div style="font-weight: 700" id="spotCount">
+								120
+							</div>
+							<div class="muted mt-3">Type</div>
+							<div class="mt-1">
+								<span
+									id="spotType"
+									class="badge bg-warning text-dark"
+									>Requires approval</span
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Events preview -->
+				<div class="card-compact mb-3">
+					<div
+						class="d-flex justify-content-between align-items-center mb-2"
+					>
+						<div>
+							<strong>Upcoming events</strong>
+							<div class="muted">Public & campus events</div>
+						</div>
+						<div>
+							<select
+								id="filterType"
+								class="form-select form-select-sm"
+							>
+								<option value="all">All types</option>
+								<option value="tech">Tech</option>
+								<option value="cultural">Cultural</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="table-responsive">
+						<table class="table align-middle">
+							<thead>
+								<tr>
+									<th>Event</th>
+									<th>Date</th>
+									<th>Venue</th>
+									<th>Type</th>
+									<th class="text-end">Action</th>
+								</tr>
+							</thead>
+							<tbody id="eventsPreview"></tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="muted">
+					Remember: registrations for events marked "Requires
+					approval" will show as <strong>Pending</strong> until the
+					teacher approves.
+				</div>
+			</main>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			/* Demo data: events */
+			const EVENTS = [
+				{
+					id: "E101",
+					name: "Inter-College Hackathon",
+					date: "2025-12-05T10:00",
+					venue: "Auditorium A",
+					type: "tech",
+					teamParticipation: true,
+					requiresApproval: true,
+					manager: "TCH01",
+					capacity: 200,
+					participants: 120,
+				},
+				{
+					id: "E102",
+					name: "Food Fest",
+					date: "2025-12-12T16:00",
+					venue: "Hall B",
+					type: "cultural",
+					teamParticipation: false,
+					requiresApproval: false,
+					manager: "TCH01",
+					capacity: 80,
+					participants: 45,
+				},
+				{
+					id: "E103",
+					name: "Design Sprint",
+					date: "2025-12-10T09:00",
+					venue: "Lab 101",
+					type: "tech",
+					teamParticipation: true,
+					requiresApproval: false,
+					manager: "TCH01",
+					capacity: 40,
+					participants: 22,
+				},
+			];
+
+			/* registration store for current student (in-memory) */
+			let registrations = [
+				/* { regId:'R1', eventId:'E101', status:'pending'|'approved'|'cancelled', createdAt:'', notes:'' } */
+			];
+
+			document.getElementById("userYear").textContent =
+				new Date().getFullYear();
+
+			/* Render spot & small list */
+			function renderSpot() {
+				const spot = EVENTS[0];
+				document.getElementById("spotTitle").textContent = spot.name;
+				document.getElementById("spotMeta").textContent = new Date(
+					spot.date
+				).toLocaleString();
+				document.getElementById("spotDesc").textContent = `Type: ${
+					spot.type
+				}. ${
+					spot.teamParticipation ? "Teams allowed." : "Individual."
+				} ${
+					spot.requiresApproval
+						? "Teacher approval required."
+						: "Auto-approved."
+				}`;
+				document.getElementById("spotCount").textContent =
+					spot.participants;
+				document.getElementById("spotType").textContent =
+					spot.requiresApproval ? "Requires approval" : "Auto";
+				document.getElementById("spotRegister").onclick = () =>
+					openRegisterModal(spot.id);
+				document.getElementById("spotDetails").onclick = () =>
+					openEventDetails(spot.id);
+			}
+
+			/* Events preview table */
+			function renderEvents() {
+				const tbody = document.getElementById("eventsPreview");
+				tbody.innerHTML = "";
+				const ftype = document.getElementById("filterType").value;
+				EVENTS.filter(
+					(e) => ftype === "all" || e.type === ftype
+				).forEach((e) => {
+					const tr = document.createElement("tr");
+					tr.innerHTML = `
+      <td style="font-weight:600">${e.name}<div class="small muted">${
+						e.id
+					}</div></td>
+      <td>${new Date(e.date).toLocaleDateString()}</td>
+      <td>${e.venue}</td>
+      <td><span class="badge ${
+			e.requiresApproval ? "bg-warning text-dark" : "bg-success"
+		}">${e.requiresApproval ? "Requires approval" : "Auto"}</span></td>
+      <td class="text-end"><button class="btn btn-sm btn-outline me-1" onclick="openEventDetails('${
+			e.id
+		}')">Details</button>
+        <button class="btn btn-sm btn-primary" onclick="openRegisterModal('${
+			e.id
+		}')">Register</button></td>
+    `;
+					tbody.appendChild(tr);
+				});
+			}
+
+			/* Modal: Register -> behavior depends on requiresApproval */
+			function openRegisterModal(eventId) {
+				const e = EVENTS.find((x) => x.id === eventId);
+				if (!e) return alert("Event not found");
+				const confirmText = e.requiresApproval
+					? `This event requires teacher approval. Submit registration request?`
+					: `This event will be registered automatically (no teacher approval needed). Confirm registration?`;
+
+				if (!confirm(confirmText)) return;
+				// Demo: create registration
+				const reg = {
+					regId: "R" + Math.floor(Math.random() * 9000 + 1000),
+					eventId: eventId,
+					createdAt: new Date().toISOString(),
+					status: e.requiresApproval ? "pending" : "approved",
+				};
+				registrations.push(reg);
+				// if auto-approved, increment participants count locally
+				if (reg.status === "approved") {
+					e.participants = (e.participants || 0) + 1;
+					alert("Registered (auto-approved).");
+				} else alert("Request sent — status: Pending.");
+				renderEvents();
+			}
+
+			/* View details (light) */
+			function openEventDetails(eventId) {
+				const e = EVENTS.find((x) => x.id === eventId);
+				if (!e) return;
+				alert(
+					`${e.name}\n${new Date(e.date).toLocaleString()}\nVenue: ${
+						e.venue
+					}\nType: ${e.type}\nTeams: ${
+						e.teamParticipation ? "Allowed" : "No"
+					}\nApproval: ${
+						e.requiresApproval ? "Required" : "Not required"
+					}\nParticipants: ${e.participants}/${e.capacity}`
+				);
+			}
+
+			/* My registrations page quick nav */
+			document
+				.getElementById("btnMyRegs")
+				.addEventListener(
+					"click",
+					() => (location.href = "user-registrations.html")
+				);
+			document
+				.getElementById("filterType")
+				.addEventListener("change", renderEvents);
+			document
+				.getElementById("searchUserTop")
+				.addEventListener("keydown", (e) => {
+					if (e.key === "Enter") {
+						document.getElementById("filterType").value = "all";
+						/* optionally filter by query */ renderEvents();
+					}
+				});
+
+			renderSpot();
+			renderEvents();
+		</script>
+	</body>
+</html>

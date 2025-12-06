@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Event Ease — Teacher Events</title>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+		<style>
+			:root {
+				--header-h: 64px;
+			}
+			.topbar {
+				height: var(--header-h);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 20px;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+				position: sticky;
+				top: 0;
+				z-index: 20;
+			}
+			.app-shell {
+				display: flex;
+				min-height: calc(100vh - var(--header-h));
+			}
+			.app-sidebar {
+				width: 240px;
+				background: linear-gradient(180deg, #1e3a8a, #12224a);
+				color: #fff;
+				padding: 18px;
+				display: flex;
+				flex-direction: column;
+			}
+			.app-main {
+				flex: 1;
+				padding: 22px;
+			}
+			.card-compact {
+				background: var(--bg-surface);
+				border-radius: 10px;
+				padding: 16px;
+				border: 1px solid var(--border);
+			}
+			.muted {
+				color: var(--text-muted);
+			}
+			@media (max-width: 900px) {
+				.app-sidebar {
+					display: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header class="topbar">
+			<a
+				href="teacher-home.html"
+				class="d-flex align-items-center text-decoration-none"
+				><div
+					style="
+						width: 36px;
+						height: 36px;
+						border-radius: 8px;
+						background: linear-gradient(180deg, #3b82f6, #2b6ee6);
+						display: grid;
+						place-items: center;
+						color: #fff;
+					"
+				>
+					EE
+				</div>
+				<div class="ms-2 fw-600">Event Ease</div></a
+			>
+			<div class="d-flex gap-2 align-items-center">
+				<input
+					id="searchEv"
+					class="form-control form-control-sm d-none d-md-block"
+					style="min-width: 220px"
+					placeholder="Search my events"
+				/>
+				<div class="dropdown">
+					<button
+						class="btn d-flex align-items-center"
+						data-bs-toggle="dropdown"
+					>
+						<div
+							class="rounded-circle bg-primary text-white"
+							style="
+								width: 36px;
+								height: 36px;
+								display: grid;
+								place-items: center;
+							"
+						>
+							TC
+						</div>
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<div class="app-shell">
+			<aside class="app-sidebar d-none d-lg-flex">
+				<nav style="display: flex; flex-direction: column; gap: 10px">
+					<a
+						href="teacher-home.html"
+						class="text-white-95 p-2 rounded"
+						>🏠 Home</a
+					>
+					<a
+						href="teacher-events.html"
+						class="text-white-95 p-2 rounded active"
+						>📅 My Events</a
+					>
+					<a
+						href="teacher-approvals.html"
+						class="text-white-95 p-2 rounded"
+						>✅ Approvals</a
+					>
+					<a
+						href="teacher-profile.html"
+						class="text-white-95 p-2 rounded"
+						>👤 Profile</a
+					>
+				</nav>
+			</aside>
+
+			<main class="app-main">
+				<div
+					class="d-flex justify-content-between align-items-center mb-3"
+				>
+					<div>
+						<h4 class="mb-0">My Events</h4>
+						<div class="muted">
+							Create, edit, assign student coordinators, and
+							export rosters
+						</div>
+					</div>
+					<div class="d-flex gap-2">
+						<select
+							id="filterStatusEv"
+							class="form-select form-select-sm"
+						>
+							<option value="all">All status</option>
+							<option value="upcoming">Upcoming</option>
+							<option value="ongoing">Ongoing</option>
+							<option value="completed">Completed</option>
+						</select>
+						<button class="btn btn-primary" id="btnNewEvent">
+							+ Create
+						</button>
+					</div>
+				</div>
+
+				<div class="card-compact mb-3">
+					<div class="table-responsive">
+						<table class="table align-middle">
+							<thead>
+								<tr>
+									<th>Event</th>
+									<th>Date</th>
+									<th>Venue</th>
+									<th>Coordinator(s)</th>
+									<th>Participants</th>
+									<th>Status</th>
+									<th class="text-end">Actions</th>
+								</tr>
+							</thead>
+							<tbody id="eventsList"></tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="card-compact">
+					<h6>Quick actions</h6>
+					<div class="d-flex gap-2 mt-2">
+						<button class="btn btn-outline" id="exportAll">
+							Export All Rosters
+						</button>
+						<button class="btn btn-outline" id="notifyAll">
+							Notify All Participants
+						</button>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<!-- Modals: Create/Edit, Assign Student Coordinator, View Roster -->
+		<div class="modal fade" id="evModal" tabindex="-1">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<form id="evForm" class="needs-validation" novalidate>
+						<div class="modal-header">
+							<h5 class="modal-title" id="evModalTitle">
+								Create Event
+							</h5>
+							<button
+								class="btn-close"
+								data-bs-dismiss="modal"
+							></button>
+						</div>
+						<div class="modal-body">
+							<input id="evId" type="hidden" />
+							<div class="row g-3">
+								<div class="col-md-6">
+									<label class="form-label">Name</label
+									><input
+										id="evName"
+										class="form-control"
+										required
+									/>
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Venue</label
+									><input
+										id="evVenue"
+										class="form-control"
+										required
+									/>
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Date & Time</label
+									><input
+										id="evDateInput"
+										type="datetime-local"
+										class="form-control"
+										required
+									/>
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Capacity</label
+									><input
+										id="evCap"
+										type="number"
+										class="form-control"
+										value="50"
+									/>
+								</div>
+								<div class="col-12">
+									<label class="form-label">Description</label
+									><textarea
+										id="evDesc"
+										class="form-control"
+										rows="3"
+									></textarea>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button
+								class="btn btn-outline"
+								data-bs-dismiss="modal"
+							>
+								Cancel</button
+							><button class="btn btn-primary" id="saveEvBtn">
+								Save
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="assignStudentModal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Assign Student Coordinator</h5>
+						<button
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body">
+						<label class="form-label"
+							>Select student coordinator</label
+						>
+						<select id="studentSelect" class="form-select">
+							<option>Student A (CS101)</option>
+							<option>Student B (CS102)</option>
+							<option>Student C (CS103)</option>
+						</select>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-outline" data-bs-dismiss="modal">
+							Cancel</button
+						><button class="btn btn-primary" id="assignStudentBtn">
+							Assign
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="rosterModal" tabindex="-1">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Roster</h5>
+						<button
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body" id="rosterBody"></div>
+					<div class="modal-footer">
+						<button class="btn btn-outline" data-bs-dismiss="modal">
+							Close
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			// demo dataset
+			let teacherEvents = [
+				{
+					id: "T001",
+					name: "Design Thinking Workshop",
+					date: "2025-12-10T14:00",
+					venue: "Lab 101",
+					students: ["S101", "S102"],
+					cap: 50,
+					enrolled: 23,
+					status: "Upcoming",
+				},
+				{
+					id: "T002",
+					name: "Arduino Intro",
+					date: "2025-11-20T09:00",
+					venue: "Lab 102",
+					students: ["S103"],
+					cap: 30,
+					enrolled: 12,
+					status: "Completed",
+				},
+				{
+					id: "T003",
+					name: "Web Dev Sprint",
+					date: "2025-12-05T09:00",
+					venue: "Room 210",
+					students: ["S104", "S105"],
+					cap: 40,
+					enrolled: 34,
+					status: "Ongoing",
+				},
+			];
+
+			function renderTeacherEvents() {
+				const tb = document.getElementById("eventsList");
+				tb.innerHTML = "";
+				teacherEvents.forEach((ev) => {
+					const tr = document.createElement("tr");
+					const dt = new Date(ev.date);
+					tr.innerHTML = `<td style="font-weight:600">${
+						ev.name
+					}<div class="small muted">${ev.id}</div></td>
+          <td>${dt.toLocaleString()}</td><td>${ev.venue}</td><td>${
+						(ev.students || []).join(", ") || "-"
+					}</td><td>${ev.enrolled}/${ev.cap}</td>
+          <td><span class="badge ${
+				ev.status === "Ongoing"
+					? "bg-success"
+					: ev.status === "Upcoming"
+					? "bg-primary"
+					: "bg-secondary"
+			}">${ev.status}</span></td>
+          <td class="text-end"><button class="btn btn-sm btn-outline me-1" onclick="openRoster('${
+				ev.id
+			}')">Roster</button><button class="btn btn-sm btn-outline me-1" onclick="openAssign('${
+						ev.id
+					}')">Assign</button><button class="btn btn-sm btn-outline me-1" onclick="editEv('${
+						ev.id
+					}')">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteEv('${
+						ev.id
+					}')">Delete</button></td>`;
+					tb.appendChild(tr);
+				});
+			}
+
+			function openRoster(id) {
+				const ev = teacherEvents.find((e) => e.id === id);
+				document.getElementById(
+					"rosterBody"
+				).innerHTML = `<p class="small muted">Roster for ${
+					ev.name
+				} (demo):</p><ul>${(ev.students || [])
+					.map((s) => "<li>" + s + "</li>")
+					.join("")}</ul>`;
+				new bootstrap.Modal(
+					document.getElementById("rosterModal")
+				).show();
+			}
+
+			document
+				.getElementById("btnNewEvent")
+				.addEventListener("click", () => {
+					document.getElementById("evModalTitle").textContent =
+						"Create Event";
+					document.getElementById("evId").value = "";
+					document.getElementById("evName").value = "";
+					document.getElementById("evVenue").value = "";
+					document.getElementById("evDateInput").value = "";
+					document.getElementById("evCap").value = 50;
+					document.getElementById("evDesc").value = "";
+					new bootstrap.Modal(
+						document.getElementById("evModal")
+					).show();
+				});
+
+			document
+				.getElementById("saveEvBtn")
+				.addEventListener("click", (e) => {
+					e.preventDefault();
+					const form = document.getElementById("evForm");
+					if (!form.checkValidity()) {
+						form.classList.add("was-validated");
+						return;
+					}
+					const id =
+						document.getElementById("evId").value ||
+						"T" + Math.floor(Math.random() * 9000 + 1000);
+					const payload = {
+						id,
+						name: document.getElementById("evName").value.trim(),
+						date: document.getElementById("evDateInput").value,
+						venue: document.getElementById("evVenue").value.trim(),
+						cap: parseInt(
+							document.getElementById("evCap").value || 0,
+							10
+						),
+						desc: document.getElementById("evDesc").value.trim(),
+						students: [],
+						enrolled: 0,
+						status: "Upcoming",
+					};
+					const idx = teacherEvents.findIndex((x) => x.id === id);
+					if (idx >= 0)
+						teacherEvents[idx] = {
+							...teacherEvents[idx],
+							...payload,
+						};
+					else teacherEvents.unshift(payload);
+					bootstrap.Modal.getInstance(
+						document.getElementById("evModal")
+					).hide();
+					renderTeacherEvents();
+				});
+
+			function openAssign(id) {
+				// demo: open student selector modal
+				new bootstrap.Modal(
+					document.getElementById("assignStudentModal")
+				).show();
+				document.getElementById("assignStudentBtn").onclick = () => {
+					alert("Assigned student coordinator (demo)");
+					bootstrap.Modal.getInstance(
+						document.getElementById("assignStudentModal")
+					).hide();
+				};
+			}
+
+			function editEv(id) {
+				const ev = teacherEvents.find((e) => e.id === id);
+				if (!ev) return;
+				document.getElementById("evModalTitle").textContent =
+					"Edit Event";
+				document.getElementById("evId").value = ev.id;
+				document.getElementById("evName").value = ev.name;
+				// set local input value
+				document.getElementById("evDateInput").value = new Date(ev.date)
+					.toISOString()
+					.slice(0, 16);
+				document.getElementById("evVenue").value = ev.venue;
+				document.getElementById("evCap").value = ev.cap;
+				document.getElementById("evDesc").value = ev.desc || "";
+				new bootstrap.Modal(document.getElementById("evModal")).show();
+			}
+
+			function deleteEv(id) {
+				if (confirm("Delete " + id + "?")) {
+					teacherEvents = teacherEvents.filter((e) => e.id !== id);
+					renderTeacherEvents();
+				}
+			}
+
+			document
+				.getElementById("exportAll")
+				.addEventListener("click", () =>
+					alert("Export all rosters (demo)")
+				);
+			document
+				.getElementById("notifyAll")
+				.addEventListener("click", () =>
+					alert("Notify all participants (demo)")
+				);
+			renderTeacherEvents();
+		</script>
+	</body>
+</html>

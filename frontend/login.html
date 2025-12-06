@@ -3,9 +3,64 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
+		<title>Login page</title>
 	</head>
 	<body>
-		<h2>welcome to the login page.</h2>
+		<div>
+			<img src="logo.svg" alt="" />
+			<h2>Event Ease</h2>
+		</div>
+		<div>
+			<div>
+				<div>
+					<div>
+						<h3>Welcome back!!</h3>
+						<p>Login to your account</p>
+					</div>
+					<div></div>
+				</div>
+				<div>
+					<form action="" method="post">
+						<div>
+							<label for="email">email</label>
+							<input
+								type="text"
+								id="email"
+								name="email"
+								required
+							/>
+						</div>
+						<div>
+							<label for="password">Password</label>
+							<input
+								type="password"
+								id="password"
+								name="password"
+								required
+							/>
+						</div>
+						<div>
+							<input
+								type="checkbox"
+								id="terms"
+								name="terms"
+								required
+							/>
+							<label for="terms">Terms and Conditions</label>
+						</div>
+						<div>
+							<button type="submit">Login</button>
+						</div>
+						<div>
+							Don't have an account?
+							<a href="/register">Register</a>
+						</div>
+						<div>
+							<a href="/forgot-password">Forgot Password?</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

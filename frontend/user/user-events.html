@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Event Ease — Browse Events (Student)</title>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+
+		<style>
+			:root {
+				--header-h: 64px;
+			}
+			.topbar {
+				height: var(--header-h);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 20px;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+			}
+			.app-shell {
+				display: flex;
+				min-height: calc(100vh - var(--header-h));
+			}
+			.app-sidebar {
+				width: 220px;
+				background: linear-gradient(180deg, #0b1220, #071028);
+				color: #fff;
+				padding: 18px;
+				display: flex;
+				flex-direction: column;
+			}
+			.app-main {
+				flex: 1;
+				padding: 22px;
+			}
+			.card-compact {
+				background: var(--bg-surface);
+				border-radius: 10px;
+				padding: 16px;
+				border: 1px solid var(--border);
+			}
+			.muted {
+				color: var(--text-muted);
+			}
+			@media (max-width: 900px) {
+				.app-sidebar {
+					display: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header class="topbar">
+			<a
+				href="user-home.html"
+				class="d-flex align-items-center text-decoration-none"
+			>
+				<div
+					class="logo-mark"
+					style="
+						width: 36px;
+						height: 36px;
+						border-radius: 8px;
+						background: linear-gradient(180deg, #3b82f6, #2b6ee6);
+						display: grid;
+						place-items: center;
+						color: #fff;
+					"
+				>
+					EE
+				</div>
+				<div style="margin-left: 10px; font-weight: 700">
+					Event Ease
+				</div>
+			</a>
+			<div class="d-flex align-items-center gap-3">
+				<input
+					id="evtSearch"
+					class="form-control form-control-sm d-none d-md-block"
+					placeholder="Search events..."
+					style="min-width: 260px"
+				/>
+				<div class="dropdown">
+					<button
+						class="btn d-flex align-items-center gap-2"
+						data-bs-toggle="dropdown"
+					>
+						<div
+							class="rounded-circle bg-primary text-white"
+							style="
+								width: 36px;
+								height: 36px;
+								display: grid;
+								place-items: center;
+							"
+						>
+							ST
+						</div>
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li>
+							<a class="dropdown-item" href="user-home.html"
+								>Home</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</header>
+
+		<div class="app-shell">
+			<aside class="app-sidebar d-none d-lg-flex">
+				<nav style="display: flex; flex-direction: column; gap: 10px">
+					<a href="user-home.html" class="text-white-95 p-2 rounded"
+						>🏠 Home</a
+					>
+					<a
+						href="user-events.html"
+						class="text-white-95 p-2 rounded active"
+						>📅 Browse Events</a
+					>
+					<a
+						href="user-registrations.html"
+						class="text-white-95 p-2 rounded"
+						>📋 My Registrations</a
+					>
+				</nav>
+			</aside>
+
+			<main class="app-main">
+				<div
+					class="d-flex justify-content-between align-items-center mb-3"
+				>
+					<div>
+						<h4 class="mb-0">Browse Events</h4>
+						<div class="muted">
+							Filters show approval requirement and team settings
+						</div>
+					</div>
+					<div class="d-flex gap-2">
+						<select
+							id="typeFilter"
+							class="form-select form-select-sm"
+						>
+							<option value="all">All types</option>
+							<option value="tech">Tech</option>
+							<option value="cultural">Cultural</option>
+						</select>
+						<select
+							id="approvalFilter"
+							class="form-select form-select-sm"
+						>
+							<option value="all">All</option>
+							<option value="requires">Requires approval</option>
+							<option value="auto">Auto-approved</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="card-compact">
+					<div class="table-responsive">
+						<table class="table align-middle">
+							<thead>
+								<tr>
+									<th>Event</th>
+									<th>Date</th>
+									<th>Venue</th>
+									<th>Capacity</th>
+									<th>Type</th>
+									<th class="text-end">Action</th>
+								</tr>
+							</thead>
+							<tbody id="eventsTable"></tbody>
+						</table>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			const EVENTS = [
+				{
+					id: "E101",
+					name: "Inter-College Hackathon",
+					date: "2025-12-05T10:00",
+					venue: "Auditorium A",
+					type: "tech",
+					teamParticipation: true,
+					requiresApproval: true,
+					capacity: 200,
+					participants: 120,
+				},
+				{
+					id: "E102",
+					name: "Food Fest",
+					date: "2025-12-12T16:00",
+					venue: "Hall B",
+					type: "cultural",
+					teamParticipation: false,
+					requiresApproval: false,
+					capacity: 80,
+					participants: 45,
+				},
+				{
+					id: "E103",
+					name: "Design Sprint",
+					date: "2025-12-10T09:00",
+					venue: "Lab 101",
+					type: "tech",
+					teamParticipation: true,
+					requiresApproval: false,
+					capacity: 40,
+					participants: 22,
+				},
+			];
+
+			/* same student registrations store */
+			let registrations = [];
+
+			function render() {
+				const tbody = document.getElementById("eventsTable");
+				tbody.innerHTML = "";
+				const q = (
+					document.getElementById("evtSearch").value || ""
+				).toLowerCase();
+				const tfilter = document.getElementById("typeFilter").value;
+				const afilter = document.getElementById("approvalFilter").value;
+				EVENTS.filter((e) => {
+					if (tfilter !== "all" && e.type !== tfilter) return false;
+					if (afilter === "requires" && !e.requiresApproval)
+						return false;
+					if (afilter === "auto" && e.requiresApproval) return false;
+					if (
+						q &&
+						!(e.name + " " + e.venue + " " + e.id)
+							.toLowerCase()
+							.includes(q)
+					)
+						return false;
+					return true;
+				}).forEach((e) => {
+					const tr = document.createElement("tr");
+					tr.innerHTML = `
+      <td style="font-weight:600">${e.name}<div class="small muted">${
+						e.id
+					}</div></td>
+      <td>${new Date(e.date).toLocaleString()}</td>
+      <td>${e.venue}</td>
+      <td>${e.participants}/${e.capacity}</td>
+      <td><span class="badge ${
+			e.requiresApproval ? "bg-warning text-dark" : "bg-success"
+		}">${e.requiresApproval ? "Requires approval" : "Auto"}</span></td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-outline me-1" onclick="viewDetails('${
+			e.id
+		}')">Details</button>
+        <button class="btn btn-sm btn-primary" onclick="register('${
+			e.id
+		}')">Register</button>
+      </td>`;
+					tbody.appendChild(tr);
+				});
+			}
+
+			function viewDetails(eventId) {
+				const e = EVENTS.find((x) => x.id === eventId);
+				alert(
+					`${e.name}\n${new Date(e.date).toLocaleString()}\n${
+						e.venue
+					}\nTeams: ${
+						e.teamParticipation ? "Allowed" : "No"
+					}\nApproval: ${e.requiresApproval ? "Required" : "None"}`
+				);
+			}
+			function register(eventId) {
+				const e = EVENTS.find((x) => x.id === eventId);
+				if (!e) return;
+				if (
+					!confirm(
+						e.requiresApproval
+							? "This event requires teacher approval. Submit registration request?"
+							: "Register for this event? (auto-approved)"
+					)
+				)
+					return;
+				const reg = {
+					regId: "R" + Math.floor(Math.random() * 9000 + 1000),
+					eventId,
+					status: e.requiresApproval ? "pending" : "approved",
+					createdAt: new Date().toISOString(),
+				};
+				registrations.push(reg);
+				if (reg.status === "approved") {
+					e.participants = (e.participants || 0) + 1;
+					alert("Registered — approved.");
+				} else alert("Request submitted — pending approval.");
+				render();
+			}
+
+			document
+				.getElementById("evtSearch")
+				.addEventListener("keydown", (e) => {
+					if (e.key === "Enter") render();
+				});
+			document
+				.getElementById("typeFilter")
+				.addEventListener("change", render);
+			document
+				.getElementById("approvalFilter")
+				.addEventListener("change", render);
+
+			render();
+		</script>
+	</body>
+</html>

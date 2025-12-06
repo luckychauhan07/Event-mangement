@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Event Ease — Teacher Profile</title>
+
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+		<style>
+			.topbar {
+				height: 64px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 20px;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+			}
+			.app-shell {
+				display: flex;
+			}
+			.app-sidebar {
+				width: 240px;
+				background: linear-gradient(180deg, #1e3a8a, #12224a);
+				color: #fff;
+				padding: 18px;
+			}
+			.app-main {
+				flex: 1;
+				padding: 22px;
+			}
+			.card-compact {
+				padding: 16px;
+				border-radius: 10px;
+				border: 1px solid var(--border);
+				background: var(--bg-surface);
+			}
+		</style>
+	</head>
+	<body>
+		<header class="topbar">
+			<a
+				href="teacher-home.html"
+				class="d-flex align-items-center text-decoration-none"
+				><div
+					style="
+						width: 36px;
+						height: 36px;
+						border-radius: 8px;
+						background: linear-gradient(180deg, #3b82f6, #2b6ee6);
+						display: grid;
+						place-items: center;
+						color: #fff;
+					"
+				>
+					EE
+				</div>
+				<div class="ms-2 fw-600">Event Ease</div></a
+			>
+		</header>
+
+		<div class="app-shell">
+			<aside class="app-sidebar d-none d-lg-flex">
+				<nav style="display: flex; flex-direction: column; gap: 10px">
+					<a
+						href="teacher-home.html"
+						class="text-white-95 p-2 rounded"
+						>🏠 Home</a
+					><a
+						href="teacher-events.html"
+						class="text-white-95 p-2 rounded"
+						>📅 My Events</a
+					><a
+						href="teacher-approvals.html"
+						class="text-white-95 p-2 rounded"
+						>✅ Approvals</a
+					><a
+						href="teacher-profile.html"
+						class="text-white-95 p-2 rounded active"
+						>👤 Profile</a
+					>
+				</nav>
+			</aside>
+
+			<main class="app-main">
+				<div class="card-compact">
+					<h4>Teacher Profile</h4>
+					<p class="muted">
+						Name: Prof. Rao<br />Email: teacher@college.edu<br />Department:
+						Computer Science
+					</p>
+					<div class="d-flex gap-2">
+						<button
+							class="btn btn-outline"
+							onclick="alert('Edit profile (demo)')"
+						>
+							Edit</button
+						><a class="btn btn-outline" href="teacher-home.html"
+							>Back</a
+						>
+					</div>
+				</div>
+			</main>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Event Ease — Sign up</title>
+
+		<!-- Fonts & Bootstrap -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+
+		<!-- Shared project styles -->
+		<link rel="stylesheet" href="style.css" />
+
+		<style>
+			:root {
+				--header-h: 64px;
+			}
+			body {
+				font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+					Arial;
+				background: var(--bg-light);
+				color: var(--text-dark);
+			}
+			.topbar {
+				height: var(--header-h);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 20px;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+			}
+			.brand {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				text-decoration: none;
+				color: inherit;
+			}
+			.signup-wrap {
+				max-width: 980px;
+				margin: 36px auto;
+				padding: 18px;
+			}
+			.panel {
+				background: var(--bg-surface);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 20px;
+			}
+			.muted {
+				color: var(--text-muted);
+			}
+			.avatar-preview {
+				width: 56px;
+				height: 56px;
+				border-radius: 10px;
+				display: grid;
+				place-items: center;
+				background: linear-gradient(180deg, #3b82f6, #2b6ee6);
+				color: white;
+				font-weight: 700;
+			}
+			.required {
+				color: #d33;
+				margin-left: 4px;
+				font-size: 12px;
+			}
+			.help {
+				font-size: 13px;
+				color: var(--text-muted);
+			}
+			.two-col {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 12px;
+			}
+			@media (max-width: 780px) {
+				.two-col {
+					grid-template-columns: 1fr;
+				}
+				.signup-wrap {
+					padding: 12px;
+				}
+			}
+			.small-note {
+				font-size: 13px;
+				color: var(--text-muted);
+			}
+		</style>
+	</head>
+	<body>
+		<header class="topbar">
+			<a class="brand" href="user-home.html" aria-label="Event Ease home">
+				<div class="avatar-preview" aria-hidden>EE</div>
+				<div>
+					<div style="font-weight: 700">Event Ease</div>
+					<div class="muted" style="font-size: 13px">
+						Campus Event Management
+					</div>
+				</div>
+			</a>
+			<div>
+				<a href="login.html" class="btn btn-outline btn-sm"
+					>Already have an account? Log in</a
+				>
+			</div>
+		</header>
+
+		<main class="signup-wrap">
+			<div class="panel shadow-sm">
+				<div class="row g-4">
+					<!-- LEFT: intro -->
+					<div class="col-12 col-lg-4">
+						<h3 class="mb-1">Create your account</h3>
+						<p class="muted">
+							Accounts get created in a pending state. An
+							administrator will assign roles (Student, Student
+							Coordinator, Teacher, Admin) after verification.
+						</p>
+
+						<div class="mt-3">
+							<strong>Why we ask for these</strong>
+							<ul class="muted small">
+								<li>
+									Institutional email and student ID help
+									admins verify identity.
+								</li>
+								<li>
+									Department/course helps route approval
+									requests correctly.
+								</li>
+								<li>
+									Emergency contact is required for on-site
+									events.
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<!-- RIGHT: form -->
+					<div class="col-12 col-lg-8">
+						<form
+							id="signupForm"
+							class="needs-validation"
+							novalidate
+						>
+							<div class="row g-3">
+								<!-- Full name -->
+								<div class="col-12">
+									<label for="fullName" class="form-label"
+										>Full name
+										<span class="required">*</span></label
+									>
+									<input
+										id="fullName"
+										name="fullName"
+										class="form-control"
+										required
+										autocomplete="name"
+									/>
+									<div class="invalid-feedback">
+										Please enter your full name.
+									</div>
+								</div>
+
+								<!-- Email -->
+								<div class="col-12 col-md-6">
+									<label for="email" class="form-label"
+										>Institutional email
+										<span class="required">*</span></label
+									>
+									<input
+										id="email"
+										name="email"
+										type="email"
+										class="form-control"
+										placeholder="you@college.edu"
+										required
+										autocomplete="email"
+									/>
+									<div class="form-text help">
+										Use your college email for faster
+										verification.
+									</div>
+									<div class="invalid-feedback">
+										Please enter a valid email address.
+									</div>
+								</div>
+
+								<!-- Department & Course -->
+								<div class="col-12 col-md-6">
+									<label for="department" class="form-label"
+										>Department / Course
+										<span class="required">*</span></label
+									>
+									<input
+										id="department"
+										name="department"
+										class="form-control"
+										required
+									/>
+									<div class="invalid-feedback">
+										Enter your department or course.
+									</div>
+								</div>
+
+								<div class="col-12 col-md-6">
+									<label
+										for="enrollmentYear"
+										class="form-label"
+										>Enrollment / Joining year</label
+									>
+									<input
+										id="enrollmentYear"
+										name="enrollmentYear"
+										type="number"
+										min="2000"
+										max="2099"
+										step="1"
+										class="form-control"
+										placeholder="2024"
+									/>
+									<div class="form-text help">
+										Optional — used for filtering and
+										reports.
+									</div>
+								</div>
+
+								<!-- DOB & Gender -->
+								<div class="col-12 col-md-6">
+									<label for="dob" class="form-label"
+										>Date of birth</label
+									>
+									<input
+										id="dob"
+										name="dob"
+										type="date"
+										class="form-control"
+									/>
+								</div>
+
+								<div class="col-12 col-md-6">
+									<label for="gender" class="form-label"
+										>Gender</label
+									>
+									<select
+										id="gender"
+										name="gender"
+										class="form-select"
+									>
+										<option value="">
+											Prefer not to say
+										</option>
+										<option value="female">Female</option>
+										<option value="male">Male</option>
+										<option value="other">Other</option>
+									</select>
+								</div>
+
+								<!-- Phone & Emergency contact -->
+								<div class="col-12 col-md-6">
+									<label for="phone" class="form-label"
+										>Phone</label
+									>
+									<input
+										id="phone"
+										name="phone"
+										type="tel"
+										class="form-control"
+										placeholder="+91 98XXXXXXXX"
+									/>
+								</div>
+
+								<div class="col-12 col-md-6">
+									<label for="emergency" class="form-label"
+										>Emergency contact (name — phone)
+										<span class="required">*</span></label
+									>
+									<input
+										id="emergency"
+										name="emergency"
+										class="form-control"
+										required
+										placeholder="Parent / guardian — +91XXXXXXXXXX"
+									/>
+									<div class="invalid-feedback">
+										Provide an emergency contact.
+									</div>
+								</div>
+
+								<!-- Address -->
+								<div class="col-12">
+									<label for="address" class="form-label"
+										>Address</label
+									>
+									<textarea
+										id="address"
+										name="address"
+										rows="2"
+										class="form-control"
+									></textarea>
+									<div class="form-text help">
+										Optional — used for event logistical
+										planning.
+									</div>
+								</div>
+
+								<!-- Social / Interests -->
+								<div class="col-12 col-md-6">
+									<label for="interests" class="form-label"
+										>Interests / Clubs</label
+									>
+									<input
+										id="interests"
+										name="interests"
+										class="form-control"
+										placeholder="e.g., Web Dev, Robotics"
+									/>
+									<div class="form-text help">
+										Comma-separated topics — helps event
+										recommendations.
+									</div>
+								</div>
+
+								<div class="col-12 col-md-6">
+									<label for="linkedin" class="form-label"
+										>LinkedIn / Portfolio</label
+									>
+									<input
+										id="linkedin"
+										name="linkedin"
+										type="url"
+										class="form-control"
+										placeholder="https://..."
+									/>
+								</div>
+
+								<!-- Passwords -->
+								<div class="col-12 col-md-6">
+									<label for="password" class="form-label"
+										>Password
+										<span class="required">*</span></label
+									>
+									<div class="input-group">
+										<input
+											id="password"
+											name="password"
+											type="password"
+											class="form-control"
+											minlength="8"
+											required
+											aria-describedby="pwdHelp"
+										/>
+										<button
+											type="button"
+											id="togglePwd"
+											class="btn btn-outline-secondary"
+											aria-label="Show password"
+										>
+											👁
+										</button>
+									</div>
+									<div id="pwdHelp" class="form-text help">
+										Minimum 8 characters, include a number
+										and a special character.
+									</div>
+									<div class="invalid-feedback">
+										Enter a valid password.
+									</div>
+								</div>
+
+								<div class="col-12 col-md-6">
+									<label
+										for="confirmPassword"
+										class="form-label"
+										>Confirm password
+										<span class="required">*</span></label
+									>
+									<input
+										id="confirmPassword"
+										name="confirmPassword"
+										type="password"
+										class="form-control"
+										required
+									/>
+									<div class="invalid-feedback">
+										Passwords must match.
+									</div>
+								</div>
+
+								<!-- Terms & Consent -->
+								<div class="col-12">
+									<div class="form-check">
+										<input
+											id="agree"
+											name="agree"
+											class="form-check-input"
+											type="checkbox"
+											required
+										/>
+										<label
+											for="agree"
+											class="form-check-label"
+											>I agree to the
+											<a href="#" target="_blank"
+												>terms & privacy</a
+											>.
+											<span class="required"
+												>*</span
+											></label
+										>
+										<div class="invalid-feedback">
+											You must accept terms to continue.
+										</div>
+									</div>
+									<div class="form-text small-note mt-1">
+										By signing up you consent to
+										event-related notifications and to
+										sharing your basic details with event
+										organizers.
+									</div>
+								</div>
+
+								<!-- Hidden: role assigned by admin later -->
+								<input
+									type="hidden"
+									id="role"
+									name="role"
+									value="pending"
+								/>
+
+								<!-- Submit -->
+								<div class="col-12 d-flex justify-content-end">
+									<button
+										type="submit"
+										class="btn btn-primary"
+									>
+										Create account
+									</button>
+								</div>
+							</div>
+						</form>
+
+						<!-- Avatar preview + demo output -->
+						<div class="mt-3 d-flex gap-3 align-items-start">
+							<div id="avatarPreview" aria-hidden></div>
+							<div id="resultArea" class="muted small"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<!-- Success modal -->
+		<div
+			class="modal fade"
+			id="successModal"
+			tabindex="-1"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog modal-sm modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-body text-center">
+						<div style="font-size: 28px">✅</div>
+						<h5 class="mt-2">
+							Account created — pending verification
+						</h5>
+						<p class="muted small">
+							An administrator will verify your details and assign
+							a role. You will be notified after verification.
+						</p>
+						<div class="d-grid">
+							<a
+								id="goLoginBtn"
+								href="login.html"
+								class="btn btn-primary"
+								>Go to login</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bootstrap -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+		<script>
+			// Elements
+			const signupForm = document.getElementById("signupForm");
+			const password = document.getElementById("password");
+			const confirmPassword = document.getElementById("confirmPassword");
+			const togglePwd = document.getElementById("togglePwd");
+			const resultArea = document.getElementById("resultArea");
+
+			// Password policy
+			function passwordValid(p) {
+				if (!p || p.length < 8) return false;
+				if (!/[0-9]/.test(p)) return false;
+				if (!/[^A-Za-z0-9]/.test(p)) return false;
+				return true;
+			}
+
+			// Toggle password visibility
+			togglePwd.addEventListener("click", () => {
+				const show = password.type === "password";
+				password.type = show ? "text" : "password";
+				confirmPassword.type = show ? "text" : "password";
+				togglePwd.innerText = show ? "🙈" : "👁";
+			});
+
+			// demo persistence: store users in localStorage
+			function saveUser(payload) {
+				const users = JSON.parse(
+					localStorage.getItem("ee_users") || "[]"
+				);
+				users.push(payload);
+				localStorage.setItem("ee_users", JSON.stringify(users));
+			}
+
+			// Form submit
+			signupForm.addEventListener("submit", (evt) => {
+				evt.preventDefault();
+				evt.stopPropagation();
+
+				// native validation
+				if (!signupForm.checkValidity()) {
+					signupForm.classList.add("was-validated");
+					return;
+				}
+
+				// password policy & match
+				const pw = password.value.trim();
+				if (!passwordValid(pw)) {
+					password.setCustomValidity(
+						"Password must be 8+ chars, include a number and special character"
+					);
+					signupForm.classList.add("was-validated");
+					password.reportValidity();
+					return;
+				} else {
+					password.setCustomValidity("");
+				}
+
+				if (confirmPassword.value !== pw) {
+					confirmPassword.setCustomValidity("Passwords do not match");
+					signupForm.classList.add("was-validated");
+					confirmPassword.reportValidity();
+					return;
+				} else {
+					confirmPassword.setCustomValidity("");
+				}
+
+				// collect form data
+				const fm = new FormData(signupForm);
+				const data = {};
+				for (const [k, v] of fm.entries()) {
+					// don't store file binary in demo user object; store filename only
+					if (k === "avatar" && v && v.name) {
+						data.avatar = v.name;
+					} else {
+						data[k] = v;
+					}
+				}
+
+				// default role pending — admin will assign
+				data.role = "pending";
+				data.createdAt = new Date().toISOString();
+				// NOTE: Do NOT store raw passwords in production. This demo stores for prototyping only.
+				data._demo_password = pw;
+
+				// demo save
+				saveUser(data);
+
+				// show success modal
+				const sm = new bootstrap.Modal(
+					document.getElementById("successModal")
+				);
+				sm.show();
+
+				// show captured payload (demo)
+				resultArea.innerHTML =
+					'<pre class="small muted">' +
+					JSON.stringify(data, null, 2) +
+					"</pre>";
+				signupForm.reset();
+				avatarPreview.innerHTML = "";
+				signupForm.classList.remove("was-validated");
+			});
+
+			// small accessibility
+			window.addEventListener("load", () =>
+				document.getElementById("fullName").focus()
+			);
+		</script>
+	</body>
+</html>
