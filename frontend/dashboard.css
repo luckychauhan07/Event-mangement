@@ -1,0 +1,68 @@
+/* styles.css */
+
+/* General background */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+nav {
+  background-color: #1a1a2e !important;
+}
+nav h4 {
+  color: #f9a825;
+}
+nav .nav-link {
+  transition: all 0.3s ease;
+}
+nav .nav-link:hover {
+  background-color: #f9a825;
+  color: #1a1a2e !important;
+  border-radius: 5px;
+}
+
+/* Cards */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  background-color: #ffffff;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+.card h6 {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+.card p {
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+  color: #f9a825;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #f9a825;
+  border: none;
+  color: #1a1a2e;
+}
+.btn-primary:hover {
+  background-color: #d18816;
+}
+.btn-secondary {
+  background-color: #1a1a2e;
+  border: none;
+}
+.btn-secondary:hover {
+  background-color: #33334d;
+}
+
+/* Chart containers */
+canvas {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
