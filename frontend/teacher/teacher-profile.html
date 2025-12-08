@@ -15,33 +15,35 @@
 		/>
 		<link rel="stylesheet" href="../style.css" />
 		<style>
-			.topbar {
-				height: 64px;
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding: 0 20px;
-				background: #fff;
-				border-bottom: 1px solid var(--border);
+			body {
+				font-family: Inter, system-ui, Arial;
+				background: var(--bg-light);
+				color: var(--text-dark);
 			}
 			.app-shell {
 				display: flex;
+				min-height: calc(100vh - var(--header-height));
 			}
 			.app-sidebar {
-				width: 240px;
-				background: linear-gradient(180deg, #1e3a8a, #12224a);
+				width: var(--sidebar-width);
+				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
 				color: #fff;
-				padding: 18px;
+				padding: 28px 20px;
+				display: flex;
+				flex-direction: column;
+				box-shadow: var(--shadow-md);
 			}
 			.app-main {
 				flex: 1;
-				padding: 22px;
+				padding: 32px;
 			}
-			.card-compact {
-				padding: 16px;
-				border-radius: 10px;
-				border: 1px solid var(--border);
-				background: var(--bg-surface);
+			@media (max-width: 991px) {
+				.app-sidebar {
+					display: none;
+				}
+				.app-main {
+					padding: 24px;
+				}
 			}
 		</style>
 	</head>
@@ -50,41 +52,30 @@
 			<a
 				href="teacher-home.html"
 				class="d-flex align-items-center text-decoration-none"
-				><div
-					style="
-						width: 36px;
-						height: 36px;
-						border-radius: 8px;
-						background: linear-gradient(180deg, #3b82f6, #2b6ee6);
-						display: grid;
-						place-items: center;
-						color: #fff;
-					"
-				>
-					EE
-				</div>
-				<div class="ms-2 fw-600">Event Ease</div></a
 			>
+				<div class="logo-mark">EE</div>
+				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
+			</a>
 		</header>
 
 		<div class="app-shell">
 			<aside class="app-sidebar d-none d-lg-flex">
-				<nav style="display: flex; flex-direction: column; gap: 10px">
+				<nav class="sidebar-nav">
 					<a
 						href="teacher-home.html"
-						class="text-white-95 p-2 rounded"
 						>🏠 Home</a
-					><a
+					>
+					<a
 						href="teacher-events.html"
-						class="text-white-95 p-2 rounded"
 						>📅 My Events</a
-					><a
+					>
+					<a
 						href="teacher-approvals.html"
-						class="text-white-95 p-2 rounded"
 						>✅ Approvals</a
-					><a
+					>
+					<a
 						href="teacher-profile.html"
-						class="text-white-95 p-2 rounded active"
+						class="active"
 						>👤 Profile</a
 					>
 				</nav>

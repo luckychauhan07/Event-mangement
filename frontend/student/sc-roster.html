@@ -15,45 +15,35 @@
 		/>
 		<link rel="stylesheet" href="../style.css" />
 		<style>
-			:root {
-				--header-h: 64px;
-			}
-			.topbar {
-				height: var(--header-h);
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding: 0 20px;
-				background: #fff;
-				border-bottom: 1px solid var(--border);
-				position: sticky;
-				top: 0;
-				z-index: 20;
+			body {
+				font-family: Inter, system-ui, Arial;
+				background: var(--bg-light);
+				color: var(--text-dark);
 			}
 			.app-shell {
 				display: flex;
-				min-height: calc(100vh - var(--header-h));
+				min-height: calc(100vh - var(--header-height));
 			}
 			.app-sidebar {
-				width: 240px;
-				background: linear-gradient(180deg, #0f172a, #0b1a3a);
+				width: var(--sidebar-width);
+				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
 				color: #fff;
-				padding: 18px;
+				padding: 28px 20px;
 				display: flex;
 				flex-direction: column;
+				box-shadow: var(--shadow-md);
 			}
 			.app-main {
 				flex: 1;
-				padding: 22px;
+				padding: 32px;
 			}
-			.card-compact {
-				background: var(--bg-surface);
-				border-radius: 10px;
-				padding: 16px;
-				border: 1px solid var(--border);
-			}
-			.muted {
-				color: var(--text-muted);
+			@media (max-width: 991px) {
+				.app-sidebar {
+					display: none;
+				}
+				.app-main {
+					padding: 24px;
+				}
 			}
 		</style>
 	</head>
@@ -62,21 +52,10 @@
 			<a
 				class="d-flex align-items-center text-decoration-none"
 				href="sc-home.html"
-				><div
-					style="
-						width: 36px;
-						height: 36px;
-						border-radius: 8px;
-						background: linear-gradient(180deg, #3b82f6, #2b6ee6);
-						display: grid;
-						place-items: center;
-						color: #fff;
-					"
-				>
-					EE
-				</div>
-				<div class="ms-2 fw-600">Event Ease</div></a
 			>
+				<div class="logo-mark">EE</div>
+				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
+			</a>
 			<div class="d-flex align-items-center gap-3">
 				<input
 					id="rosterSearch"
@@ -106,14 +85,16 @@
 
 		<div class="app-shell">
 			<aside class="app-sidebar d-none d-lg-flex">
-				<nav style="display: flex; flex-direction: column; gap: 10px">
-					<a href="sc-home.html" class="text-white-95 p-2 rounded"
+				<nav class="sidebar-nav">
+					<a href="sc-home.html"
 						>🏠 Home</a
-					><a href="sc-events.html" class="text-white-95 p-2 rounded"
+					>
+					<a href="sc-events.html"
 						>📅 Events</a
-					><a
+					>
+					<a
 						href="sc-roster.html"
-						class="text-white-95 p-2 rounded active"
+						class="active"
 						>📋 Rosters</a
 					>
 				</nav>

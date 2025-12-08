@@ -4,142 +4,377 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Event Ease — Sign up</title>
-
-		<!-- Fonts & Bootstrap -->
 		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
 			rel="stylesheet"
 		/>
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 		/>
-
-		<!-- Shared project styles -->
 		<link rel="stylesheet" href="style.css" />
-
 		<style>
-			:root {
-				--header-h: 64px;
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
 			}
+
 			body {
-				font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
-					Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
+				font-family: "Inter", -apple-system, BlinkMacSystemFont,
+					"Segoe UI", Roboto, sans-serif;
+				background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+				min-height: 100vh;
+				position: relative;
+				overflow-x: hidden;
 			}
+
+			body::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23000000" fill-opacity="0.02"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>');
+				opacity: 1;
+			}
+
 			.topbar {
-				height: var(--header-h);
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding: 0 20px;
-				background: #fff;
-				border-bottom: 1px solid var(--border);
+				position: relative;
+				z-index: 100;
+				background: #ffffff;
+				border-bottom: 1px solid var(--border-light);
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 			}
+
 			.brand {
 				display: flex;
 				align-items: center;
-				gap: 10px;
+				gap: 12px;
 				text-decoration: none;
 				color: inherit;
 			}
-			.signup-wrap {
-				max-width: 980px;
-				margin: 36px auto;
-				padding: 18px;
+
+			.brand .logo-mark {
+				box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
 			}
-			.panel {
-				background: var(--bg-surface);
-				border: 1px solid var(--border);
-				border-radius: 12px;
-				padding: 20px;
+
+			.brand > div > div:first-child {
+				font-weight: 700;
+				color: var(--text-dark);
+				font-size: 18px;
 			}
-			.muted {
+
+			.brand .muted {
 				color: var(--text-muted);
 			}
-			.avatar-preview {
-				width: 56px;
-				height: 56px;
-				border-radius: 10px;
-				display: grid;
-				place-items: center;
-				background: linear-gradient(180deg, #3b82f6, #2b6ee6);
-				color: white;
+
+			.signup-wrap {
+				max-width: 1200px;
+				margin: 40px auto;
+				padding: 20px;
+				position: relative;
+				z-index: 10;
+			}
+
+			.panel {
+				background: #ffffff;
+				border-radius: 32px;
+				padding: 48px;
+				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08),
+					0 0 0 1px rgba(0, 0, 0, 0.04);
+				border: 1px solid var(--border-light);
+				animation: fadeInUp 0.6s ease-out;
+			}
+
+			@keyframes fadeInUp {
+				from {
+					opacity: 0;
+					transform: translateY(30px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			.intro-section {
+				padding-right: 32px;
+			}
+
+			.intro-section h3 {
+				font-size: 32px;
+				font-weight: 700;
+				color: var(--text-dark);
+				margin-bottom: 16px;
+				letter-spacing: -0.5px;
+			}
+
+			.intro-section > p {
+				color: var(--text-muted);
+				font-size: 16px;
+				line-height: 1.7;
+				margin-bottom: 32px;
+			}
+
+			.info-box {
+				background: linear-gradient(
+					135deg,
+					var(--primary-light),
+					#e0f2fe
+				);
+				border-radius: 16px;
+				padding: 24px;
+				border: 1px solid var(--border-light);
+				margin-top: 32px;
+			}
+
+			.info-box strong {
+				display: block;
+				color: var(--text-dark);
+				font-size: 15px;
+				margin-bottom: 16px;
+				font-weight: 600;
+			}
+
+			.info-box ul {
+				list-style: none;
+				padding: 0;
+			}
+
+			.info-box li {
+				color: var(--text-muted);
+				font-size: 14px;
+				line-height: 1.8;
+				padding-left: 24px;
+				position: relative;
+				margin-bottom: 12px;
+			}
+
+			.info-box li::before {
+				content: "✓";
+				position: absolute;
+				left: 0;
+				color: var(--primary);
 				font-weight: 700;
 			}
+
+			.form-section {
+				background: #fff;
+				border-radius: 20px;
+				padding: 32px;
+				border: 1px solid var(--border-light);
+			}
+
+			.form-label {
+				font-weight: 600;
+				font-size: 14px;
+				color: var(--text-dark);
+				margin-bottom: 10px;
+				display: block;
+			}
+
 			.required {
-				color: #d33;
+				color: var(--danger);
 				margin-left: 4px;
 				font-size: 12px;
+				font-weight: 600;
 			}
-			.help {
+
+			.form-control,
+			.form-select {
+				border: 2px solid var(--border);
+				border-radius: 12px;
+				padding: 12px 16px;
+				font-size: 15px;
+				transition: all 0.2s ease;
+			}
+
+			.form-control:focus,
+			.form-select:focus {
+				border-color: var(--primary);
+				box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+				outline: none;
+			}
+
+			.form-text {
 				font-size: 13px;
 				color: var(--text-muted);
+				margin-top: 6px;
 			}
-			.two-col {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 12px;
+
+			.input-group .btn {
+				border: 2px solid var(--border);
+				border-left: none;
+				border-radius: 0 12px 12px 0;
+				background: var(--bg-light);
+				padding: 12px 16px;
 			}
-			@media (max-width: 780px) {
-				.two-col {
-					grid-template-columns: 1fr;
+
+			.input-group .form-control {
+				border-right: none;
+				border-radius: 12px 0 0 12px;
+			}
+
+			.form-check {
+				padding: 16px;
+				background: linear-gradient(
+					135deg,
+					var(--primary-light),
+					#e0f2fe
+				);
+				border-radius: 12px;
+				border: 1px solid var(--border-light);
+				margin-bottom: 16px;
+			}
+
+			.form-check-input {
+				width: 20px;
+				height: 20px;
+				accent-color: var(--primary);
+				margin-top: 2px;
+			}
+
+			.form-check-label {
+				font-size: 14px;
+				color: var(--text-dark);
+				cursor: pointer;
+			}
+
+			.form-check-label a {
+				color: var(--primary);
+				font-weight: 600;
+			}
+
+			.btn-primary {
+				padding: 16px 32px;
+				font-size: 16px;
+				font-weight: 600;
+				border-radius: 12px;
+				background: linear-gradient(
+					135deg,
+					var(--primary),
+					var(--primary-hover)
+				);
+				border: none;
+				box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+				transition: all 0.3s ease;
+			}
+
+			.btn-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+			}
+
+			.btn-outline {
+				border: 2px solid var(--border);
+				background: var(--bg-surface);
+				color: var(--text-dark);
+				padding: 10px 20px;
+				border-radius: 10px;
+				font-weight: 500;
+				transition: all 0.2s ease;
+			}
+
+			.btn-outline:hover {
+				background: var(--primary-light);
+				color: var(--primary);
+				border-color: var(--primary);
+			}
+
+			.modal-content {
+				border-radius: 24px;
+				border: none;
+				overflow: hidden;
+			}
+
+			.modal-body {
+				text-align: center;
+				padding: 40px;
+			}
+
+			.modal-body > div:first-child {
+				font-size: 64px;
+				margin-bottom: 20px;
+			}
+
+			@media (max-width: 992px) {
+				.intro-section {
+					padding-right: 0;
+					margin-bottom: 32px;
 				}
+
+				.panel {
+					padding: 32px 24px;
+				}
+			}
+
+			@media (max-width: 576px) {
 				.signup-wrap {
+					margin: 20px auto;
 					padding: 12px;
 				}
-			}
-			.small-note {
-				font-size: 13px;
-				color: var(--text-muted);
+
+				.panel {
+					padding: 24px 20px;
+					border-radius: 24px;
+				}
+
+				.intro-section h3 {
+					font-size: 24px;
+				}
 			}
 		</style>
 	</head>
 	<body>
 		<header class="topbar">
-			<a class="brand" href="user-home.html" aria-label="Event Ease home">
-				<div class="avatar-preview" aria-hidden>EE</div>
+			<a class="brand" href="login.html" aria-label="Event Ease home">
+				<div
+					class="logo-mark"
+					style="width: 44px; height: 44px; font-size: 16px"
+				>
+					EE
+				</div>
 				<div>
-					<div style="font-weight: 700">Event Ease</div>
+					<div style="font-weight: 700; color: #fff">Event Ease</div>
 					<div class="muted" style="font-size: 13px">
 						Campus Event Management
 					</div>
 				</div>
 			</a>
 			<div>
-				<a href="login.html" class="btn btn-outline btn-sm"
-					>Already have an account? Log in</a
-				>
+				<a href="login.html" class="btn btn-outline btn-sm">Log in</a>
 			</div>
 		</header>
 
 		<main class="signup-wrap">
-			<div class="panel shadow-sm">
+			<div class="panel">
 				<div class="row g-4">
 					<!-- LEFT: intro -->
-					<div class="col-12 col-lg-4">
-						<h3 class="mb-1">Create your account</h3>
-						<p class="muted">
-							Accounts get created in a pending state. An
-							administrator will assign roles (Student, Student
-							Coordinator, Teacher, Admin) after verification.
+					<div class="col-12 col-lg-4 intro-section">
+						<h3>Create your account</h3>
+						<p>
+							Join Event Ease to discover, register, and manage
+							campus events. Your account will be verified by an
+							administrator who will assign your role (Student,
+							Student Coordinator, Teacher, or Admin).
 						</p>
 
-						<div class="mt-3">
-							<strong>Why we ask for these</strong>
-							<ul class="muted small">
+						<div class="info-box">
+							<strong>Why we ask for these details</strong>
+							<ul>
 								<li>
-									Institutional email and student ID help
-									admins verify identity.
+									Institutional email helps admins verify your
+									identity quickly.
 								</li>
 								<li>
-									Department/course helps route approval
-									requests correctly.
+									Department/course information helps route
+									approval requests to the right faculty.
 								</li>
 								<li>
-									Emergency contact is required for on-site
-									events.
+									Emergency contact is required for safety
+									during on-site events.
 								</li>
 							</ul>
 						</div>
@@ -147,312 +382,345 @@
 
 					<!-- RIGHT: form -->
 					<div class="col-12 col-lg-8">
-						<form
-							id="signupForm"
-							class="needs-validation"
-							novalidate
-						>
-							<div class="row g-3">
-								<!-- Full name -->
-								<div class="col-12">
-									<label for="fullName" class="form-label"
-										>Full name
-										<span class="required">*</span></label
-									>
-									<input
-										id="fullName"
-										name="fullName"
-										class="form-control"
-										required
-										autocomplete="name"
-									/>
-									<div class="invalid-feedback">
-										Please enter your full name.
-									</div>
-								</div>
-
-								<!-- Email -->
-								<div class="col-12 col-md-6">
-									<label for="email" class="form-label"
-										>Institutional email
-										<span class="required">*</span></label
-									>
-									<input
-										id="email"
-										name="email"
-										type="email"
-										class="form-control"
-										placeholder="you@college.edu"
-										required
-										autocomplete="email"
-									/>
-									<div class="form-text help">
-										Use your college email for faster
-										verification.
-									</div>
-									<div class="invalid-feedback">
-										Please enter a valid email address.
-									</div>
-								</div>
-
-								<!-- Department & Course -->
-								<div class="col-12 col-md-6">
-									<label for="department" class="form-label"
-										>Department / Course
-										<span class="required">*</span></label
-									>
-									<input
-										id="department"
-										name="department"
-										class="form-control"
-										required
-									/>
-									<div class="invalid-feedback">
-										Enter your department or course.
-									</div>
-								</div>
-
-								<div class="col-12 col-md-6">
-									<label
-										for="enrollmentYear"
-										class="form-label"
-										>Enrollment / Joining year</label
-									>
-									<input
-										id="enrollmentYear"
-										name="enrollmentYear"
-										type="number"
-										min="2000"
-										max="2099"
-										step="1"
-										class="form-control"
-										placeholder="2024"
-									/>
-									<div class="form-text help">
-										Optional — used for filtering and
-										reports.
-									</div>
-								</div>
-
-								<!-- DOB & Gender -->
-								<div class="col-12 col-md-6">
-									<label for="dob" class="form-label"
-										>Date of birth</label
-									>
-									<input
-										id="dob"
-										name="dob"
-										type="date"
-										class="form-control"
-									/>
-								</div>
-
-								<div class="col-12 col-md-6">
-									<label for="gender" class="form-label"
-										>Gender</label
-									>
-									<select
-										id="gender"
-										name="gender"
-										class="form-select"
-									>
-										<option value="">
-											Prefer not to say
-										</option>
-										<option value="female">Female</option>
-										<option value="male">Male</option>
-										<option value="other">Other</option>
-									</select>
-								</div>
-
-								<!-- Phone & Emergency contact -->
-								<div class="col-12 col-md-6">
-									<label for="phone" class="form-label"
-										>Phone</label
-									>
-									<input
-										id="phone"
-										name="phone"
-										type="tel"
-										class="form-control"
-										placeholder="+91 98XXXXXXXX"
-									/>
-								</div>
-
-								<div class="col-12 col-md-6">
-									<label for="emergency" class="form-label"
-										>Emergency contact (name — phone)
-										<span class="required">*</span></label
-									>
-									<input
-										id="emergency"
-										name="emergency"
-										class="form-control"
-										required
-										placeholder="Parent / guardian — +91XXXXXXXXXX"
-									/>
-									<div class="invalid-feedback">
-										Provide an emergency contact.
-									</div>
-								</div>
-
-								<!-- Address -->
-								<div class="col-12">
-									<label for="address" class="form-label"
-										>Address</label
-									>
-									<textarea
-										id="address"
-										name="address"
-										rows="2"
-										class="form-control"
-									></textarea>
-									<div class="form-text help">
-										Optional — used for event logistical
-										planning.
-									</div>
-								</div>
-
-								<!-- Social / Interests -->
-								<div class="col-12 col-md-6">
-									<label for="interests" class="form-label"
-										>Interests / Clubs</label
-									>
-									<input
-										id="interests"
-										name="interests"
-										class="form-control"
-										placeholder="e.g., Web Dev, Robotics"
-									/>
-									<div class="form-text help">
-										Comma-separated topics — helps event
-										recommendations.
-									</div>
-								</div>
-
-								<div class="col-12 col-md-6">
-									<label for="linkedin" class="form-label"
-										>LinkedIn / Portfolio</label
-									>
-									<input
-										id="linkedin"
-										name="linkedin"
-										type="url"
-										class="form-control"
-										placeholder="https://..."
-									/>
-								</div>
-
-								<!-- Passwords -->
-								<div class="col-12 col-md-6">
-									<label for="password" class="form-label"
-										>Password
-										<span class="required">*</span></label
-									>
-									<div class="input-group">
-										<input
-											id="password"
-											name="password"
-											type="password"
-											class="form-control"
-											minlength="8"
-											required
-											aria-describedby="pwdHelp"
-										/>
-										<button
-											type="button"
-											id="togglePwd"
-											class="btn btn-outline-secondary"
-											aria-label="Show password"
-										>
-											👁
-										</button>
-									</div>
-									<div id="pwdHelp" class="form-text help">
-										Minimum 8 characters, include a number
-										and a special character.
-									</div>
-									<div class="invalid-feedback">
-										Enter a valid password.
-									</div>
-								</div>
-
-								<div class="col-12 col-md-6">
-									<label
-										for="confirmPassword"
-										class="form-label"
-										>Confirm password
-										<span class="required">*</span></label
-									>
-									<input
-										id="confirmPassword"
-										name="confirmPassword"
-										type="password"
-										class="form-control"
-										required
-									/>
-									<div class="invalid-feedback">
-										Passwords must match.
-									</div>
-								</div>
-
-								<!-- Terms & Consent -->
-								<div class="col-12">
-									<div class="form-check">
-										<input
-											id="agree"
-											name="agree"
-											class="form-check-input"
-											type="checkbox"
-											required
-										/>
-										<label
-											for="agree"
-											class="form-check-label"
-											>I agree to the
-											<a href="#" target="_blank"
-												>terms & privacy</a
-											>.
+						<div class="form-section">
+							<form
+								id="signupForm"
+								class="needs-validation"
+								novalidate
+							>
+								<div class="row g-3">
+									<!-- Full name -->
+									<div class="col-12">
+										<label for="fullName" class="form-label"
+											>Full name
 											<span class="required"
 												>*</span
 											></label
 										>
+										<input
+											id="fullName"
+											name="fullName"
+											class="form-control"
+											placeholder="John Doe"
+											required
+											autocomplete="name"
+										/>
 										<div class="invalid-feedback">
-											You must accept terms to continue.
+											Please enter your full name.
 										</div>
 									</div>
-									<div class="form-text small-note mt-1">
-										By signing up you consent to
-										event-related notifications and to
-										sharing your basic details with event
-										organizers.
+
+									<!-- Email -->
+									<div class="col-12 col-md-6">
+										<label for="email" class="form-label"
+											>Institutional email
+											<span class="required"
+												>*</span
+											></label
+										>
+										<input
+											id="email"
+											name="email"
+											type="email"
+											class="form-control"
+											placeholder="you@college.edu"
+											required
+											autocomplete="email"
+										/>
+										<div class="form-text">
+											Use your college email for faster
+											verification.
+										</div>
+										<div class="invalid-feedback">
+											Please enter a valid email address.
+										</div>
+									</div>
+
+									<!-- Department & Course -->
+									<div class="col-12 col-md-6">
+										<label
+											for="department"
+											class="form-label"
+											>Department / Course
+											<span class="required"
+												>*</span
+											></label
+										>
+										<input
+											id="department"
+											name="department"
+											class="form-control"
+											placeholder="Computer Science"
+											required
+										/>
+										<div class="invalid-feedback">
+											Enter your department or course.
+										</div>
+									</div>
+
+									<div class="col-12 col-md-6">
+										<label
+											for="enrollmentYear"
+											class="form-label"
+											>Enrollment / Joining year</label
+										>
+										<input
+											id="enrollmentYear"
+											name="enrollmentYear"
+											type="number"
+											min="2000"
+											max="2099"
+											step="1"
+											class="form-control"
+											placeholder="2024"
+										/>
+										<div class="form-text">
+											Optional — used for filtering and
+											reports.
+										</div>
+									</div>
+
+									<!-- DOB & Gender -->
+									<div class="col-12 col-md-6">
+										<label for="dob" class="form-label"
+											>Date of birth</label
+										>
+										<input
+											id="dob"
+											name="dob"
+											type="date"
+											class="form-control"
+										/>
+									</div>
+
+									<div class="col-12 col-md-6">
+										<label for="gender" class="form-label"
+											>Gender</label
+										>
+										<select
+											id="gender"
+											name="gender"
+											class="form-select"
+										>
+											<option value="">
+												Prefer not to say
+											</option>
+											<option value="female">
+												Female
+											</option>
+											<option value="male">Male</option>
+											<option value="other">Other</option>
+										</select>
+									</div>
+
+									<!-- Phone & Emergency contact -->
+									<div class="col-12 col-md-6">
+										<label for="phone" class="form-label"
+											>Phone</label
+										>
+										<input
+											id="phone"
+											name="phone"
+											type="tel"
+											class="form-control"
+											placeholder="+91 98XXXXXXXX"
+										/>
+									</div>
+
+									<div class="col-12 col-md-6">
+										<label
+											for="emergency"
+											class="form-label"
+											>Emergency contact (name — phone)
+											<span class="required"
+												>*</span
+											></label
+										>
+										<input
+											id="emergency"
+											name="emergency"
+											class="form-control"
+											required
+											placeholder="Parent / guardian — +91XXXXXXXXXX"
+										/>
+										<div class="invalid-feedback">
+											Provide an emergency contact.
+										</div>
+									</div>
+
+									<!-- Address -->
+									<div class="col-12">
+										<label for="address" class="form-label"
+											>Address</label
+										>
+										<textarea
+											id="address"
+											name="address"
+											rows="2"
+											class="form-control"
+											placeholder="Your address (optional)"
+										></textarea>
+										<div class="form-text">
+											Optional — used for event logistical
+											planning.
+										</div>
+									</div>
+
+									<!-- Social / Interests -->
+									<div class="col-12 col-md-6">
+										<label
+											for="interests"
+											class="form-label"
+											>Interests / Clubs</label
+										>
+										<input
+											id="interests"
+											name="interests"
+											class="form-control"
+											placeholder="e.g., Web Dev, Robotics"
+										/>
+										<div class="form-text">
+											Comma-separated topics — helps event
+											recommendations.
+										</div>
+									</div>
+
+									<div class="col-12 col-md-6">
+										<label for="linkedin" class="form-label"
+											>LinkedIn / Portfolio</label
+										>
+										<input
+											id="linkedin"
+											name="linkedin"
+											type="url"
+											class="form-control"
+											placeholder="https://..."
+										/>
+									</div>
+
+									<!-- Passwords -->
+									<div class="col-12 col-md-6">
+										<label for="password" class="form-label"
+											>Password
+											<span class="required"
+												>*</span
+											></label
+										>
+										<div class="input-group">
+											<input
+												id="password"
+												name="password"
+												type="password"
+												class="form-control"
+												minlength="8"
+												required
+												aria-describedby="pwdHelp"
+												placeholder="Create a strong password"
+											/>
+											<button
+												type="button"
+												id="togglePwd"
+												class="btn btn-outline-secondary"
+												aria-label="Show password"
+											>
+												👁
+											</button>
+										</div>
+										<div id="pwdHelp" class="form-text">
+											Minimum 8 characters, include a
+											number and special character.
+										</div>
+										<div class="invalid-feedback">
+											Enter a valid password.
+										</div>
+									</div>
+
+									<div class="col-12 col-md-6">
+										<label
+											for="confirmPassword"
+											class="form-label"
+											>Confirm password
+											<span class="required"
+												>*</span
+											></label
+										>
+										<input
+											id="confirmPassword"
+											name="confirmPassword"
+											type="password"
+											class="form-control"
+											placeholder="Confirm your password"
+											required
+										/>
+										<div class="invalid-feedback">
+											Passwords must match.
+										</div>
+									</div>
+
+									<!-- Terms & Consent -->
+									<div class="col-12">
+										<div class="form-check">
+											<input
+												id="agree"
+												name="agree"
+												class="form-check-input"
+												type="checkbox"
+												required
+											/>
+											<label
+												for="agree"
+												class="form-check-label"
+												>I agree to the
+												<a href="#" target="_blank"
+													>terms & privacy</a
+												>.
+												<span class="required"
+													>*</span
+												></label
+											>
+											<div class="invalid-feedback">
+												You must accept terms to
+												continue.
+											</div>
+										</div>
+										<div class="form-text mt-2">
+											By signing up you consent to
+											event-related notifications and to
+											sharing your basic details with
+											event organizers.
+										</div>
+									</div>
+
+									<!-- Hidden: role assigned by admin later -->
+									<input
+										type="hidden"
+										id="role"
+										name="role"
+										value="pending"
+									/>
+
+									<!-- Submit -->
+									<div
+										class="col-12 d-flex justify-content-end mt-2"
+									>
+										<button
+											type="submit"
+											class="btn btn-primary"
+										>
+											Create account
+										</button>
 									</div>
 								</div>
+							</form>
 
-								<!-- Hidden: role assigned by admin later -->
-								<input
-									type="hidden"
-									id="role"
-									name="role"
-									value="pending"
-								/>
-
-								<!-- Submit -->
-								<div class="col-12 d-flex justify-content-end">
-									<button
-										type="submit"
-										class="btn btn-primary"
-									>
-										Create account
-									</button>
-								</div>
+							<!-- Avatar preview + demo output -->
+							<div class="mt-4 d-flex gap-3 align-items-start">
+								<div id="avatarPreview" aria-hidden></div>
+								<div
+									id="resultArea"
+									class="text-muted small"
+								></div>
 							</div>
-						</form>
-
-						<!-- Avatar preview + demo output -->
-						<div class="mt-3 d-flex gap-3 align-items-start">
-							<div id="avatarPreview" aria-hidden></div>
-							<div id="resultArea" class="muted small"></div>
 						</div>
 					</div>
 				</div>
@@ -469,15 +737,17 @@
 			<div class="modal-dialog modal-sm modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-body text-center">
-						<div style="font-size: 28px">✅</div>
-						<h5 class="mt-2">
+						<div style="font-size: 64px; margin-bottom: 20px">
+							✅
+						</div>
+						<h5 class="mt-2" style="font-weight: 700">
 							Account created — pending verification
 						</h5>
-						<p class="muted small">
+						<p class="text-muted small mt-3">
 							An administrator will verify your details and assign
 							a role. You will be notified after verification.
 						</p>
-						<div class="d-grid">
+						<div class="d-grid mt-4">
 							<a
 								id="goLoginBtn"
 								href="login.html"
