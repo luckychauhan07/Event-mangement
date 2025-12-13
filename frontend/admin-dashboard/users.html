@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Event Ease — Users (Admin)</title>
 
+		<!-- Fonts & Bootstrap -->
 		<link
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
 			rel="stylesheet"
@@ -13,93 +14,240 @@
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 		/>
+
+		<!-- Global design system CSS -->
 		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="admin-common.css" />
 
 		<style>
 			body {
-				font-family: Inter, system-ui, Arial;
 				background: var(--bg-light);
 				color: var(--text-dark);
 			}
 			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
+				height: calc(100vh - var(--header-height));
+				overflow: hidden;
 			}
 			.app-main {
 				flex: 1;
 				padding: 32px;
+				height: 100%;
+				overflow-y: auto;
+				background: var(--bg-light);
+			}
+			.page-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				gap: 16px;
+				margin-bottom: 18px;
+			}
+			.kpi-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 14px;
+				margin-bottom: 18px;
+			}
+			.kpi-card .muted {
+				font-size: 13px;
+				text-transform: uppercase;
+				letter-spacing: 0.4px;
+			}
+			.filter-card .filter-bar {
+				margin-bottom: 0;
+			}
+			.flex-1 {
+				flex: 1 1 200px;
+				min-width: 220px;
+			}
+			.role-chip {
+				padding: 6px 12px;
+				border-radius: 12px;
+				font-weight: 600;
+				font-size: 12px;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				text-transform: capitalize;
+				background: var(--primary-light);
+				color: var(--primary-dark);
+			}
+			.role-chip[data-role="teacher"] {
+				background: var(--warning-light);
+				color: #92400e;
+			}
+			.role-chip[data-role="coordinator"] {
+				background: var(--success-light);
+				color: #065f46;
+			}
+			.role-chip[data-role="admin"] {
+				background: #e0e7ff;
+				color: #1e3a8a;
+			}
+			.status-dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 999px;
+				display: inline-block;
+				background: var(--success);
+			}
+			.status-dot.off {
+				background: var(--danger);
+				opacity: 0.8;
+			}
+			.table-actions button {
+				min-width: 92px;
+			}
+			.badge-soft {
+				background: var(--primary-light);
+				color: var(--primary-dark);
+				border-radius: 10px;
+				padding: 6px 10px;
 			}
 			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
 				.app-main {
 					padding: 24px;
+				}
+				.page-header {
+					flex-direction: column;
+				}
+			}
+			/* --- FILTER BAR STYLING --- */
+			.filter-bar {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				background: var(--bg-surface);
+				padding: 12px 16px;
+				border-radius: 12px;
+				box-shadow: var(--shadow);
+				border: 1px solid #e4e8f0;
+				margin-bottom: 16px;
+			}
+
+			.filter-bar .search-box {
+				position: relative;
+			}
+
+			.filter-bar .search-box input {
+				width: 100%;
+				padding: 10px 12px 10px 38px;
+				border-radius: 8px;
+				border: 1px solid #d0d6e0;
+				background: white;
+				font-size: 14px;
+				outline: none;
+				transition: border-color 0.2s ease;
+			}
+
+			.filter-bar .search-box input:focus {
+				border-color: var(--primary);
+				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+			}
+
+			.filter-bar .search-box::before {
+				content: "🔍";
+				position: absolute;
+				top: 50%;
+				left: 12px;
+				transform: translateY(-50%);
+				font-size: 16px;
+				opacity: 0.6;
+			}
+
+			.filter-bar select {
+				min-width: 170px;
+				padding: 8px 12px;
+				border-radius: 8px;
+				border: 1px solid #d0d6e0;
+				background: white;
+				font-size: 14px;
+				cursor: pointer;
+				transition: border-color 0.2s ease;
+			}
+
+			.filter-bar select:focus {
+				border-color: var(--primary);
+				box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+			}
+
+			/* Responsive layout */
+			@media (max-width: 768px) {
+				.filter-bar {
+					flex-direction: column;
+					align-items: stretch;
+				}
+				.filter-bar select {
+					width: 100%;
 				}
 			}
 		</style>
 	</head>
 	<body>
-		<!-- header -->
-		<header class="topbar">
-			<a
-				href="admin.html"
-				class="d-flex align-items-center text-decoration-none"
-			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
-					Event Ease
-				</div>
-			</a>
+		<!-- TOPBAR -->
+		<header class="topbar" role="banner">
+			<div class="d-flex align-items-center gap-3">
+				<button
+					class="menu-toggle d-lg-none"
+					id="sidebarToggle"
+					aria-label="Open navigation"
+				>
+					☰
+				</button>
+				<a
+					href="admin.html"
+					class="d-flex align-items-center text-decoration-none"
+					aria-label="Event Ease Home"
+				>
+					<div class="logo"><img src="../logo.svg" alt="EE" /></div>
+					<div
+						style="
+							margin-left: 10px;
+							font-weight: 700;
+							color: var(--text-dark);
+						"
+					>
+						Event Ease
+					</div>
+				</a>
+			</div>
 
 			<div class="d-flex align-items-center gap-3">
-				<input
-					id="searchTop"
-					class="form-control form-control-sm d-none d-md-block"
-					style="min-width: 260px"
-					placeholder="Search events, teams, participants"
-				/>
+				<div class="d-none d-md-block" style="min-width: 260px">
+					<input
+						id="globalSearch"
+						class="form-control form-control-sm"
+						placeholder="Search (users, emails, ids) — /"
+						aria-label="Global search"
+					/>
+				</div>
+
 				<div class="dropdown">
 					<button
 						class="btn d-flex align-items-center gap-2"
 						data-bs-toggle="dropdown"
+						aria-expanded="false"
 					>
 						<div
-							class="rounded-circle bg-primary text-white"
-							style="
-								width: 36px;
-								height: 36px;
-								display: grid;
-								place-items: center;
-							"
+							class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+							style="width: 36px; height: 36px"
 						>
-							TC
+							AD
 						</div>
 						<div class="d-none d-md-block text-start">
-							<div style="font-weight: 600">Teacher</div>
-							<div class="small muted">teacher@college.edu</div>
+							<div style="font-weight: 600">Admin</div>
+							<div class="muted small">admin@college.edu</div>
 						</div>
 					</button>
 					<ul class="dropdown-menu dropdown-menu-end">
 						<li>
-							<a class="dropdown-item" href="teacher-profile.html"
+							<a class="dropdown-item" href="profile.html"
 								>Profile</a
 							>
 						</li>
 						<li>
-							<a
-								class="dropdown-item"
-								href="teacher-approvals.html"
-								>Approvals</a
+							<a class="dropdown-item" href="settings.html"
+								>Settings</a
 							>
 						</li>
 						<li><hr class="dropdown-divider" /></li>
@@ -117,26 +265,22 @@
 		</header>
 
 		<div class="app-shell">
-			<!-- sidebar -->
-			<aside class="app-sidebar d-none d-lg-flex" aria-label="Sidebar">
-				<nav class="sidebar-nav">
-					<a href="admin.html"
-						>🏠 Home</a
-					>
-					<a
-						href="users.html"
-						class="active"
+			<!-- SIDEBAR -->
+			<aside
+				class="app-sidebar d-none d-lg-flex"
+				id="sidebar"
+				role="navigation"
+				aria-label="Main navigation"
+			>
+				<nav class="sidebar-nav" role="menu">
+					<a href="admin.html">🏠 Home</a>
+					<a href="users.html" class="active" aria-current="page"
 						>👥 Users</a
 					>
-					<a href="events.html"
-						>📅 Events</a
-					>
-					<a href="reports.html"
-						>📊 Reports</a
-					>
-					<a href="profile.html"
-						>👤 Profile</a
-					>
+					<a href="events.html">📅 Events</a>
+					<a href="add-event.html">➕ Add Event</a>
+					<a href="reports.html">📊 Reports</a>
+					<a href="profile.html">👤 Profile</a>
 				</nav>
 
 				<div class="sidebar-footer">
@@ -144,170 +288,210 @@
 						class="text-danger"
 						href="#"
 						id="logoutSide"
-						style="display: block; margin-bottom: 12px;"
+						style="display: block; margin-bottom: 12px"
 						>🔒 Logout</a
 					>
-					v1.0 • © <span id="yrHome"></span>
+					<div>v1.0 • © <span id="yrHome"></span></div>
 				</div>
 			</aside>
 
-			<main class="app-main">
-				<!-- top: upcoming + quick stats -->
-				<div class="row g-3 mb-3">
-					<div class="col-12 col-lg-8">
-						<div class="card-compact">
-							<div class="d-flex justify-content-between">
-								<div>
-									<div class="muted">
-										Next scheduled (your event)
-									</div>
-									<h4 id="upTitle">
-										Tech Workshop — Design Thinking
-									</h4>
-									<div class="muted" id="upMeta">
-										Dec 10, 2025 • Lab 101 • 2:00 PM
-									</div>
-									<p class="muted mt-2" id="upDesc">
-										Hands-on workshop for UI/UX basics.
-										Student coordinators: 2 assigned.
-									</p>
-									<div class="d-flex gap-2">
-										<button
-											class="btn btn-primary"
-											id="viewRoster"
-										>
-											View Roster
-										</button>
-										<button
-											class="btn btn-outline"
-											id="notifyParticipants"
-										>
-											Send Notification
-										</button>
-										<button
-											class="btn btn-outline"
-											id="openParticipants"
-										>
-											View Participants
-										</button>
-									</div>
-								</div>
-								<div
-									style="text-align: right; min-width: 160px"
-								>
-									<div class="muted">Capacity</div>
-									<div style="font-weight: 700" id="upCap">
-										23 / 50
-									</div>
-									<div class="muted mt-3">Status</div>
-									<div class="mt-1">
-										<span
-											class="badge bg-primary"
-											id="upStatus"
-											>Upcoming</span
-										>
-									</div>
-								</div>
-							</div>
+			<!-- MAIN -->
+			<main class="app-main" id="main" role="main">
+				<div class="page-header">
+					<div>
+						<h3>Users</h3>
+						<div class="muted">
+							Manage roles, status and access for everyone in
+							Event Ease.
+						</div>
+					</div>
+					<div class="d-flex gap-2 align-items-center">
+						<button
+							class="btn btn-outline btn-sm"
+							id="btnRefresh"
+							aria-label="Refresh user list"
+						>
+							⟳ Refresh
+						</button>
+						<button
+							class="btn btn-primary btn-sm"
+							id="btnNewUser"
+							aria-label="Add new user"
+						>
+							+ Add user
+						</button>
+					</div>
+				</div>
+
+				<div class="kpi-grid">
+					<!-- <div class="kpi-card">
+						<div class="muted">Total users</div>
+						<div id="kpiTotal">—</div>
+					</div> -->
+					<div class="card-compact">
+						<div class="muted">Total users</div>
+						<div
+							style="font-weight: 700; font-size: 20px"
+							id="kpiTotal"
+						>
+							—
 						</div>
 					</div>
 
-					<div class="col-12 col-lg-4">
-						<div class="card-compact">
-							<div
-								class="d-flex justify-content-between align-items-center"
-							>
-								<div>
-									<strong>Quick stats</strong>
-									<div class="muted">At-a-glance</div>
-								</div>
-								<div style="text-align: right">
-									<div class="muted small">Active events</div>
-									<div
-										style="font-weight: 700"
-										id="statActive"
-									>
-										3
-									</div>
-								</div>
-							</div>
-
-							<div class="mt-3">
-								<div class="muted small">Pending approvals</div>
-								<div style="font-weight: 700" id="statPending">
-									4
-								</div>
-								<div class="mt-2">
-									<a
-										href="teacher-approvals.html"
-										class="btn btn-outline btn-sm"
-										>Open Approvals</a
-									>
-								</div>
-							</div>
+					<div class="card-compact">
+						<div class="muted">Active</div>
+						<div
+							id="kpiActive"
+							style="font-weight: 700; font-size: 20px"
+						>
+							—
+						</div>
+					</div>
+					<div class="card-compact">
+						<div class="muted">Teachers</div>
+						<div
+							id="kpiStaff"
+							style="font-weight: 700; font-size: 20px"
+						>
+							—
 						</div>
 					</div>
 				</div>
 
-				<!-- events list (compact) -->
-				<div class="card-compact mb-3">
+				<div class="card-compact filter-card mb-3">
 					<div
 						class="d-flex justify-content-between align-items-center mb-2"
 					>
 						<div>
-							<strong>My Events</strong>
+							<strong>Filters & tools</strong>
 							<div class="muted">
-								Upcoming & ongoing events you manage
+								Combine search, role, status and sorting to
+								narrow results.
 							</div>
 						</div>
-						<div>
-							<a
+						<div class="d-flex gap-2">
+							<button
 								class="btn btn-outline btn-sm"
-								href="teacher-events.html"
-								>Manage Events</a
+								id="clearFilters"
 							>
+								Clear
+							</button>
 							<button
 								class="btn btn-primary btn-sm"
-								id="createEventBtn"
+								id="exportCsv"
 							>
-								+ Create
+								Export CSV
 							</button>
 						</div>
 					</div>
+					<div class="filter-bar">
+						<div class="search-box flex-1">
+							<input
+								id="userSearch"
+								class="form-control"
+								placeholder="Search by name, email, id or role"
+								aria-label="Search users"
+							/>
+						</div>
 
-					<div class="table-responsive">
-						<table class="table align-middle">
-							<thead>
-								<tr>
-									<th>Event</th>
-									<th>Date</th>
-									<th>Venue</th>
-									<th>Participants</th>
-									<th>Status</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody id="myEventsTbody"></tbody>
-						</table>
+						<select id="roleFilter" class="form-select">
+							<option value="all">All roles</option>
+							<option value="student">Student</option>
+							<option value="teacher">Teacher</option>
+							<option value="coordinator">Coordinator</option>
+							<option value="admin">Admin</option>
+						</select>
+
+						<select id="statusFilter" class="form-select">
+							<option value="all">All statuses</option>
+							<option value="active">Active</option>
+							<option value="inactive">Deactivated</option>
+						</select>
+
+						<select id="sortBy" class="form-select">
+							<option value="recent">Last active (newest)</option>
+							<option value="name-asc">Name A → Z</option>
+							<option value="name-desc">Name Z → A</option>
+							<option value="role">Role</option>
+							<option value="status">Status</option>
+						</select>
 					</div>
 				</div>
 
-				<div class="muted">
-					Use the sidebar to view all events, manage approvals or
-					update your profile.
+				<div class="card-compact mb-3">
+					<div class="table-responsive">
+						<table
+							class="table align-middle"
+							id="usersTable"
+							aria-describedby="usersCount"
+						>
+							<thead>
+								<tr>
+									<th scope="col">User</th>
+									<th scope="col">Email</th>
+									<th scope="col">Role</th>
+									<th scope="col">Status</th>
+									<th scope="col">Last active</th>
+									<th scope="col" class="text-end">
+										Actions
+									</th>
+								</tr>
+							</thead>
+							<tbody id="usersTbody" role="rowgroup"></tbody>
+						</table>
+					</div>
+
+					<div
+						class="d-flex justify-content-between align-items-center mt-2"
+					>
+						<div id="usersCount" class="muted small">
+							Showing 0 users
+						</div>
+						<div class="d-flex gap-2">
+							<button
+								class="btn btn-outline btn-sm"
+								id="prevPage"
+								aria-label="Previous page"
+							>
+								Prev
+							</button>
+							<button
+								class="btn btn-outline btn-sm"
+								id="nextPage"
+								aria-label="Next page"
+							>
+								Next
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="muted small">
+					Tip: Filters, search and pagination can be combined. Hook up
+					API calls where noted in the script to persist changes.
 				</div>
 			</main>
 		</div>
 
-		<!-- modals -->
-		<div class="modal fade" id="participantsModal" tabindex="-1">
+		<!-- MODALS -->
+		<!-- Participants modal (kept for compatibility) -->
+		<div
+			class="modal fade"
+			id="participantsModal"
+			tabindex="-1"
+			aria-hidden="true"
+			aria-labelledby="participantsModalLabel"
+		>
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title">Participants</h5>
+						<h5 id="participantsModalLabel" class="modal-title">
+							Participants
+						</h5>
 						<button
 							class="btn-close"
 							data-bs-dismiss="modal"
+							aria-label="Close"
 						></button>
 					</div>
 					<div class="modal-body" id="participantsBody">
@@ -322,65 +506,78 @@
 			</div>
 		</div>
 
-		<div class="modal fade" id="createEventModal" tabindex="-1">
-			<div class="modal-dialog modal-lg">
+		<!-- Edit User Modal -->
+		<div
+			class="modal fade"
+			id="editUserModal"
+			tabindex="-1"
+			aria-hidden="true"
+			aria-labelledby="editUserModalLabel"
+		>
+			<div class="modal-dialog modal-md">
 				<div class="modal-content">
-					<form
-						id="createEventForm"
-						class="needs-validation"
-						novalidate
-					>
+					<form id="editUserForm" class="needs-validation" novalidate>
 						<div class="modal-header">
-							<h5 class="modal-title">Create Event</h5>
+							<h5 id="editUserModalLabel" class="modal-title">
+								Edit User
+							</h5>
 							<button
 								class="btn-close"
 								data-bs-dismiss="modal"
+								aria-label="Close"
 							></button>
 						</div>
 						<div class="modal-body">
-							<div class="row g-3">
-								<div class="col-md-6">
-									<label class="form-label">Name</label
-									><input
-										id="teName"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Venue</label
-									><input
-										id="teVenue"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Date & Time</label
-									><input
-										id="teDate"
-										type="datetime-local"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Capacity</label
-									><input
-										id="teCap"
-										type="number"
-										class="form-control"
-										value="50"
-									/>
-								</div>
-								<div class="col-12">
-									<label class="form-label">Description</label
-									><textarea
-										id="teDesc"
-										class="form-control"
-										rows="3"
-									></textarea>
-								</div>
+							<input type="hidden" id="editUserId" />
+							<div class="mb-3">
+								<label for="editUserName" class="form-label"
+									>Full name</label
+								>
+								<input
+									id="editUserName"
+									class="form-control"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="editUserEmail" class="form-label"
+									>Email</label
+								>
+								<input
+									id="editUserEmail"
+									type="email"
+									class="form-control"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="editUserRole" class="form-label"
+									>Role</label
+								>
+								<select
+									id="editUserRole"
+									class="form-select"
+									required
+								>
+									<option value="student">Student</option>
+									<option value="teacher">Teacher</option>
+									<option value="coordinator">
+										Coordinator
+									</option>
+									<option value="admin">Admin</option>
+								</select>
+							</div>
+							<div class="form-check">
+								<input
+									class="form-check-input"
+									type="checkbox"
+									id="editUserActive"
+								/>
+								<label
+									class="form-check-label"
+									for="editUserActive"
+									>Active (can access account)</label
+								>
 							</div>
 						</div>
 						<div class="modal-footer">
@@ -388,12 +585,14 @@
 								class="btn btn-outline"
 								data-bs-dismiss="modal"
 							>
-								Cancel</button
-							><button
+								Cancel
+							</button>
+							<button
 								class="btn btn-primary"
-								id="saveTeacherEvent"
+								id="saveUserBtn"
+								type="submit"
 							>
-								Save
+								Save changes
 							</button>
 						</div>
 					</form>
@@ -401,135 +600,664 @@
 			</div>
 		</div>
 
+		<!-- Confirm Delete Modal -->
+		<div
+			class="modal fade"
+			id="confirmDeleteModal"
+			tabindex="-1"
+			aria-hidden="true"
+			aria-labelledby="confirmDeleteLabel"
+		>
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 id="confirmDeleteLabel" class="modal-title">
+							Confirm delete
+						</h5>
+						<button
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body">
+						<p class="small-muted" id="deletePrompt">
+							Are you sure you want to delete this user?
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-outline" data-bs-dismiss="modal">
+							Cancel
+						</button>
+						<button class="btn btn-danger" id="confirmDeleteBtn">
+							Delete
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bootstrap JS -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 		<script>
-			// demo data
+			// --- Demo & State ---
 			document.getElementById("yrHome").textContent =
 				new Date().getFullYear();
-			const myEvents = [
+
+			// Replace this with an API fetch in production
+			let users = [
 				{
-					id: "T001",
-					name: "Tech Workshop — Design Thinking",
-					date: "2025-12-10T14:00",
-					venue: "Lab 101",
-					enrolled: 23,
-					cap: 50,
-					status: "Upcoming",
+					id: "U001",
+					name: "Asha Sharma",
+					email: "asha@college.edu",
+					role: "student",
+					active: true,
+					lastActive: "2025-12-04T09:30:00Z",
 				},
 				{
-					id: "T002",
-					name: "Intro to Arduino",
-					date: "2025-11-28T10:00",
-					venue: "Lab 102",
-					enrolled: 12,
-					cap: 30,
-					status: "Completed",
+					id: "U002",
+					name: "Ravi Patel",
+					email: "ravi@college.edu",
+					role: "teacher",
+					active: true,
+					lastActive: "2025-12-03T14:10:00Z",
 				},
 				{
-					id: "T003",
-					name: "Web Dev Sprint",
-					date: "2025-12-05T09:00",
-					venue: "Room 210",
-					enrolled: 34,
-					cap: 40,
-					status: "Ongoing",
+					id: "U003",
+					name: "Meera Singh",
+					email: "meera@college.edu",
+					role: "coordinator",
+					active: false,
+					lastActive: "2025-11-28T11:55:00Z",
+				},
+				{
+					id: "U004",
+					name: "Dev Admin",
+					email: "admin@college.edu",
+					role: "admin",
+					active: true,
+					lastActive: "2025-12-05T08:10:00Z",
+				},
+				{
+					id: "U005",
+					name: "Karan Gupta",
+					email: "karan@college.edu",
+					role: "student",
+					active: true,
+					lastActive: "2025-12-01T16:35:00Z",
+				},
+				{
+					id: "U006",
+					name: "Sima Roy",
+					email: "sima@college.edu",
+					role: "student",
+					active: true,
+					lastActive: "2025-12-02T10:05:00Z",
+				},
+				{
+					id: "U007",
+					name: "Nikhil Verma",
+					email: "nikhil@college.edu",
+					role: "teacher",
+					active: true,
+					lastActive: "2025-12-04T06:40:00Z",
+				},
+				{
+					id: "U008",
+					name: "Priya Nair",
+					email: "priya@college.edu",
+					role: "coordinator",
+					active: true,
+					lastActive: "2025-12-03T09:00:00Z",
+				},
+				{
+					id: "U009",
+					name: "Rahul Bose",
+					email: "rahul@college.edu",
+					role: "student",
+					active: false,
+					lastActive: "2025-11-25T13:15:00Z",
+				},
+				{
+					id: "U010",
+					name: "Sneha Kulkarni",
+					email: "sneha@college.edu",
+					role: "teacher",
+					active: true,
+					lastActive: "2025-12-05T04:55:00Z",
 				},
 			];
 
-			function renderMyEvents() {
-				const tb = document.getElementById("myEventsTbody");
-				tb.innerHTML = "";
-				myEvents.slice(0, 5).forEach((ev) => {
-					const tr = document.createElement("tr");
-					const d = new Date(ev.date);
-					tr.innerHTML = `<td style="font-weight:600">${
-						ev.name
-					}<div class="small muted">${ev.id}</div></td>
-          <td>${d.toLocaleDateString()}</td><td>${ev.venue}</td><td>${
-						ev.enrolled
-					}/${ev.cap}</td>
-          <td><span class="badge ${
-				ev.status === "Ongoing"
-					? "bg-success"
-					: ev.status === "Upcoming"
-					? "bg-primary"
-					: "bg-secondary"
-			}">${ev.status}</span></td>
-          <td class="text-end"><button class="btn btn-sm btn-outline me-1" onclick="viewParticipants('${
-				ev.id
-			}')">Participants</button><button class="btn btn-sm btn-outline" onclick="openAssign('${
-						ev.id
-					}')">Assign</button></td>`;
-					tb.appendChild(tr);
+			// If you want to protect certain actions, set the current admin id here (demo)
+			const CURRENT_ADMIN_ID = "U004"; // replace by server-provided user id
+
+			// Pagination + filters
+			let page = 1;
+			const pageSize = 7;
+			const filters = {
+				query: "",
+				role: "all",
+				status: "all",
+				sort: "recent",
+			};
+
+			// --- Helpers (safe DOM usage) ---
+			function tdText(text, className) {
+				const td = document.createElement("td");
+				if (className) td.className = className;
+				td.textContent = text ?? "";
+				return td;
+			}
+
+			function createBadge(text, isActive) {
+				const span = document.createElement("span");
+				span.className =
+					"badge " + (isActive ? "bg-success" : "bg-secondary");
+				span.textContent = text;
+				return span;
+			}
+
+			function formatLastActive(iso) {
+				const d = new Date(iso);
+				if (Number.isNaN(d.getTime())) return "—";
+				return `${d.toLocaleDateString("en-US", {
+					month: "short",
+					day: "numeric",
+				})} • ${d.toLocaleTimeString([], {
+					hour: "2-digit",
+					minute: "2-digit",
+				})}`;
+			}
+
+			function applyFilterSort() {
+				const q = filters.query.trim().toLowerCase();
+				let list = users.filter((u) => {
+					const matchesSearch =
+						!q ||
+						u.name.toLowerCase().includes(q) ||
+						u.email.toLowerCase().includes(q) ||
+						u.id.toLowerCase().includes(q) ||
+						u.role.toLowerCase().includes(q);
+					const matchesRole =
+						filters.role === "all" || u.role === filters.role;
+					const matchesStatus =
+						filters.status === "all" ||
+						(filters.status === "active" && u.active) ||
+						(filters.status === "inactive" && !u.active);
+					return matchesSearch && matchesRole && matchesStatus;
 				});
+
+				const sorters = {
+					recent: (a, b) =>
+						new Date(b.lastActive).getTime() -
+						new Date(a.lastActive).getTime(),
+					"name-asc": (a, b) => a.name.localeCompare(b.name),
+					"name-desc": (a, b) => b.name.localeCompare(a.name),
+					role: (a, b) =>
+						a.role.localeCompare(b.role) ||
+						a.name.localeCompare(b.name),
+					status: (a, b) =>
+						Number(b.active) - Number(a.active) ||
+						a.name.localeCompare(b.name),
+				};
+				list = list.sort(sorters[filters.sort]);
+				return list;
 			}
 
-			function viewParticipants(id) {
-				document.getElementById("participantsBody").innerHTML =
-					'<p class="small muted">Participants list for ' +
-					id +
-					" (demo)</p>";
-				new bootstrap.Modal(
-					document.getElementById("participantsModal")
-				).show();
+			function renderStats(list) {
+				const total = list.length;
+				const active = list.filter((u) => u.active).length;
+				const staff = list.filter(
+					(u) => u.role === "teacher"
+					// || u.role === "coordinator"
+				).length;
+				document.getElementById("kpiTotal").textContent = total;
+				document.getElementById("kpiActive").textContent = `${active} `;
+				document.getElementById("kpiStaff").textContent = `${staff} `;
 			}
-			function openAssign(id) {
-				alert(
-					"Open assign student coordinator UI for " + id + " (demo)"
+
+			// --- Rendering ---
+			function renderUsers() {
+				const tbody = document.getElementById("usersTbody");
+				tbody.innerHTML = "";
+
+				const filtered = applyFilterSort();
+				renderStats(filtered);
+
+				const total = filtered.length;
+				const start = (page - 1) * pageSize;
+				if (start >= total && page > 1) {
+					page = Math.max(1, Math.ceil(total / pageSize));
+					return renderUsers();
+				}
+				const paged = filtered.slice(start, start + pageSize);
+
+				paged.forEach((u) => {
+					const tr = document.createElement("tr");
+
+					// User cell
+					const userTd = document.createElement("td");
+					userTd.style.fontWeight = 600;
+					const nameDiv = document.createElement("div");
+					nameDiv.textContent = u.name;
+					const idDiv = document.createElement("div");
+					idDiv.className = "small-muted";
+					idDiv.textContent = u.id;
+					userTd.appendChild(nameDiv);
+					userTd.appendChild(idDiv);
+
+					const emailTd = tdText(u.email);
+
+					// Role chip
+					const roleTd = document.createElement("td");
+					const roleSpan = document.createElement("span");
+					roleSpan.className = "role-chip";
+					roleSpan.dataset.role = u.role;
+					roleSpan.textContent = u.role;
+					roleTd.appendChild(roleSpan);
+
+					// Status
+					// Status
+					const statusTd = document.createElement("td");
+					statusTd.className = "status-cell"; // add a class for styling if needed
+					statusTd.style.whiteSpace = "nowrap"; // prevent wrapping that can change heights
+
+					const statusDot = document.createElement("span");
+					statusDot.className =
+						"status-dot" + (u.active ? "" : " off");
+					statusTd.appendChild(statusDot);
+
+					// small spacer
+					statusTd.appendChild(document.createTextNode(" "));
+
+					// wrap the badge in a fixed-width inline-block to stabilize column width
+					const badgeWrap = document.createElement("span");
+					badgeWrap.className = "badge-wrap";
+					badgeWrap.style.display = "inline-block";
+					badgeWrap.style.minWidth = "110px"; // adjust to taste (110px is a reasonable default)
+					badgeWrap.style.textAlign = "center";
+					badgeWrap.style.verticalAlign = "middle";
+
+					// createBadge(...) returns the badge element you already use
+					badgeWrap.appendChild(
+						createBadge(
+							u.active ? "Active" : "Deactivated",
+							u.active
+						)
+					);
+
+					statusTd.appendChild(badgeWrap);
+
+					const lastActiveTd = tdText(
+						formatLastActive(u.lastActive),
+						"text-muted"
+					);
+
+					// Actions
+					// Actions
+					const actionsTd = document.createElement("td");
+					actionsTd.className = "text-end table-actions";
+
+					// View Details button
+					const btnView = document.createElement("button");
+					btnView.className = "btn btn-sm btn-outline-primary";
+					btnView.textContent = "View Details";
+					btnView.addEventListener("click", () => {
+						openUserDetails(u.id);
+					});
+
+					actionsTd.appendChild(btnView);
+
+					// Edit
+					const btnEdit = document.createElement("button");
+					btnEdit.className = "btn btn-sm btn-outline me-1";
+					btnEdit.textContent = "Edit";
+					btnEdit.addEventListener("click", () => openEdit(u.id));
+
+					// Quick toggle (activate/deactivate)
+					const btnToggle = document.createElement("button");
+					btnToggle.className = "btn btn-sm btn-outline me-1";
+					btnToggle.textContent = u.active
+						? "Deactivate"
+						: "Activate";
+					btnToggle.addEventListener("click", () =>
+						toggleActive(u.id)
+					);
+
+					// Delete (with safeguards)
+					const btnDelete = document.createElement("button");
+					btnDelete.className = "btn btn-sm btn-danger";
+					btnDelete.textContent = "Delete";
+					btnDelete.addEventListener("click", () =>
+						confirmDelete(u.id, u.name)
+					);
+
+					// actionsTd.appendChild(btnEdit);
+					// actionsTd.appendChild(btnToggle);
+					// actionsTd.appendChild(btnDelete);
+
+					tr.appendChild(userTd);
+					tr.appendChild(emailTd);
+					tr.appendChild(roleTd);
+					tr.appendChild(statusTd);
+					tr.appendChild(lastActiveTd);
+					tr.appendChild(actionsTd);
+
+					tbody.appendChild(tr);
+				});
+
+				// Update count & pagination state
+				document.getElementById("usersCount").textContent =
+					total === 0
+						? "No users"
+						: `Showing ${Math.min(start + 1, total)} - ${Math.min(
+								start + paged.length,
+								total
+						  )} of ${total} users`;
+				document.getElementById("prevPage").disabled = page <= 1;
+				document.getElementById("nextPage").disabled =
+					start + pageSize >= total;
+			}
+			function openUserDetails(userId) {
+				// open modal OR navigate to user detail page
+				const user = users.find((u) => u.id === userId);
+				sessionStorage.setItem("selectedUser", JSON.stringify(user));
+				// also add id param as fallback
+				window.location.href = `user-details.html?id=${encodeURIComponent(
+					userId
+				)}`;
+			}
+
+			// --- Edit / Create user ---
+			function openEdit(id) {
+				const user = users.find((u) => u.id === id);
+				if (!user) return alert("User not found");
+
+				document.getElementById("editUserId").value = user.id;
+				document.getElementById("editUserName").value = user.name;
+				document.getElementById("editUserEmail").value = user.email;
+				document.getElementById("editUserRole").value = user.role;
+				document.getElementById("editUserActive").checked =
+					!!user.active;
+
+				const modal = new bootstrap.Modal(
+					document.getElementById("editUserModal")
+				);
+				modal.show();
+
+				const modalEl = document.getElementById("editUserModal");
+				modalEl.addEventListener(
+					"shown.bs.modal",
+					() => {
+						document.getElementById("editUserName").focus();
+					},
+					{ once: true }
 				);
 			}
 
 			document
-				.getElementById("createEventBtn")
-				.addEventListener("click", () =>
+				.getElementById("btnNewUser")
+				.addEventListener("click", () => {
+					document.getElementById("editUserId").value = "";
+					document.getElementById("editUserName").value = "";
+					document.getElementById("editUserEmail").value = "";
+					document.getElementById("editUserRole").value = "student";
+					document.getElementById("editUserActive").checked = true;
 					new bootstrap.Modal(
-						document.getElementById("createEventModal")
-					).show()
-				);
+						document.getElementById("editUserModal")
+					).show();
+				});
+
 			document
-				.getElementById("saveTeacherEvent")
-				.addEventListener("click", (e) => {
+				.getElementById("editUserForm")
+				.addEventListener("submit", function (e) {
 					e.preventDefault();
-					if (
-						!document
-							.getElementById("createEventForm")
-							.checkValidity()
-					) {
-						document
-							.getElementById("createEventForm")
-							.classList.add("was-validated");
+					const id = document.getElementById("editUserId").value;
+					const name = document
+						.getElementById("editUserName")
+						.value.trim();
+					const email = document
+						.getElementById("editUserEmail")
+						.value.trim();
+					const role = document.getElementById("editUserRole").value;
+					const active =
+						document.getElementById("editUserActive").checked;
+
+					if (!name || !email) {
+						this.classList.add("was-validated");
 						return;
 					}
-					alert("Event created (demo)");
+
+					// Existing user update
+					const idx = users.findIndex((u) => u.id === id);
+					if (idx >= 0) {
+						if (users[idx].role === "admin" && role !== "admin") {
+							const adminCount = users.filter(
+								(u) =>
+									u.role === "admin" && u.id !== users[idx].id
+							).length;
+							if (adminCount === 0) {
+								return alert(
+									"Cannot demote the only remaining admin. Assign another admin before changing this user."
+								);
+							}
+						}
+						users[idx] = {
+							...users[idx],
+							name,
+							email,
+							role,
+							active,
+						};
+					} else {
+						// Create user (demo)
+						const newId = `U${(users.length + 1)
+							.toString()
+							.padStart(3, "0")}`;
+						users.push({
+							id: newId,
+							name,
+							email,
+							role,
+							active,
+							lastActive: new Date().toISOString(),
+						});
+					}
+
 					bootstrap.Modal.getInstance(
-						document.getElementById("createEventModal")
+						document.getElementById("editUserModal")
 					).hide();
+					page = 1;
+					renderUsers();
+				});
+
+			// --- Toggle active (quick action) ---
+			function toggleActive(id) {
+				const idx = users.findIndex((u) => u.id === id);
+				if (idx === -1) return;
+				if (users[idx].id === CURRENT_ADMIN_ID) {
+					return alert(
+						"You cannot deactivate your own account from this interface."
+					);
+				}
+				users[idx].active = !users[idx].active;
+				renderUsers();
+			}
+
+			// --- Delete with confirmation & safeguards ---
+			let _pendingDeleteId = null;
+			function confirmDelete(id, name) {
+				if (id === CURRENT_ADMIN_ID) {
+					return alert(
+						"You cannot delete your own admin account from this interface."
+					);
+				}
+				const user = users.find((u) => u.id === id);
+				if (user && user.role === "admin") {
+					const otherAdmins = users.filter(
+						(u) => u.role === "admin" && u.id !== id
+					);
+					if (otherAdmins.length === 0) {
+						return alert(
+							"Cannot delete this admin — no other admin accounts exist. Create/assign another admin first."
+						);
+					}
+				}
+
+				_pendingDeleteId = id;
+				document.getElementById(
+					"deletePrompt"
+				).textContent = `Delete ${name} (${id}) — this action cannot be undone.`;
+				new bootstrap.Modal(
+					document.getElementById("confirmDeleteModal")
+				).show();
+			}
+
+			document
+				.getElementById("confirmDeleteBtn")
+				.addEventListener("click", function () {
+					if (!_pendingDeleteId) return;
+					users = users.filter((u) => u.id !== _pendingDeleteId);
+					_pendingDeleteId = null;
+					bootstrap.Modal.getInstance(
+						document.getElementById("confirmDeleteModal")
+					).hide();
+					page = 1;
+					renderUsers();
+				});
+
+			// --- Search / filters (debounce for text) ---
+			function debounce(fn, delay = 300) {
+				let t;
+				return (...args) => {
+					clearTimeout(t);
+					t = setTimeout(() => fn(...args), delay);
+				};
+			}
+
+			const handleSearch = debounce((value) => {
+				filters.query = value;
+				page = 1;
+				renderUsers();
+			}, 250);
+
+			document
+				.getElementById("userSearch")
+				.addEventListener("input", (e) => handleSearch(e.target.value));
+			document
+				.getElementById("globalSearch")
+				.addEventListener("input", (e) => handleSearch(e.target.value));
+
+			document
+				.getElementById("roleFilter")
+				.addEventListener("change", (e) => {
+					filters.role = e.target.value;
+					page = 1;
+					renderUsers();
 				});
 
 			document
-				.getElementById("logoutTop")
-				.addEventListener("click", () => {
-					if (confirm("Logout?")) alert("Logged out (demo)");
-				});
-			document
-				.getElementById("logoutSide")
-				.addEventListener("click", () => {
-					if (confirm("Logout?")) alert("Logged out (demo)");
+				.getElementById("statusFilter")
+				.addEventListener("change", (e) => {
+					filters.status = e.target.value;
+					page = 1;
+					renderUsers();
 				});
 
-			renderMyEvents();
-			// quick action buttons
 			document
-				.getElementById("viewRoster")
-				.addEventListener("click", () => viewParticipants("T001"));
+				.getElementById("sortBy")
+				.addEventListener("change", (e) => {
+					filters.sort = e.target.value;
+					renderUsers();
+				});
+
 			document
-				.getElementById("notifyParticipants")
-				.addEventListener("click", () =>
-					alert("Open notification composer (demo)")
-				);
+				.getElementById("clearFilters")
+				.addEventListener("click", () => {
+					filters.query = "";
+					filters.role = "all";
+					filters.status = "all";
+					filters.sort = "recent";
+					document.getElementById("userSearch").value = "";
+					document.getElementById("globalSearch").value = "";
+					document.getElementById("roleFilter").value = "all";
+					document.getElementById("statusFilter").value = "all";
+					document.getElementById("sortBy").value = "recent";
+					page = 1;
+					renderUsers();
+				});
+
+			// --- Pagination ---
 			document
-				.getElementById("openParticipants")
-				.addEventListener("click", () => viewParticipants("T001"));
+				.getElementById("prevPage")
+				.addEventListener("click", () => {
+					if (page > 1) {
+						page--;
+						renderUsers();
+					}
+				});
+			document
+				.getElementById("nextPage")
+				.addEventListener("click", () => {
+					page++;
+					renderUsers();
+				});
+
+			// --- Refresh (example: re-fetch from API) ---
+			document
+				.getElementById("btnRefresh")
+				.addEventListener("click", async () => {
+					// Replace this block with an API call to fetch latest users. Example:
+					// try {
+					//   const res = await fetch('/api/admin/users');
+					//   const data = await res.json();
+					//   users = data; page = 1; renderUsers();
+					// } catch(err) { alert('Failed to fetch users'); }
+					renderUsers(); // demo fallback
+				});
+
+			// --- Export CSV (demo) ---
+			document
+				.getElementById("exportCsv")
+				.addEventListener("click", () => {
+					const filtered = applyFilterSort();
+					if (filtered.length === 0) {
+						return alert(
+							"No users to export with current filters."
+						);
+					}
+					const header = [
+						"id",
+						"name",
+						"email",
+						"role",
+						"active",
+						"lastActive",
+					];
+					const rows = filtered.map((u) =>
+						[
+							u.id,
+							u.name,
+							u.email,
+							u.role,
+							u.active ? "active" : "inactive",
+							u.lastActive,
+						]
+							.map((v) => `"${String(v).replace(/"/g, '""')}"`)
+							.join(",")
+					);
+					const csv = [header.join(","), ...rows].join("\n");
+					const blob = new Blob([csv], { type: "text/csv" });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement("a");
+					a.href = url;
+					a.download = "users.csv";
+					a.click();
+					URL.revokeObjectURL(url);
+				});
+			// Initial render
+			renderUsers();
 		</script>
 	</body>
 </html>

@@ -17,6 +17,7 @@
 
 		<!-- Global design system CSS (must exist) -->
 		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="admin-common.css" />
 
 		<style>
 			body {
@@ -30,7 +31,11 @@
 			}
 			.app-sidebar {
 				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
+				background: linear-gradient(
+					180deg,
+					var(--sidebar-gradient-start),
+					var(--sidebar-gradient-end)
+				);
 				color: #fff;
 				padding: 28px 20px;
 				display: flex;
@@ -44,47 +49,8 @@
 			.kpi-grid {
 				display: grid;
 				grid-template-columns: repeat(3, 1fr);
-				gap: 20px;
-				margin-bottom: 32px;
-			}
-			.kpi-card {
-				background: linear-gradient(135deg, var(--bg-surface), var(--bg-light));
-				border: 1px solid var(--border-light);
-				border-radius: var(--card-radius);
-				padding: 24px;
-				transition: all var(--transition-base);
-				position: relative;
-				overflow: hidden;
-			}
-			.kpi-card::after {
-				content: '';
-				position: absolute;
-				top: 0;
-				right: 0;
-				width: 80px;
-				height: 80px;
-				background: linear-gradient(135deg, var(--primary-light), transparent);
-				border-radius: 0 0 0 100%;
-				opacity: 0.6;
-			}
-			.kpi-card:hover {
-				transform: translateY(-4px);
-				box-shadow: var(--shadow-md);
-				border-color: var(--primary-light);
-			}
-			.kpi-card .muted {
-				font-size: 13px;
-				font-weight: 500;
-				margin-bottom: 8px;
-				text-transform: uppercase;
-				letter-spacing: 0.5px;
-			}
-			.kpi-card > div:last-child {
-				font-size: 32px;
-				font-weight: 700;
-				color: var(--primary-dark);
-				position: relative;
-				z-index: 1;
+				gap: 16px;
+				margin-bottom: 24px;
 			}
 			.events-table .table th,
 			.events-table .table td {
@@ -111,8 +77,14 @@
 				href="admin.html"
 				aria-label="Event Ease Home"
 			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
+				<div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
+				>
 					Event Ease
 				</div>
 			</a>
@@ -175,25 +147,19 @@
 				aria-label="Main navigation"
 			>
 				<nav class="sidebar-nav">
-					<a class="active" href="admin.html"
-						>🏠 Home</a
-					>
-					<a href="users.html"
-						>👥 Users</a
-					>
-					<a href="events.html"
-						>📅 Events</a
-					>
-					<a href="reports.html"
-						>📊 Reports</a
-					>
-					<a href="profile.html"
-						>👤 Profile</a
-					>
+					<a class="active" href="admin.html">🏠 Home</a>
+					<a href="users.html">👥 Users</a>
+					<a href="events.html">📅 Events</a>
+					<a href="add-event.html">➕ Add Event</a>
+					<a href="reports.html">📊 Reports</a>
+					<a href="profile.html">👤 Profile</a>
 				</nav>
 
 				<div class="sidebar-footer">
-					<a id="logoutSide" class="text-danger" style="display: block; margin-bottom: 12px;"
+					<a
+						id="logoutSide"
+						class="text-danger"
+						style="display: block; margin-bottom: 12px"
 						>🔒 Logout</a
 					>
 					v1.0 • © <span id="year"></span>
@@ -204,22 +170,37 @@
 			<main class="app-main">
 				<!-- Top stats row -->
 				<div class="kpi-grid">
-					<div class="kpi-card">
+					<div class="card-compact">
 						<div class="muted">Total Users</div>
-						<div id="statUsers">1,247</div>
+						<div
+							style="font-weight: 700; font-size: 20px"
+							id="statUsers"
+						>
+							1,247
+						</div>
 					</div>
-					<div class="kpi-card">
+					<div class="card-compact">
 						<div class="muted">Active Events</div>
-						<div id="statEvents">5</div>
+						<div
+							style="font-weight: 700; font-size: 20px"
+							id="statEvents"
+						>
+							5
+						</div>
 					</div>
-					<div class="kpi-card">
+					<div class="card-compact">
 						<div class="muted">Participants Today</div>
-						<div id="statParticipants">245</div>
+						<div
+							style="font-weight: 700; font-size: 20px"
+							id="statParticipants"
+						>
+							245
+						</div>
 					</div>
 				</div>
 
 				<!-- Upcoming Event (single) -->
-				<div class="card-compact mb-4">
+				<div class="card-compact mb-3">
 					<div
 						class="d-flex justify-content-between align-items-start"
 					>
@@ -235,7 +216,7 @@
 							</p>
 							<div class="d-flex gap-2">
 								<button class="btn btn-primary" id="btnRoster">
-									View Roster
+									View Details
 								</button>
 								<button class="btn btn-outline" id="btnNotify">
 									Send Notification
@@ -355,7 +336,7 @@
 			});
 
 			function viewEvent(id) {
-				alert("View event " + id + " (demo)");
+				window.location.href = `event-details.html?id=${id}`;
 			}
 			document
 				.getElementById("btnCreate")
@@ -365,7 +346,10 @@
 				);
 			document
 				.getElementById("btnRoster")
-				.addEventListener("click", () => alert("Open roster (demo)"));
+				.addEventListener(
+					"click",
+					() => (window.location.href = `event-details.html?id=E001`)
+				);
 			document
 				.getElementById("btnNotify")
 				.addEventListener("click", () =>
@@ -375,7 +359,7 @@
 				.getElementById("btnAssign")
 				.addEventListener(
 					"click",
-					() => (location.href = "events.html#assign")
+					() => (location.href = "assign.html")
 				);
 
 			document

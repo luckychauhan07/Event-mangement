@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Event Details — Event Ease</title>
+
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="admin-common.css" />
+
+		<style>
+			.muted {
+				color: #6c757d;
+			}
+			.card-proto {
+				background: #fff;
+				padding: 18px;
+				border-radius: 10px;
+				box-shadow: var(--shadow-md);
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- HEADER -->
+		<header class="topbar">
+			<a
+				class="d-flex align-items-center text-decoration-none"
+				href="admin.html"
+			>
+				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
+				<div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
+				>
+					Event Ease
+				</div>
+			</a>
+
+			<div class="d-flex align-items-center gap-3">
+				<div class="d-none d-md-block" style="min-width: 280px">
+					<input
+						class="form-control form-control-sm"
+						placeholder="Search (events, users, IDs)"
+					/>
+				</div>
+
+				<div class="dropdown">
+					<button
+						class="btn d-flex align-items-center gap-2"
+						data-bs-toggle="dropdown"
+					>
+						<div
+							class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+							style="width: 36px; height: 36px"
+						>
+							AD
+						</div>
+						<div class="d-none d-md-block text-start">
+							<div style="font-weight: 600">Admin</div>
+							<div class="small muted">admin@college.edu</div>
+						</div>
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li><a class="dropdown-item" href="#">Profile</a></li>
+						<li><a class="dropdown-item" href="#">Settings</a></li>
+						<li><hr class="dropdown-divider" /></li>
+						<li>
+							<a
+								class="dropdown-item text-danger"
+								href="#"
+								id="logoutBtn"
+								>Logout</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</header>
+
+		<div class="app-shell">
+			<!-- SIDEBAR -->
+			<aside class="app-sidebar d-none d-lg-flex">
+				<nav class="sidebar-nav">
+					<a href="admin.html">🏠 Home</a>
+					<a href="users.html">👥 Users</a>
+					<a href="events.html" class="active">📅 Events</a>
+					<a href="add-event.html">➕ Add Event</a>
+					<a href="#">📊 Reports</a>
+					<a href="#">👤 Profile</a>
+				</nav>
+
+				<div class="sidebar-footer">
+					<a id="logoutSide" class="text-danger">🔒 Logout</a>
+					<div class="small mt-2">
+						v1.0 • © <span id="year"></span>
+					</div>
+				</div>
+			</aside>
+
+			<main class="app-main">
+				<div class="container">
+					<div
+						class="d-flex justify-content-between align-items-center"
+					>
+						<h3 id="evName">Event</h3>
+						<a href="events.html" class="btn btn-outline-secondary"
+							>← Back</a
+						>
+					</div>
+
+					<div class="card-proto mt-3">
+						<div id="evInfo"></div>
+
+						<div class="mt-3 d-flex gap-2 flex-wrap">
+							<button id="editBtn" class="btn btn-primary">
+								Edit
+							</button>
+							<button
+								id="assignBtn"
+								class="btn btn-outline-primary"
+							>
+								Assign Coordinator
+							</button>
+							<button id="deleteBtn" class="btn btn-danger">
+								Delete
+							</button>
+							<button
+								id="viewParticipantsBtn"
+								class="btn btn-primary btn-sm"
+							>
+								View Participants
+							</button>
+						</div>
+					</div>
+
+					<!-- PARTICIPANTS -->
+					<div
+						id="participantsCard"
+						class="card-proto mt-3"
+						style="display: none"
+					>
+						<div
+							class="d-flex justify-content-between align-items-center flex-wrap"
+						>
+							<h5 class="mb-0 fw-bold">Event Participants</h5>
+							<select
+								id="participantsPageSize"
+								class="form-select form-select-sm"
+								style="width: 90px"
+							>
+								<option value="5">5</option>
+								<option value="10" selected>10</option>
+								<option value="25">25</option>
+							</select>
+						</div>
+
+						<div id="participantsTableContainer" class="mt-3"></div>
+						<div
+							id="participantsPagination"
+							class="d-flex justify-content-between align-items-center mt-2"
+						></div>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<!-- MODALS -->
+		<div class="modal fade" id="confirmModal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Confirm</h5>
+						<button
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body" id="confirmBody"></div>
+					<div class="modal-footer">
+						<button class="btn btn-outline" data-bs-dismiss="modal">
+							Cancel
+						</button>
+						<button class="btn btn-danger" id="confirmYes">
+							Yes, delete
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+		<script>
+			/* ---------------- DATA ---------------- */
+			const events = [
+				{
+					id: "E001",
+					name: "Hackathon 2025",
+					date: "2025-12-05T10:00",
+					venue: "Auditorium A",
+					capacity: 100,
+					coordinator: "Prof Rao",
+					desc: "24-hour coding event",
+				},
+			];
+
+			const ALL_PARTICIPANTS = Array.from({ length: 37 }, (_, i) => ({
+				id: "P" + (i + 1),
+				name: "Participant " + (i + 1),
+				email: "p" + (i + 1) + "@example.com",
+			}));
+
+			/* ---------------- HELPERS ---------------- */
+			const qs = (k) => new URL(location.href).searchParams.get(k);
+			const escapeHtml = (t) => {
+				const d = document.createElement("div");
+				d.textContent = t;
+				return d.innerHTML;
+			};
+
+			/* ---------------- EVENT LOAD ---------------- */
+			const id = qs("id") || "E001";
+			let ev = events.find((e) => e.id === id);
+			if (!ev) location.href = "events.html";
+
+			const elName = document.getElementById("evName");
+			const elInfo = document.getElementById("evInfo");
+
+			function render() {
+				elName.textContent = ev.name;
+				elInfo.innerHTML = `
+					<div><strong>ID:</strong> ${ev.id}</div>
+					<div><strong>Date:</strong> ${new Date(ev.date).toLocaleString()}</div>
+					<div><strong>Venue:</strong> ${ev.venue}</div>
+					<div><strong>Capacity:</strong> ${ev.capacity}</div>
+					<div><strong>Coordinator:</strong> ${ev.coordinator || "-"}</div>
+					<div class="mt-2 small muted">${ev.desc}</div>
+				`;
+			}
+			render();
+
+			/* ---------------- PARTICIPANTS ---------------- */
+			let partPage = 1;
+			const card = document.getElementById("participantsCard");
+			const sizeSel = document.getElementById("participantsPageSize");
+
+			function renderParticipants(page = 1) {
+				const size = Number(sizeSel.value);
+				const start = (page - 1) * size;
+				const slice = ALL_PARTICIPANTS.slice(start, start + size);
+
+				document.getElementById(
+					"participantsTableContainer"
+				).innerHTML = `
+					<table class="table table-sm">
+						<thead>
+							<tr><th>#</th><th>Name</th><th>Email</th></tr>
+						</thead>
+						<tbody>
+							${slice
+								.map(
+									(p, i) => `
+								<tr>
+									<td>${start + i + 1}</td>
+									<td>${escapeHtml(p.name)}</td>
+									<td>${escapeHtml(p.email)}</td>
+								</tr>`
+								)
+								.join("")}
+						</tbody>
+					</table>
+				`;
+
+				const totalPages = Math.ceil(ALL_PARTICIPANTS.length / size);
+				document.getElementById("participantsPagination").innerHTML = `
+					<div>${ALL_PARTICIPANTS.length} participants</div>
+					<div class="d-flex gap-2">
+						<button class="btn btn-sm btn-outline-secondary" ${
+							page === 1 ? "disabled" : ""
+						} onclick="changePage(-1)">Prev</button>
+						<span>Page ${page}/${totalPages}</span>
+						<button class="btn btn-sm btn-outline-secondary" ${
+							page === totalPages ? "disabled" : ""
+						} onclick="changePage(1)">Next</button>
+					</div>
+				`;
+			}
+
+			window.changePage = (d) => {
+				partPage += d;
+				renderParticipants(partPage);
+			};
+
+			document.getElementById("viewParticipantsBtn").onclick = () => {
+				card.style.display =
+					card.style.display === "none" ? "block" : "none";
+				partPage = 1;
+				renderParticipants(partPage);
+			};
+
+			sizeSel.onchange = () => renderParticipants(1);
+
+			/* ---------------- ASSIGN ---------------- */
+			document.getElementById("assignBtn").onclick = () => {
+				let ev = "E001";
+				window.location.href = `assign.html?id=${ev}`;
+			};
+			/* ---------------- DELETE ---------------- */
+			document.getElementById("deleteBtn").onclick = () => {
+				document.getElementById("confirmBody").textContent =
+					"Delete this event? (prototype)";
+				new bootstrap.Modal(
+					document.getElementById("confirmModal")
+				).show();
+			};
+
+			document.getElementById("confirmYes").onclick = () => {
+				alert("Deleted (prototype)");
+				location.href = "events.html";
+			};
+
+			/* ---------------- FOOTER ---------------- */
+			document.getElementById("year").textContent =
+				new Date().getFullYear();
+		</script>
+	</body>
+</html>

@@ -25,7 +25,11 @@
 			}
 			.app-sidebar {
 				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
+				background: linear-gradient(
+					180deg,
+					var(--sidebar-gradient-start),
+					var(--sidebar-gradient-end)
+				);
 				color: #fff;
 				padding: 28px 20px;
 				display: flex;
@@ -53,8 +57,14 @@
 				href="admin.html"
 				aria-label="Event Ease Home"
 			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
+				<div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
+				>
 					Event Ease
 				</div>
 			</a>
@@ -116,26 +126,19 @@
 				aria-label="Main navigation"
 			>
 				<nav class="sidebar-nav">
-					<a href="admin.html"
-						>🏠 Home</a
-					>
-					<a href="users.html"
-						>👥 Users</a
-					>
-					<a href="events.html"
-						>📅 Events</a
-					>
-					<a href="reports.html"
-						class="active"
-						>📊 Reports</a
-					>
-					<a href="profile.html"
-						>👤 Profile</a
-					>
+					<a href="admin.html">🏠 Home</a>
+					<a href="users.html">👥 Users</a>
+					<a href="events.html">📅 Events</a
+					><a href="add-event.html">➕ Add Event</a>
+					<a href="reports.html" class="active">📊 Reports</a>
+					<a href="profile.html">👤 Profile</a>
 				</nav>
 
 				<div class="sidebar-footer">
-					<a id="logoutSide" class="text-danger" style="display: block; margin-bottom: 12px;"
+					<a
+						id="logoutSide"
+						class="text-danger"
+						style="display: block; margin-bottom: 12px"
 						>🔒 Logout</a
 					>
 					v1.0 • © <span id="year"></span>
