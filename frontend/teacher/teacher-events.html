@@ -13,7 +13,7 @@
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 		/>
-		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="style1.css" />
 		<style>
 			body {
 				font-family: Inter, system-ui, Arial;
@@ -103,6 +103,10 @@
 					<a
 						href="teacher-profile.html"
 						>👤 Profile</a
+					>
+					<a
+						href="notifications.html"
+						>🔔 Notifications</a
 					>
 				</nav>
 			</aside>
@@ -244,54 +248,32 @@
 		</div>
 
 		<div class="modal fade" id="assignStudentModal" tabindex="-1">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Assign Student Coordinator</h5>
-						<button
-							class="btn-close"
-							data-bs-dismiss="modal"
-						></button>
-					</div>
-					<div class="modal-body">
-						<label class="form-label"
-							>Select student coordinator</label
-						>
-						<select id="studentSelect" class="form-select">
-							<option>Student A (CS101)</option>
-							<option>Student B (CS102)</option>
-							<option>Student C (CS103)</option>
-						</select>
-					</div>
-					<div class="modal-footer">
-						<button class="btn btn-outline" data-bs-dismiss="modal">
-							Cancel</button
-						><button class="btn btn-primary" id="assignStudentBtn">
-							Assign
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="modal fade" id="rosterModal" tabindex="-1">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Roster</h5>
-						<button
-							class="btn-close"
-							data-bs-dismiss="modal"
-						></button>
-					</div>
-					<div class="modal-body" id="rosterBody"></div>
-					<div class="modal-footer">
-						<button class="btn btn-outline" data-bs-dismiss="modal">
-							Close
-						</button>
-					</div>
-				</div>
-			</div>
+  			<div class="modal-dialog">
+    			<div class="modal-content">
+      				<div class="modal-header">
+        				<h5 class="modal-title">Assign Student Coordinators</h5>
+        				<button class="btn-close" data-bs-dismiss="modal"></button>
+      				</div>
+      				<div class="modal-body">
+        				<label class="form-label">Select student coordinators & roles</label>
+        				<div id="studentAssignList">
+          					<div class="input-group mb-2">
+            					<select class="form-select studentSelect">
+              						<option value="S101">Student A (CS101)</option>
+              						<option value="S102">Student B (CS102)</option>
+              						<option value="S103">Student C (CS103)</option>
+            					</select>
+            					<input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
+          					</div>
+        				</div>
+        				<button class="btn btn-sm btn-outline" id="addCoordinatorRow">+ Add another</button>
+      				</div>
+      				<div class="modal-footer">
+        				<button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+        				<button class="btn btn-primary" id="assignStudentBtn">Assign</button>
+      				</div>
+    			</div>
+  			</div>
 		</div>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -430,19 +412,57 @@
 					).hide();
 					renderTeacherEvents();
 				});
-
+// stu coord
 			function openAssign(id) {
-				// demo: open student selector modal
-				new bootstrap.Modal(
-					document.getElementById("assignStudentModal")
-				).show();
-				document.getElementById("assignStudentBtn").onclick = () => {
-					alert("Assigned student coordinator (demo)");
-					bootstrap.Modal.getInstance(
-						document.getElementById("assignStudentModal")
-					).hide();
-				};
-			}
+    const modal = new bootstrap.Modal(document.getElementById("assignStudentModal"));
+    modal.show();
+
+    // reset rows
+    document.getElementById("studentAssignList").innerHTML = `
+      <div class="input-group mb-2">
+        <select class="form-select studentSelect">
+          <option value="S101">Student A (CS101)</option>
+          <option value="S102">Student B (CS102)</option>
+          <option value="S103">Student C (CS103)</option>
+        </select>
+        <input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
+      </div>
+    `;
+
+    document.getElementById("addCoordinatorRow").onclick = () => {
+      const row = document.createElement("div");
+      row.className = "input-group mb-2";
+      row.innerHTML = `
+        <select class="form-select studentSelect">
+          <option value="S101">Student A (CS101)</option>
+          <option value="S102">Student B (CS102)</option>
+          <option value="S103">Student C (CS103)</option>
+        </select>
+        <input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
+      `;
+      document.getElementById("studentAssignList").appendChild(row);
+    };
+
+    document.getElementById("assignStudentBtn").onclick = () => {
+      const selects = document.querySelectorAll("#studentAssignList .studentSelect");
+      const roles = document.querySelectorAll("#studentAssignList .roleInput");
+      const assigned = [];
+      selects.forEach((sel, i) => {
+        if (sel.value) {
+          assigned.push(sel.value + " (" + (roles[i].value || "Coordinator") + ")");
+        }
+      });
+
+      const ev = teacherEvents.find((e) => e.id === id);
+      if (ev) {
+        ev.students = assigned;
+      }
+
+      alert("Assigned coordinators: " + assigned.join(", "));
+      modal.hide();
+      renderTeacherEvents();
+    };
+  }
 
 			function editEv(id) {
 				const ev = teacherEvents.find((e) => e.id === id);
