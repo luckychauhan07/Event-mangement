@@ -1,106 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Event Ease — Notifications</title>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Event Ease — Notifications</title>
 
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="style1.css" />
-		<style>
-			body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
-			}
-			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
-			}
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="style1.css" />
+        <style>
+            body {
+                font-family: Inter, system-ui, Arial;
+                background: var(--bg-light);
+                color: var(--text-dark);
+            }
+            .app-shell {
+                display: flex;
+                min-height: calc(100vh - var(--header-height));
+            }
+            .app-sidebar {
+                width: var(--sidebar-width);
+                background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
+                color: #fff;
+                padding: 28px 20px;
+                display: flex;
+                flex-direction: column;
+                box-shadow: var(--shadow-md);
+            }
+            @media (max-width: 991px) {
+                .app-sidebar {
+                    display: none;
+                }
+            }
             .notification-card {
-      border-left: 4px solid #0d6efd;
-      margin-bottom: 1rem;
-      transition: background 0.2s;
-    }
-    .notification-card:hover {
-      background-color: #f1f5ff;
-      cursor: pointer;
-    }
-    .notification-time {
-      font-size: 0.85rem;
-      color: #6c757d;
-    }
-    .badge-status {
-      font-size: 0.75rem;
-    }
-		</style>
-	</head>
-	<body>
-		<header class="topbar">
-			<a
-				href="teacher-home.html"
-				class="d-flex align-items-center text-decoration-none"
-			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
-			</a>
-		</header>
+                border-left: 4px solid #0d6efd;
+                margin-bottom: 1rem;
+                transition: background 0.2s;
+            }
+            .notification-card:hover {
+                background-color: #f1f5ff;
+                cursor: pointer;
+            }
+            .notification-time {
+                font-size: 0.85rem;
+                color: #6c757d;
+            }
+            .badge-status {
+                font-size: 0.75rem;
+            }
+        </style>
+    </head>
+    <body>
+        <header class="topbar">
+            <a href="teacher-home.html" class="d-flex align-items-center text-decoration-none">
+                <div class="logo-mark">EE</div>
+                <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
+            </a>
+        </header>
 
-		<div class="app-shell">
-			<aside class="app-sidebar d-none d-lg-flex">
-				<nav class="sidebar-nav">
-					<a
-						href="teacher-home.html"
-						>🏠 Home</a
-					>
-					<a
-						href="teacher-events.html"
-						>📅 My Events</a
-					>
-					<a
-						href="teacher-approvals.html"
-						>✅ Approvals</a
-					>
-					<a
-						href="teacher-profile.html"
-						>👤 Profile</a
-					>
-					<a
-						href="notifications.html"
-                        class="active"
-						>🔔 Notifications</a
-					>
-				</nav>
-			</aside>
+        <div class="app-shell">
+            <aside class="app-sidebar d-none d-lg-flex">
+                <nav class="sidebar-nav">
+                    <a href="teacher-home.html">🏠 Home</a>
+                    <a href="teacher-events.html">📅 My Events</a>
+                    <a href="teacher-approvals.html">✅ Approvals</a>
+                    <a href="teacher-profile.html">👤 Profile</a>
+                    <a href="notifications.html" class="active">🔔 Notifications</a>
+                </nav>
+            </aside>
             
             <div class="container py-4">
                 <h2 class="mb-4">🔔 Notifications</h2>
 
                 <!-- Toolbar -->
                 <div class="d-flex justify-content-between mb-3">
-                    <button class="btn btn-sm btn-outline-primary" id="markAll">Mark All as Read</button>
-                    <button class="btn btn-sm btn-outline-danger" id="clearAll">Clear All</button>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" id="markAll">Mark All as Read</button>
+                        <button class="btn btn-sm btn-outline-danger" id="clearAll">Clear All</button>
+                    </div>
+                    <!-- Send Notification -->
+                    <div class="input-group input-group-sm" style="max-width: 400px;">
+                        <input type="text" id="customMessage" class="form-control" placeholder="Enter notification message">
+                        <button class="btn btn-success" id="sendNotification">Send</button>
+                    </div>
                 </div>
 
                 <!-- Notification list -->
@@ -116,61 +104,71 @@
                             <span class="badge bg-primary badge-status">Unread</span>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="card notification-card">
+        <!-- Load Bootstrap once -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Custom JS -->
+        <script>
+            // Toggle read/unread when clicking a card
+            document.querySelectorAll(".notification-card").forEach(card => {
+                card.addEventListener("click", () => {
+                    const badge = card.querySelector(".badge-status");
+                    if (badge.classList.contains("bg-primary")) {
+                        badge.classList.replace("bg-primary", "bg-success");
+                        badge.textContent = "Read";
+                    }
+                });
+            });
+
+            // Mark all as read
+            document.getElementById("markAll").onclick = () => {
+                document.querySelectorAll(".badge-status").forEach(badge => {
+                    badge.classList.remove("bg-primary");
+                    badge.classList.add("bg-success");
+                    badge.textContent = "Read";
+                });
+            };
+
+            // Clear all notifications
+            document.getElementById("clearAll").onclick = () => {
+                document.getElementById("notificationsList").innerHTML = "<p class='text-muted'>No notifications</p>";
+            };
+
+            // Send custom notification
+            document.getElementById("sendNotification").onclick = () => {
+                const message = document.getElementById("customMessage").value.trim();
+                if (message) {
+                    const card = document.createElement("div");
+                    card.className = "card notification-card";
+                    card.innerHTML = `
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="mb-1">Coordinator Assigned</h6>
-                                <p class="mb-1 text-muted">Student A (CS101) assigned as Lead Coordinator for Web Dev Sprint.</p>
-                                <span class="notification-time">Yesterday</span>
-                            </div>
-                            <span class="badge bg-success badge-status">Read</span>
-                        </div>
-                    </div>
-
-                    <div class="card notification-card">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">Roster Updated</h6>
-                                <p class="mb-1 text-muted">3 new participants joined Arduino Intro.</p>
-                                <span class="notification-time">Dec 12, 2025</span>
+                                <h6 class="mb-1">Custom Notification</h6>
+                                <p class="mb-1 text-muted">${message}</p>
+                                <span class="notification-time">${new Date().toLocaleString()}</span>
                             </div>
                             <span class="badge bg-primary badge-status">Unread</span>
                         </div>
-                    </div>
-                </div>
-            </div>
-		</div>
-		<!-- Load Bootstrap once -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+                    `;
+                    document.getElementById("notificationsList").appendChild(card);
+                    document.getElementById("customMessage").value = "";
 
-        <!-- Your custom JS in a separate script tag -->
-        <script>
-        // Demo: toggle read/unread when clicking a card
-        document.querySelectorAll(".notification-card").forEach(card => {
-            card.addEventListener("click", () => {
-            const badge = card.querySelector(".badge-status");
-            if (badge.classList.contains("bg-primary")) {
-                badge.classList.replace("bg-primary", "bg-success");
-                badge.textContent = "Read";
-            }
-            });
-        });
-
-        // Mark all as read
-        document.getElementById("markAll").onclick = () => {
-            document.querySelectorAll(".badge-status").forEach(badge => {
-            badge.classList.remove("bg-primary");
-            badge.classList.add("bg-success");
-            badge.textContent = "Read";
-            });
-        };
-
-        // Clear all notifications
-        document.getElementById("clearAll").onclick = () => {
-            document.getElementById("notificationsList").innerHTML = "<p class='text-muted'>No notifications</p>";
-        };
+                    // Add click handler for new card
+                    card.addEventListener("click", () => {
+                        const badge = card.querySelector(".badge-status");
+                        if (badge.classList.contains("bg-primary")) {
+                            badge.classList.replace("bg-primary", "bg-success");
+                            badge.textContent = "Read";
+                        }
+                    });
+                } else {
+                    alert("Please enter a message before sending.");
+                }
+            };
         </script>
-
-	</body>
+    </body>
 </html>
