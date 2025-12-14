@@ -50,6 +50,42 @@
 				padding: 16px;
 				border: 1px solid var(--border);
 			}
+			.status-box {
+	padding: 8px 16px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 700;
+	text-transform: uppercase;
+	display: inline-block;
+	min-width: 140px;
+	text-align: center;
+}
+
+.status-approved {
+	background-color: #198754;
+	color: white;
+}
+
+.status-pending {
+	background-color: #ffc107;
+	color: #000;
+}
+
+.status-cancelled {
+	background-color: #dc3545;
+	color: white;
+}
+
+/* Team info styling */
+.team-box {
+	font-size: 14px;
+	font-weight: 600;
+	padding: 6px 10px;
+	border-radius: 6px;
+	background: #f1f3f5;
+	display: inline-block;
+}
+
 			.muted {
 				color: var(--text-muted);
 			}
@@ -85,7 +121,57 @@
 				</div>
 			</a>
 			<div class="d-flex align-items-center gap-3">
-				<div class="muted">My registrations</div>
+				<input
+					id="searchUserTop"
+					class="form-control form-control-sm d-none d-md-block"
+					placeholder="Search events..."
+					style="min-width: 260px"
+				/>
+				<div class="dropdown">
+					<button
+						class="btn d-flex align-items-center gap-2"
+						data-bs-toggle="dropdown"
+					>
+						<div
+							class="rounded-circle bg-primary text-white"
+							style="
+								width: 36px;
+								height: 36px;
+								display: grid;
+								place-items: center;
+							"
+						>
+							ST
+						</div>
+						<div class="d-none d-md-block text-start">
+							<div style="font-weight: 600">Student</div>
+							<div class="muted">you@college.edu</div>
+						</div>
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li>
+							<a class="dropdown-item" href="user-profile.html"
+								>Profile</a
+							>
+						</li>
+						<li>
+							<a
+								class="dropdown-item"
+								href="user-registrations.html"
+								>My Registrations</a
+							>
+						</li>
+						<li><hr class="dropdown-divider" /></li>
+						<li>
+							<button
+								class="dropdown-item text-danger"
+								onclick="userLogout()"
+							>
+								Logout
+							</button>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</header>
 
@@ -103,6 +189,8 @@
 						class="text-white-95 p-2 rounded active"
 						>📋 My Registrations</a
 					>
+					<a href="user-notification.html" class="text-white-95 p-2 rounded active">🔔 Notifications</a>
+				    <a href="user-profile.html" class="text-white-95 p-2 rounded">👤 Profile</a>
 				</nav>
 			</aside>
 
@@ -133,49 +221,99 @@
 					eventId: "E101",
 					status: "pending",
 					createdAt: "2025-11-20T10:00:00Z",
+					team: null, // not assigned yet
 				},
 				{
 					regId: "R101",
 					eventId: "E102",
 					status: "approved",
 					createdAt: "2025-11-21T11:00:00Z",
+					team: {
+						name: "Alpha Squad",
+						role: "Member",
+					},
 				},
 			];
 
+			// Add deadline to registrations
+					registrations = registrations.map((r) => ({
+						...r,
+						deadline: r.deadline || "2025-12-16T23:59",
+					}));
+
+
 			function renderRegs() {
-				const box = document.getElementById("regsList");
-				box.innerHTML = "";
-				if (registrations.length === 0) {
-					box.innerHTML =
-						'<div class="muted">No registrations yet.</div>';
-					return;
-				}
-				registrations.forEach((r) => {
-					const e = EVENTS.find((x) => x.id === r.eventId) || {
-						name: r.eventId,
-					};
-					const row = document.createElement("div");
-					row.className =
-						"d-flex justify-content-between align-items-center mb-2";
-					row.innerHTML = `<div><div style="font-weight:600">${
-						e.name
-					}</div><div class="muted small">${r.regId} • ${new Date(
-						r.createdAt
-					).toLocaleString()}</div></div>
-      <div class="text-end">
-        <div class="small muted mb-1">${r.status.toUpperCase()}</div>
-        <div>
-          <button class="btn btn-sm btn-outline me-1" onclick="viewReg('${
-				r.regId
-			}')">View</button>
-          <button class="btn btn-sm btn-danger" onclick="cancelReg('${
-				r.regId
-			}')">Cancel</button>
-        </div>
-      </div>`;
-					box.appendChild(row);
-				});
-			}
+	const box = document.getElementById("regsList");
+	box.innerHTML = "";
+
+	if (registrations.length === 0) {
+		box.innerHTML = '<div class="muted">No registrations yet.</div>';
+		return;
+	}
+
+	registrations.forEach((r) => {
+		const e = EVENTS.find((x) => x.id === r.eventId) || {
+			name: r.eventId,
+		};
+
+		const statusClass =
+			r.status === "approved"
+				? "status-approved"
+				: r.status === "pending"
+				? "status-pending"
+				: "status-cancelled";
+
+		const row = document.createElement("div");
+
+		/* card-like gap between events */
+		row.className =
+			"d-flex justify-content-between align-items-center mb-4 p-3 border rounded";
+
+		row.innerHTML = `
+		<div>
+			<div style="font-weight:600; font-size:16px">
+				${e.name}
+			</div>
+
+			<div class="muted small mb-2">
+				${r.regId} • ${new Date(r.createdAt).toLocaleString()}
+			</div>
+
+			<!-- STATUS -->
+			<div class="status-box ${statusClass} mb-2">
+				${r.status}
+			</div>
+
+			<!-- TEAM INFO -->
+			<div class="team-box">
+				Team:
+				${r.team
+					? `${r.team.name} (${r.team.role})`
+					: "Not Assigned"}
+			</div>
+		</div>
+
+		<div class="text-end">
+			<button class="btn btn-sm btn-outline me-2"
+				onclick="viewReg('${r.regId}')">
+				View
+			</button>
+
+			<button
+				class="btn btn-sm btn-danger"
+				${new Date() <= new Date(r.deadline) && r.status !== "cancelled"
+					? ""
+					: "disabled"}
+				onclick="withdrawRegistration('${r.regId}')"
+			>
+				Withdraw
+			</button>
+		</div>
+		`;
+
+		box.appendChild(row);
+	});
+}
 
 			function viewReg(regId) {
 				const r = registrations.find((x) => x.regId === regId);
@@ -186,17 +324,44 @@
 					}\nRequested: ${new Date(r.createdAt).toLocaleString()}`
 				);
 			}
+			
+			renderRegs();
+				function withdrawRegistration(regId) {
+			const reg = registrations.find((r) => r.regId === regId);
+			if (!reg) return alert("Registration not found");
 
-			function cancelReg(regId) {
-				if (!confirm("Cancel this registration?")) return;
-				registrations = registrations.filter((r) => r.regId !== regId);
-				alert(
-					"Registration canceled (demo). Teacher notified if needed."
-				);
-				renderRegs();
+			// Deadline check
+			if (new Date() > new Date(reg.deadline)) {
+				return alert("Withdrawal deadline has passed");
 			}
 
+			if (!confirm("Are you sure you want to withdraw from this event?"))
+				return;
+
+			// Update status
+			reg.status = "cancelled";
+
+			alert("You have successfully withdrawn from the event.");
+
 			renderRegs();
+}
+function userLogout() {
+		if (!confirm("Are you sure you want to logout?")) return;
+
+		// Clear user session data (if any)
+		localStorage.removeItem("studentSession");
+		localStorage.removeItem("studentProfile");
+
+		// Optional: clear everything related to user
+		// localStorage.clear();
+
+		alert("You have been logged out successfully.");
+
+		// Redirect to login page (outside user folder)
+		window.location.href = "../login.html";
+	}
+
+
 		</script>
 	</body>
 </html>

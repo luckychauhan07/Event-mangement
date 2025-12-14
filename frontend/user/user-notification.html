@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Event Ease — Notifications</title>
+
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="../style.css" />
+
+	<style>
+        body {
+				font-family: Inter, system-ui, Arial;
+				background: var(--bg-light);
+				color: var(--text-dark);
+			}
+			.topbar {
+				height: var(--header-h);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 20px;
+				background: #fff;
+				border-bottom: 1px solid var(--border);
+				position: sticky;
+				top: 0;
+				z-index: 20;
+			}
+		.card-compact {
+			background: #fff;
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			padding: 16px;
+		}
+		.unread {
+			background: #f1f5ff;
+		}
+        .app-sidebar{
+            width: 220px;
+            background: linear-gradient(180deg, #0b1220, #071028);
+        }
+		.notification-card {
+  padding: 15px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.notification-card.unread {
+  background: #eef4ff;
+  border-left: 4px solid #0d6efd;
+}
+
+</style>
+</head>
+
+<body>
+	<header class="topbar">
+	<!-- LEFT: App Logo -->
+	<a
+		href="user-home.html"
+		class="d-flex align-items-center text-decoration-none"
+	>
+		<div
+			class="logo-mark"
+			style="
+				width: 36px;
+				height: 36px;
+				border-radius: 8px;
+				background: linear-gradient(180deg, #3b82f6, #2b6ee6);
+				display: grid;
+				place-items: center;
+				color: #fff;
+				font-weight: 600;
+			"
+		>
+			EE
+		</div>
+		<div style="margin-left: 10px; font-weight: 700; color:#111827">
+			Event Ease
+		</div>
+	</a>
+
+	<!-- RIGHT: Search + Notifications + Student Avatar -->
+	<div class="d-flex align-items-center gap-3">
+		<input
+			id="searchUserTop"
+			class="form-control form-control-sm d-none d-md-block"
+			placeholder="Search events..."
+			style="min-width: 240px"
+		/>
+
+		<!-- Student Avatar Dropdown -->
+		<div class="dropdown">
+			<button
+				class="btn d-flex align-items-center gap-2"
+				data-bs-toggle="dropdown"
+			>
+				<div
+					class="rounded-circle bg-primary text-white"
+					style="
+						width: 36px;
+						height: 36px;
+						display: grid;
+						place-items: center;
+						font-weight: 600;
+					"
+				>
+					ST
+				</div>
+				<div class="d-none d-md-block text-start">
+					<div style="font-weight: 600">Student</div>
+					<div class="muted small">you@college.edu</div>
+				</div>
+			</button>
+
+			<ul class="dropdown-menu dropdown-menu-end">
+				<li>
+					<a class="dropdown-item" href="user-profile.html">Profile</a>
+				</li>
+				<li>
+					<a class="dropdown-item" href="user-registrations.html">
+						My Registrations
+					</a>
+				</li>
+				<li><hr class="dropdown-divider" /></li>
+				<li>
+					<button class="dropdown-item text-danger" id="userLogout">
+						Logout
+					</button>
+				</li>
+			</ul>
+		</div>
+	</div>
+</header>
+</div>
+
+
+
+	<div class="app-shell">
+		<aside class="app-sidebar d-none d-lg-flex">
+			<nav class="d-flex flex-column gap-2">
+				<a href="user-home.html" class="text-white-95 p-2 rounded">🏠 Home</a>
+				<a href="user-events.html" class="text-white-95 p-2 rounded">📅 Browse Events</a>
+				<a href="user-registrations.html" class="text-white-95 p-2 rounded">📋 My Registrations</a>
+				<a href="user-notification.html" class="text-white-95 p-2 rounded active">🔔 Notifications</a>
+				<a href="user-profile.html" class="text-white-95 p-2 rounded">👤 Profile</a>
+			</nav>
+		</aside>
+
+		<main class="app-main">
+			<div class="mb-3">
+				<h4 class="mb-0">Notifications</h4>
+				<div class="text-muted">Updates about your event registrations</div>
+			</div>
+
+			<div id="notificationList" class="d-flex flex-column gap-2"></div>
+
+			<div id="emptyState" class="text-muted mt-4 d-none">
+				No notifications available.
+			</div>
+		</main>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+	/* Demo notifications (fixed structure) */
+	let notifications = [
+		{
+			id: "N1",
+			eventName: "Inter-College Hackathon",
+			message: "Your registration request has been approved.",
+			status: "approved",
+			time: "2025-12-01T10:30",
+			read: false,
+		},
+		{
+			id: "N2",
+			eventName: "Design Sprint",
+			message: "You have been successfully registered.",
+			status: "approved",
+			time: "2025-12-02T14:15",
+			read: true,
+		},
+		{
+			id: "N3",
+			eventName: "Food Fest",
+			message: "The event has been cancelled by the organizer.",
+			status: "cancelled",
+			time: "2025-12-03T09:00",
+			read: false,
+		},
+	];
+
+	/* 🔔 Simulate real-time updates */
+	setInterval(() => {
+		const realtimeEvents = [
+			{
+				eventName: "Inter-College Hackathon",
+				message: "Venue changed to Auditorium B",
+				status: "info",
+			},
+			{
+				eventName: "Inter-College Hackathon",
+				message: "Hackathon results are now available",
+				status: "approved",
+			},
+			{
+				eventName: "Food Fest",
+				message: "Food Fest starts in 2 hours",
+				status: "pending",
+			},
+		];
+
+		const e =
+			realtimeEvents[Math.floor(Math.random() * realtimeEvents.length)];
+
+		pushRealtimeNotification({
+			id: "N" + Date.now(),
+			eventName: e.eventName,
+			message: e.message,
+			status: e.status,
+			read: false,
+			time: new Date().toISOString(),
+		});
+	}, 10000);
+
+	/* Add new notification */
+	function pushRealtimeNotification(notification) {
+		notifications.unshift(notification);
+		renderNotifications();
+	}
+
+	/* Render notifications */
+	function renderNotifications() {
+		const box = document.getElementById("notificationList");
+		box.innerHTML = "";
+
+		if (notifications.length === 0) {
+			box.innerHTML =
+				"<p class='text-muted'>No notifications</p>";
+			return;
+		}
+
+		notifications.forEach((n) => {
+			const item = document.createElement("div");
+			item.className = `notification-card ${
+				n.read ? "" : "unread"
+			}`;
+
+			let badgeClass = "secondary";
+			if (n.status === "approved") badgeClass = "success";
+			else if (n.status === "pending")
+				badgeClass = "warning text-dark";
+			else if (n.status === "cancelled") badgeClass = "danger";
+
+			item.innerHTML = `
+				<div class="d-flex justify-content-between align-items-start">
+					<div>
+						<strong>${n.eventName}</strong>
+						<p class="mb-1">${n.message}</p>
+						<small class="text-muted">
+							${new Date(n.time).toLocaleString()}
+						</small>
+					</div>
+					<span class="badge bg-${badgeClass}">
+						${n.status.toUpperCase()}
+					</span>
+				</div>
+			`;
+
+			item.onclick = () => markAsRead(n.id);
+			box.appendChild(item);
+		});
+	}
+
+	/* Mark as read */
+	function markAsRead(id) {
+		const note = notifications.find((n) => n.id === id);
+		if (note) {
+			note.read = true;
+			renderNotifications();
+		}
+	}
+
+	renderNotifications();
+</script>
+
+</body>
+</html>

@@ -169,11 +169,8 @@
 						class="text-white-95 p-2 rounded"
 						>📋 My Registrations</a
 					>
-					<a
-						href="user-profile.html"
-						class="text-white-95 p-2 rounded"
-						>👤 Profile</a
-					>
+					<a href="user-notification.html" class="text-white-95 p-2 rounded active">🔔 Notifications</a>
+				    <a href="user-profile.html" class="text-white-95 p-2 rounded">👤 Profile</a>
 				</nav>
 				<div style="margin-top: auto">
 					<div class="small text-white-75">
@@ -187,7 +184,7 @@
 					class="d-flex justify-content-between align-items-center mb-3"
 				>
 					<div>
-						<h4 class="mb-0">Welcome — Student</h4>
+						<h4 class="mb-0">Welcome, Student 👋</h4>
 						<div class="muted">
 							Browse events, request participation and track your
 							registrations.
@@ -282,7 +279,7 @@
 									<th>Date</th>
 									<th>Venue</th>
 									<th>Type</th>
-									<th class="text-end">Action</th>
+									<th class="text-end">Explore</th>
 								</tr>
 							</thead>
 							<tbody id="eventsPreview"></tbody>
@@ -392,12 +389,18 @@
       <td><span class="badge ${
 			e.requiresApproval ? "bg-warning text-dark" : "bg-success"
 		}">${e.requiresApproval ? "Requires approval" : "Auto"}</span></td>
-      <td class="text-end"><button class="btn btn-sm btn-outline me-1" onclick="openEventDetails('${
-			e.id
-		}')">Details</button>
-        <button class="btn btn-sm btn-primary" onclick="openRegisterModal('${
-			e.id
-		}')">Register</button></td>
+      <td class="text-end">
+	<button class="btn btn-sm btn-outline me-1"
+		onclick="openEventDetails('${e.id}')">
+		Details
+	</button>
+
+	<button class="btn btn-sm btn-primary"
+		onclick="location.href='user-events.html'">
+		Browse
+	</button>
+</td>
+
     `;
 					tbody.appendChild(tr);
 				});
