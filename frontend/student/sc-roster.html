@@ -1,318 +1,400 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Event Ease — SC Rosters</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — SC Rosters</title>
 
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="../style.css" />
-		<style>
-			body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
-			}
-			.app-main {
-				flex: 1;
-				padding: 32px;
-			}
-			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
-				.app-main {
-					padding: 24px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<header class="topbar">
-			<a
-				class="d-flex align-items-center text-decoration-none"
-				href="sc-home.html"
-			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
-			</a>
-			<div class="d-flex align-items-center gap-3">
-				<input
-					id="rosterSearch"
-					class="form-control form-control-sm d-none d-md-block"
-					placeholder="Search participants..."
-				/>
-				<div class="dropdown">
-					<button
-						class="btn d-flex align-items-center gap-2"
-						data-bs-toggle="dropdown"
-					>
-						<div
-							class="rounded-circle bg-primary text-white"
-							style="
-								width: 36px;
-								height: 36px;
-								display: grid;
-								place-items: center;
-							"
-						>
-							SC
-						</div>
-					</button>
-				</div>
-			</div>
-		</header>
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
+      <div class="logo-mark">EE</div>
+      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+        Event Ease
+      </div>
+    </a>
 
-		<div class="app-shell">
-			<aside class="app-sidebar d-none d-lg-flex">
-				<nav class="sidebar-nav">
-					<a href="sc-home.html"
-						>🏠 Home</a
-					>
-					<a href="sc-events.html"
-						>📅 Events</a
-					>
-					<a
-						href="sc-roster.html"
-						class="active"
-						>📋 Rosters</a
-					>
-				</nav>
-			</aside>
+    <div class="d-flex align-items-center gap-3">
+      <input
+        id="rosterSearch"
+        class="form-control form-control-sm d-none d-md-block"
+        style="min-width: 260px"
+        placeholder="Search participants by name or ID"
+      />
 
-			<main class="app-main">
-				<div class="card-compact mb-3">
-					<div
-						class="d-flex justify-content-between align-items-center mb-2"
-					>
-						<div>
-							<strong>Rosters</strong>
-							<div class="muted">
-								Manage participants and attendance for your
-								assigned events
-							</div>
-						</div>
-						<div>
-							<select
-								id="selectEvent"
-								class="form-select form-select-sm"
-							></select>
-						</div>
-					</div>
+      <!-- User dropdown (no bell) -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            SC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Student Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
 
-					<div id="rosterTable" class="mt-2"></div>
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="sc-dashboard.html">🏠 Dashboard</a>
+        <a href="sc-events.html">📅 My Events</a>
+        <a href="sc-teams.html">👥 Manage Teams</a>
+        <a href="sc-participants.html">📋 Participants</a>
+        <a href="sc-notifications.html">
+          🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="scNotifCountBadge">3</span>
+        </a>
+      </nav>
+    </aside>
 
-					<div class="mt-3 text-end">
-						<button
-							id="rosterAddBtn"
-							class="btn btn-outline btn-sm"
-						>
-							Request Add (teacher approval required)
-						</button>
-					</div>
-				</div>
-			</main>
-		</div>
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Rosters</h4>
+          <div class="muted">
+            View participants and mark attendance for your assigned events.
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" id="btnBack" class="btn btn-outline btn-sm">
+            ← Back
+          </button>
+        </div>
+      </div>
 
-		<!-- Confirm remove -->
-		<div class="modal fade" id="confirmRemoveModal" tabindex="-1">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Confirm</h5>
-						<button
-							class="btn-close"
-							data-bs-dismiss="modal"
-						></button>
-					</div>
-					<div class="modal-body" id="confirmRemoveBody"></div>
-					<div class="modal-footer">
-						<button class="btn btn-outline" data-bs-dismiss="modal">
-							Cancel</button
-						><button class="btn btn-danger" id="confirmRemoveYes">
-							Remove
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-		<script>
-			// same demo data as earlier files (keeps it self-contained)
-			const SC_ID = "SC01";
-			const events = [
-				{
-					id: "E101",
-					name: "Hackathon — Team Coordination",
-					scAssigned: SC_ID,
-					participants: ["S101", "S102", "S103", "S104"],
-					requiresApproval: true,
-					attendance: {},
-				},
-				{
-					id: "E102",
-					name: "Design Sprint",
-					scAssigned: SC_ID,
-					participants: ["S106", "S107"],
-					requiresApproval: false,
-					attendance: {},
-				},
-			];
-			const participantsDir = {
-				S101: {
-					id: "S101",
-					name: "Asha Kumar",
-					email: "asha@college.edu",
-				},
-				S102: {
-					id: "S102",
-					name: "Rahul Mehta",
-					email: "rahul@college.edu",
-				},
-				S103: {
-					id: "S103",
-					name: "Priya Singh",
-					email: "priya@college.edu",
-				},
-				S104: {
-					id: "S104",
-					name: "Dev Sharma",
-					email: "dev@college.edu",
-				},
-				S106: {
-					id: "S106",
-					name: "Arjun Varma",
-					email: "arjun@college.edu",
-				},
-				S107: {
-					id: "S107",
-					name: "Nisha Patel",
-					email: "nisha@college.edu",
-				},
-			};
-
-			const selectEvent = document.getElementById("selectEvent");
-			const rosterTable = document.getElementById("rosterTable");
-			let currentEventId = null;
-			let pendingRemove = null;
-
-			function init() {
-				selectEvent.innerHTML = "";
-				events.forEach((e) => {
-					const opt = document.createElement("option");
-					opt.value = e.id;
-					opt.textContent = `${e.name} (${e.id})`;
-					selectEvent.appendChild(opt);
-				});
-				if (events.length) {
-					currentEventId = events[0].id;
-					renderRoster();
-				}
-			}
-
-			function renderRoster() {
-				const ev = events.find((x) => x.id === currentEventId);
-				rosterTable.innerHTML = "";
-				if (!ev)
-					return (rosterTable.innerHTML =
-						'<div class="muted">No event selected</div>');
-				const container = document.createElement("div");
-				container.innerHTML = `<div class="mb-2 muted small">Event: ${
-					ev.name
-				} • ${ev.participants.length} participants • ${
-					ev.requiresApproval
-						? "Teacher approval required for adds"
-						: "Adds auto-accepted"
-				}</div>`;
-				ev.participants.forEach((pid) => {
-					const p = participantsDir[pid] || { id: pid, name: pid };
-					const row = document.createElement("div");
-					row.className =
-						"d-flex justify-content-between align-items-center mb-2";
-					row.innerHTML = `<div><div style="font-weight:600">${p.name}</div><div class="muted small">${p.id}</div></div>
+      <div class="card-compact mb-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
           <div>
-            <button class="btn btn-sm btn-outline me-1" onclick="alert('View participant (demo)')">View</button>
-            <button class="btn btn-sm btn-outline me-1" onclick="triggerMark('${ev.id}','${pid}')">Toggle Present</button>
-            <button class="btn btn-sm btn-danger" onclick="promptRemove('${ev.id}','${pid}')">Remove</button>
-          </div>`;
-					container.appendChild(row);
-				});
-				rosterTable.appendChild(container);
-			}
+            <strong>Event roster</strong>
+            <div class="muted small" id="rosterSummary">Select an event to view its roster.</div>
+          </div>
+          <div class="d-flex gap-2">
+            <select id="selectEvent" class="form-select form-select-sm"></select>
+          </div>
+        </div>
 
-			function triggerMark(eventId, pid) {
-				const ev = events.find((e) => e.id === eventId);
-				ev.attendance = ev.attendance || {};
-				ev.attendance[pid] = !ev.attendance[pid];
-				alert(
-					`${pid} marked as ${
-						ev.attendance[pid] ? "Present" : "Absent"
-					} (local demo)`
-				);
-				renderRoster();
-			}
+        <div class="table-wrapper">
+          <table class="table table-fixed align-middle">
+            <thead>
+              <tr>
+                <th style="width: 130px;">Student ID</th>
+                <th class="table-col--name">Name</th>
+                <th style="width: 180px;">Email</th>
+                <th style="width: 120px;">Attendance</th>
+                <th style="width: 230px;" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rosterTbody"></tbody>
+          </table>
+        </div>
 
-			function promptRemove(eventId, pid) {
-				pendingRemove = { eventId, pid };
-				document.getElementById(
-					"confirmRemoveBody"
-				).textContent = `Remove ${pid} from ${eventId}? This will notify teacher.`;
-				document.getElementById("confirmRemoveYes").onclick =
-					confirmRemove;
-				new bootstrap.Modal(
-					document.getElementById("confirmRemoveModal")
-				).show();
-			}
+        <div class="mt-3 text-end d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div class="muted small" id="rosterFooterInfo"></div>
+          <div class="d-flex gap-2">
+            <button id="rosterAddBtn" class="btn btn-outline btn-sm">
+              Request participant add
+            </button>
+            <button id="rosterExportBtn" class="btn btn-outline btn-sm">
+              Export roster
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 
-			function confirmRemove() {
-				if (!pendingRemove) return;
-				const { eventId, pid } = pendingRemove;
-				const ev = events.find((e) => e.id === eventId);
-				ev.participants = ev.participants.filter((x) => x !== pid);
-				if (ev.attendance && ev.attendance[pid])
-					delete ev.attendance[pid];
-				alert("Teacher notified (demo) — participant removed");
-				pendingRemove = null;
-				new bootstrap.Modal(
-					document.getElementById("confirmRemoveModal")
-				).hide();
-				renderRoster();
-			}
+  <!-- Confirm remove -->
+  <div class="modal fade" id="confirmRemoveModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Remove participant</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="confirmRemoveBody"></div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-danger" id="confirmRemoveYes">Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-			selectEvent.addEventListener("change", (e) => {
-				currentEventId = e.target.value;
-				renderRoster();
-			});
-			document
-				.getElementById("rosterAddBtn")
-				.addEventListener("click", () => {
-					alert(
-						"Open add request UI (demo) — request will be sent to teacher"
-					);
-				});
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const SC_ID = "SC01";
 
-			init();
-		</script>
-	</body>
+    const events = [
+      {
+        id: "E101",
+        name: "Hackathon — Team Coordination",
+        scAssigned: SC_ID,
+        participants: ["S101", "S102", "S103", "S104"],
+        requiresApproval: true,
+        attendance: {}
+      },
+      {
+        id: "E102",
+        name: "Design Sprint",
+        scAssigned: SC_ID,
+        participants: ["S106", "S107"],
+        requiresApproval: false,
+        attendance: {}
+      }
+    ];
+
+    const participantsDir = {
+      S101: { id: "S101", name: "Asha Kumar",  email: "asha@college.edu"  },
+      S102: { id: "S102", name: "Rahul Mehta", email: "rahul@college.edu" },
+      S103: { id: "S103", name: "Priya Singh", email: "priya@college.edu" },
+      S104: { id: "S104", name: "Dev Sharma",  email: "dev@college.edu"   },
+      S106: { id: "S106", name: "Arjun Varma", email: "arjun@college.edu" },
+      S107: { id: "S107", name: "Nisha Patel", email: "nisha@college.edu" }
+    };
+
+    document.getElementById("scLogoutTop")?.addEventListener("click", () => {
+      if (confirm("Logout from Student Coordinator account?")) {
+        alert("Logged out.");
+      }
+    });
+
+    const notifBadge = document.getElementById("scNotifCountBadge");
+    if (notifBadge) notifBadge.textContent = "3";
+
+    const selectEvent = document.getElementById("selectEvent");
+    const rosterTbody = document.getElementById("rosterTbody");
+    const rosterSummary = document.getElementById("rosterSummary");
+    const rosterFooterInfo = document.getElementById("rosterFooterInfo");
+    const rosterSearch = document.getElementById("rosterSearch");
+    const rosterAddBtn = document.getElementById("rosterAddBtn");
+    const rosterExportBtn = document.getElementById("rosterExportBtn");
+    const btnBack = document.getElementById("btnBack");
+
+    let currentEventId = null;
+    let pendingRemove = null;
+
+    const urlParams = new URLSearchParams(window.location.search); // [web:736]
+    const preEventId = urlParams.get("event"); // [web:736]
+
+    function initEvents() {
+      selectEvent.innerHTML = "";
+      events.forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e.id;
+        opt.textContent = `${e.name} (${e.id})`;
+        selectEvent.appendChild(opt);
+      });
+      if (events.length) {
+        if (preEventId && events.some(e => e.id === preEventId)) {
+          currentEventId = preEventId;
+          selectEvent.value = preEventId;
+        } else {
+          currentEventId = events[0].id;
+          selectEvent.value = events[0].id;
+        }
+      }
+      renderRoster();
+    }
+
+    function getFilteredParticipants(ev) {
+      const q = (rosterSearch.value || "").toLowerCase();
+      return ev.participants.filter(pid => {
+        const p = participantsDir[pid] || { id: pid, name: pid, email: "" };
+        const text = (p.id + " " + p.name + " " + p.email).toLowerCase();
+        return !q || text.includes(q);
+      });
+    }
+
+    function renderRoster() {
+      rosterTbody.innerHTML = "";
+      const ev = events.find(x => x.id === currentEventId);
+
+      if (!ev) {
+        rosterSummary.textContent = "No event selected.";
+        rosterFooterInfo.textContent = "";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" class="text-center muted">Select an event to view its roster.</td>`;
+        rosterTbody.appendChild(tr);
+        return;
+      }
+
+      const filtered = getFilteredParticipants(ev);
+      const total = ev.participants.length;
+      const presentCount = Object.values(ev.attendance || {}).filter(v => v === true).length;
+
+      rosterSummary.textContent =
+        `${ev.name} — ${total} participant(s), ${presentCount} marked present.`;
+      rosterFooterInfo.textContent =
+        ev.requiresApproval
+          ? "New participant requests will be sent to the Teacher Coordinator for approval."
+          : "New participants can be added directly for this event.";
+
+      if (!filtered.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" class="text-center muted">No participants match your search.</td>`;
+        rosterTbody.appendChild(tr);
+        return;
+      }
+
+      filtered.forEach(pid => {
+        const p = participantsDir[pid] || { id: pid, name: pid, email: "" };
+        const present = !!(ev.attendance && ev.attendance[pid]);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td class="table-col--name">
+            <div style="font-weight:600">${p.name}</div>
+          </td>
+          <td>${p.email || "-"}</td>
+          <td>
+            <span class="badge ${present ? "bg-success" : "bg-secondary"}">
+              ${present ? "Present" : "Absent"}
+            </span>
+          </td>
+          <td style="width: 230px;" class="text-end">
+            <div class="d-flex justify-content-end gap-1">
+              <button class="btn btn-outline btn-sm" onclick="viewParticipant('${p.id}')">View</button>
+              <button class="btn btn-outline btn-sm" onclick="toggleAttendance('${ev.id}','${p.id}')">
+                Mark ${present ? "absent" : "present"}
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="promptRemove('${ev.id}','${p.id}')">
+                Remove
+              </button>
+            </div>
+          </td>
+        `;
+        rosterTbody.appendChild(tr);
+      });
+    }
+
+    function viewParticipant(pid) {
+      const ev = events.find(e => e.id === currentEventId);
+      if (!ev) {
+        alert("Select an event first.");
+        return;
+      }
+      window.location.href = `participant-detail.html?id=${pid}&event=${ev.id}`;
+    }
+
+    function toggleAttendance(eventId, pid) {
+      const ev = events.find(e => e.id === eventId);
+      if (!ev) return;
+      ev.attendance = ev.attendance || {};
+      ev.attendance[pid] = !ev.attendance[pid];
+      renderRoster();
+    }
+
+    function promptRemove(eventId, pid) {
+      pendingRemove = { eventId, pid };
+      const ev = events.find(e => e.id === eventId);
+      const p = participantsDir[pid] || { id: pid };
+      document.getElementById("confirmRemoveBody").textContent =
+        `Remove ${p.id} from ${ev ? ev.name : eventId}? This will notify the Teacher Coordinator.`;
+      document.getElementById("confirmRemoveYes").onclick = confirmRemove;
+      new bootstrap.Modal(document.getElementById("confirmRemoveModal")).show();
+    }
+
+    function confirmRemove() {
+      if (!pendingRemove) return;
+      const { eventId, pid } = pendingRemove;
+      const ev = events.find(e => e.id === eventId);
+      if (!ev) return;
+
+      ev.participants = ev.participants.filter(x => x !== pid);
+      if (ev.attendance && Object.prototype.hasOwnProperty.call(ev.attendance, pid)) {
+        delete ev.attendance[pid];
+      }
+
+      pendingRemove = null;
+      const modal = bootstrap.Modal.getInstance(document.getElementById("confirmRemoveModal"));
+      modal.hide();
+      renderRoster();
+      alert("Teacher Coordinator will be notified about this removal.");
+    }
+
+    selectEvent.addEventListener("change", e => {
+      currentEventId = e.target.value;
+      renderRoster();
+    });
+
+    rosterSearch.addEventListener("input", renderRoster);
+
+    rosterAddBtn.addEventListener("click", () => {
+      const ev = events.find(e => e.id === currentEventId);
+      if (!ev) {
+        alert("Select an event first.");
+        return;
+      }
+      window.location.href = `sc-roster-add-request.html?event=${ev.id}`;
+    });
+
+    rosterExportBtn.addEventListener("click", () => {
+      const ev = events.find(e => e.id === currentEventId);
+      if (!ev) {
+        alert("Select an event first.");
+        return;
+      }
+      window.location.href = `sc-roster-export.html?event=${ev.id}`;
+    });
+
+    // Back from roster: handle both direct and child-page cases
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        const ref = document.referrer || "";
+        const cameFromChild =
+          ref.includes("sc-roster-export.html") ||
+          ref.includes("sc-roster-add-request.html");
+
+        if (cameFromChild) {
+          // Skip export/add and go straight back to My Events
+          window.history.go(-2); // [web:756][web:764]
+        } else if (document.referrer) {
+          window.history.back(); // [web:730][web:756]
+        } else {
+          window.location.href = "sc-dashboard.html";
+        }
+      });
+    }
+
+    initEvents();
+
+    window.viewParticipant = viewParticipant;
+    window.toggleAttendance = toggleAttendance;
+    window.promptRemove = promptRemove;
+  </script>
+</body>
 </html>

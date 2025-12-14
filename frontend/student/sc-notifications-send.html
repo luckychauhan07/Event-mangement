@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — Send Notifications (Student Coordinator)</title>
+
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
+      <div class="logo-mark">EE</div>
+      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+        Event Ease
+      </div>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <input
+        id="scNotifSearch"
+        class="form-control form-control-sm d-none d-md-block"
+        style="min-width: 260px"
+        placeholder="Search events or teams"
+      />
+
+      <!-- User dropdown (no bell) -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            SC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Student Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="sc-dashboard.html">🏠 Dashboard</a>
+        <a href="sc-events.html">📅 My Events</a>
+        <a href="sc-teams.html">👥 Manage Teams</a>
+        <a href="sc-participants.html">📋 Participants</a>
+        <a href="sc-notifications.html">
+          🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="scNotifCountBadge">3</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Send Notification</h4>
+          <div class="muted" id="nsContext">
+            Send updates to event participants by status or team.
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" id="btnBack" class="btn btn-outline btn-sm">
+            ← Back
+          </button>
+        </div>
+      </div>
+
+      <div class="card-compact">
+        <form id="scSendNotifForm" class="needs-validation" novalidate>
+          <div class="row g-3">
+            <!-- Event -->
+            <div class="col-12 col-md-6">
+              <label for="notifEvent" class="form-label">Event</label>
+              <select id="notifEvent" class="form-select" required></select>
+              <div class="invalid-feedback">Select an event.</div>
+            </div>
+
+            <!-- Recipient type -->
+            <div class="col-12 col-md-6">
+              <label for="notifRecipientType" class="form-label">Recipients</label>
+              <select id="notifRecipientType" class="form-select" required>
+                <option value="all">All participants</option>
+                <option value="status">By status (confirmed / waitlist / pending)</option>
+                <option value="teams">Specific teams</option>
+                <option value="single">Single participant</option>
+              </select>
+            </div>
+
+            <!-- Status segmentation -->
+            <div class="col-12 col-md-6" id="statusFilterGroup" style="display: none;">
+              <label class="form-label">Status filter</label>
+              <div class="d-flex flex-wrap gap-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="statusConfirmed" checked />
+                  <label class="form-check-label" for="statusConfirmed">Confirmed</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="statusWaitlist" />
+                  <label class="form-check-label" for="statusWaitlist">Waitlist</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="statusPending" />
+                  <label class="form-check-label" for="statusPending">Pending</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Team selection -->
+            <div class="col-12 col-md-6" id="teamsFilterGroup" style="display: none;">
+              <label class="form-label">Teams</label>
+              <div class="form-text mb-1">Select one or more teams.</div>
+              <div class="border rounded p-2" style="max-height: 140px; overflow-y: auto;">
+                <div class="form-check">
+                  <input class="form-check-input notifTeamChk" type="checkbox" id="teamCodeWarriors" value="T001" />
+                  <label class="form-check-label" for="teamCodeWarriors">Code Warriors (Hackathon)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input notifTeamChk" type="checkbox" id="teamBugSmashers" value="T002" />
+                  <label class="form-check-label" for="teamBugSmashers">Bug Smashers (Hackathon)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input notifTeamChk" type="checkbox" id="teamDesignNinjas" value="T003" />
+                  <label class="form-check-label" for="teamDesignNinjas">Design Ninjas (Design Sprint)</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Single participant info (read-only summary) -->
+            <div class="col-12" id="singleParticipantGroup" style="display: none;">
+              <label class="form-label">Target participant</label>
+              <div id="nsSingleSummary" class="small border rounded px-2 py-1 bg-light">
+                No participant selected.
+              </div>
+            </div>
+
+            <!-- Subject -->
+            <div class="col-12">
+              <label for="notifSubject" class="form-label">Subject</label>
+              <input
+                id="notifSubject"
+                class="form-control"
+                required
+                placeholder="e.g., Hackathon reporting time and instructions"
+              />
+              <div class="invalid-feedback">Enter a subject.</div>
+            </div>
+
+            <!-- Message -->
+            <div class="col-12">
+              <label for="notifMessage" class="form-label">Message</label>
+              <textarea
+                id="notifMessage"
+                class="form-control"
+                rows="5"
+                required
+                placeholder="Write clear instructions, timing, venue details, or updates..."
+              ></textarea>
+              <div class="invalid-feedback">Enter the message content.</div>
+              <div class="form-text">
+                This will be sent as an in-app notification (and email/SMS in the final system, if configured).
+              </div>
+            </div>
+
+            <!-- Priority -->
+            <div class="col-12 col-md-4">
+              <label for="notifPriority" class="form-label">Priority</label>
+              <select id="notifPriority" class="form-select">
+                <option value="Normal">Normal</option>
+                <option value="High">High</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
+            <!-- Preview -->
+            <div class="col-12 col-md-8 d-flex align-items-end justify-content-end">
+              <div class="text-end w-100">
+                <div class="muted small mb-1" id="audiencePreview">
+                  Audience: 0 recipients (approx.).
+                </div>
+                <button type="button" class="btn btn-outline btn-sm me-2" id="btnPreviewAudience">
+                  Preview audience
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <span class="bi bi-send me-1"></span>Send notification
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const SC_ID = "SC01";
+
+    const SC_EVENTS = [
+      {
+        id: "E101",
+        name: "Hackathon — Team Coordination",
+        date: "2025-12-05T10:00",
+        venue: "Auditorium A",
+        total: 45,
+        confirmed: 35,
+        waitlist: 5,
+        pending: 5
+      },
+      {
+        id: "E102",
+        name: "Design Sprint",
+        date: "2025-12-12T09:00",
+        venue: "Lab 101",
+        total: 20,
+        confirmed: 15,
+        waitlist: 2,
+        pending: 3
+      }
+    ];
+
+    document.getElementById("scLogoutTop").addEventListener("click", () => {
+      if (confirm("Logout from Student Coordinator account?")) {
+        alert("Logged out.");
+      }
+    });
+
+    const notifBadge = document.getElementById("scNotifCountBadge");
+    if (notifBadge) notifBadge.textContent = "3";
+
+    // URL params for prefill
+    const urlParams = new URLSearchParams(window.location.search);
+    const preParticipantId = urlParams.get("participantId");
+    const preEventId = urlParams.get("eventId");
+    const preParticipantName = urlParams.get("participantName");
+
+    const form = document.getElementById("scSendNotifForm");
+    const eventSelect = document.getElementById("notifEvent");
+    const recipientTypeSelect = document.getElementById("notifRecipientType");
+    const statusGroup = document.getElementById("statusFilterGroup");
+    const teamsGroup = document.getElementById("teamsFilterGroup");
+    const singleParticipantGroup = document.getElementById("singleParticipantGroup");
+    const singleSummaryEl = document.getElementById("nsSingleSummary");
+    const statusConfirmed = document.getElementById("statusConfirmed");
+    const statusWaitlist = document.getElementById("statusWaitlist");
+    const statusPending = document.getElementById("statusPending");
+    const audiencePreview = document.getElementById("audiencePreview");
+    const btnPreviewAudience = document.getElementById("btnPreviewAudience");
+    const subjectEl = document.getElementById("notifSubject");
+    const messageEl = document.getElementById("notifMessage");
+    const nsContextEl = document.getElementById("nsContext");
+    const btnBack = document.getElementById("btnBack");
+
+    function initEventOptions() {
+      eventSelect.innerHTML = "";
+      SC_EVENTS.forEach(ev => {
+        const opt = document.createElement("option");
+        opt.value = ev.id;
+        opt.textContent = `${ev.name} (${new Date(ev.date).toLocaleDateString()})`;
+        eventSelect.appendChild(opt);
+      });
+      if (!SC_EVENTS.length) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No assigned events";
+        eventSelect.appendChild(opt);
+      }
+    }
+
+    function onRecipientTypeChange() {
+      const type = recipientTypeSelect.value;
+      statusGroup.style.display = type === "status" ? "" : "none";
+      teamsGroup.style.display = type === "teams" ? "" : "none";
+      singleParticipantGroup.style.display = type === "single" ? "" : "none";
+      updateAudiencePreview();
+    }
+
+    function estimateAudience() {
+      const eventId = eventSelect.value;
+      const ev = SC_EVENTS.find(e => e.id === eventId);
+      if (!ev) return 0;
+
+      const type = recipientTypeSelect.value;
+      if (type === "all") {
+        return ev.total;
+      }
+      if (type === "status") {
+        let sum = 0;
+        if (statusConfirmed.checked) sum += ev.confirmed;
+        if (statusWaitlist.checked) sum += ev.waitlist;
+        if (statusPending.checked) sum += ev.pending;
+        return sum;
+      }
+      if (type === "teams") {
+        const checkedTeams = document.querySelectorAll(".notifTeamChk:checked");
+        return checkedTeams.length * 5; // rough estimate per team
+      }
+      if (type === "single") {
+        return preParticipantId ? 1 : 0;
+      }
+      return 0;
+    }
+
+    function updateAudiencePreview() {
+      const count = estimateAudience();
+      const ev = SC_EVENTS.find(e => e.id === eventSelect.value);
+      if (!ev) {
+        audiencePreview.textContent = "Audience: 0 recipients (approx.).";
+        return;
+      }
+      audiencePreview.textContent =
+        `Audience: approx. ${count} recipient(s) for ${ev.name}.`;
+    }
+
+    btnPreviewAudience.addEventListener("click", () => {
+      const count = estimateAudience();
+      const ev = SC_EVENTS.find(e => e.id === eventSelect.value);
+      alert(
+        `Event: ${ev ? ev.name : "N/A"}\n` +
+        `Recipients (approx.): ${count}\n` +
+        `Recipient type: ${recipientTypeSelect.value}`
+      );
+    });
+
+    eventSelect.addEventListener("change", updateAudiencePreview);
+    recipientTypeSelect.addEventListener("change", onRecipientTypeChange);
+    statusConfirmed.addEventListener("change", updateAudiencePreview);
+    statusWaitlist.addEventListener("change", updateAudiencePreview);
+    statusPending.addEventListener("change", updateAudiencePreview);
+    document.querySelectorAll(".notifTeamChk").forEach(chk => {
+      chk.addEventListener("change", updateAudiencePreview);
+    });
+
+    function applyPrefillFromUrl() {
+      if (preEventId) {
+        const evExists = SC_EVENTS.some(e => e.id === preEventId);
+        if (evExists) {
+          eventSelect.value = preEventId;
+        }
+      }
+
+      if (preParticipantId) {
+        recipientTypeSelect.value = "single";
+        singleParticipantGroup.style.display = "";
+        const name = preParticipantName || preParticipantId;
+        singleSummaryEl.textContent = `To: ${name} (${preParticipantId})`;
+        nsContextEl.textContent = "Sending notification to a single participant (prefilled from Participant Details page).";
+        if (preEventId) {
+          subjectEl.value = `Update regarding event ${preEventId}`;
+        }
+        messageEl.focus();
+      }
+
+      onRecipientTypeChange();
+      updateAudiencePreview();
+    }
+
+    form.addEventListener("submit", evt => {
+      evt.preventDefault();
+      evt.stopPropagation();
+
+      if (!form.checkValidity()) {
+        form.classList.add("was-validated");
+        return;
+      }
+
+      const eventId = eventSelect.value;
+      const ev = SC_EVENTS.find(e => e.id === eventId);
+      const type = recipientTypeSelect.value;
+      const subject = subjectEl.value.trim();
+      const message = messageEl.value.trim();
+      const priority = document.getElementById("notifPriority").value;
+      const count = estimateAudience();
+
+      let targetInfo = "";
+      if (type === "single" && preParticipantId) {
+        targetInfo = `\nTarget participant: ${preParticipantName || preParticipantId} (${preParticipantId})`;
+      }
+
+      alert(
+        "Notification prepared with the following details:\n\n" +
+        `Event: ${ev ? ev.name : "N/A"}\n` +
+        `Recipient type: ${type}\n` +
+        `Estimated recipients: ${count}${targetInfo}\n` +
+        `Priority: ${priority}\n\n` +
+        `Subject: ${subject}\n` +
+        `Message:\n${message}`
+      );
+
+      form.reset();
+      recipientTypeSelect.value = preParticipantId ? "single" : "all";
+      onRecipientTypeChange();
+      applyPrefillFromUrl();
+    });
+
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        if (document.referrer) {
+          window.history.back(); // go to previous page if exists[web:733][web:730]
+        } else {
+          window.location.href = "sc-dashboard.html";
+        }
+      });
+    }
+
+    initEventOptions();
+    onRecipientTypeChange();
+    updateAudiencePreview();
+    applyPrefillFromUrl();
+  </script>
+</body>
+</html>

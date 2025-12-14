@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — Request Participant Add</title>
+
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
+      <div class="logo-mark">EE</div>
+      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+        Event Ease
+      </div>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <input
+        class="form-control form-control-sm d-none d-md-block"
+        style="min-width: 260px"
+        placeholder="Search"
+      />
+
+      <!-- Notification bell -->
+      <div class="dropdown">
+        <button
+          class="btn btn-icon btn-ghost position-relative"
+          id="scNotifBell"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          title="Notifications"
+        >
+          <span class="bi bi-bell"></span>
+          <span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 10px;"
+          >3</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-notifications-send.html">Send notifications</a></li>
+          <li><a class="dropdown-item" href="sc-notifications.html">View notifications</a></li>
+        </ul>
+      </div>
+
+      <!-- User dropdown -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            SC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Student Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-dashboard.html">Dashboard</a></li>
+          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="sc-dashboard.html">🏠 Dashboard</a>
+        <a href="sc-events.html">📅 My Events</a>
+        <a href="sc-teams.html">👥 Manage Teams</a>
+        <a href="sc-participants.html">📋 Participants</a>
+        <a href="sc-notifications.html">🔔 Notifications</a>
+        <a href="sc-profile.html">👤 Profile</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Request participant add</h4>
+          <div class="muted">
+            Send a request to the Teacher Coordinator to add a participant to an event.
+          </div>
+        </div>
+        <div>
+          <button id="btnBackRoster" class="btn btn-outline btn-sm" type="button">
+            Back to rosters
+          </button>
+        </div>
+      </div>
+
+      <div class="card-compact">
+        <form id="addRequestForm" class="row g-3 needs-validation" novalidate>
+          <!-- Event -->
+          <div class="col-12 col-md-6">
+            <label for="reqEvent" class="form-label">Event</label>
+            <select id="reqEvent" class="form-select" required></select>
+            <div class="invalid-feedback">Select an event.</div>
+          </div>
+
+          <!-- Student ID -->
+          <div class="col-12 col-md-6">
+            <label for="reqStudentId" class="form-label">Student ID</label>
+            <input
+              id="reqStudentId"
+              class="form-control"
+              required
+              placeholder="e.g., S123"
+            />
+            <div class="invalid-feedback">Enter the student ID to add.</div>
+          </div>
+
+          <!-- Optional fields: name/email (in case SC knows them) -->
+          <div class="col-12 col-md-6">
+            <label for="reqStudentName" class="form-label">Student name (optional)</label>
+            <input
+              id="reqStudentName"
+              class="form-control"
+              placeholder="Name as per college records"
+            />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="reqStudentEmail" class="form-label">Student email (optional)</label>
+            <input
+              id="reqStudentEmail"
+              type="email"
+              class="form-control"
+              placeholder="college email if known"
+            />
+          </div>
+
+          <!-- Reason / note -->
+          <div class="col-12">
+            <label for="reqReason" class="form-label">Reason / note to Teacher Coordinator</label>
+            <textarea
+              id="reqReason"
+              class="form-control"
+              rows="4"
+              required
+              placeholder="Explain why this student should be added (e.g., registered offline, section change, special permission, etc.)"
+            ></textarea>
+            <div class="invalid-feedback">Provide a brief reason for this request.</div>
+          </div>
+
+          <!-- Additional details -->
+          <div class="col-12 col-md-6">
+            <label for="reqTeamInfo" class="form-label">Team information (optional)</label>
+            <input
+              id="reqTeamInfo"
+              class="form-control"
+              placeholder="Team name / ID if applicable"
+            />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label for="reqPhone" class="form-label">Contact number (optional)</label>
+            <input
+              id="reqPhone"
+              class="form-control"
+              placeholder="Student contact number if required"
+            />
+          </div>
+
+          <!-- Footer buttons -->
+          <div class="col-12 d-flex justify-content-between align-items-center mt-2">
+            <div class="muted small">
+              The Teacher Coordinator will review this request and either approve or reject the addition.
+            </div>
+            <div class="d-flex gap-2">
+              <button type="reset" class="btn btn-outline btn-sm">Clear</button>
+              <button type="submit" class="btn btn-primary">
+                Submit request
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const SC_ID = "SC01";
+
+    const SC_EVENTS = [
+      {
+        id: "E101",
+        name: "Hackathon — Team Coordination",
+        date: "2025-12-05T10:00",
+        venue: "Auditorium A",
+        scAssigned: SC_ID
+      },
+      {
+        id: "E102",
+        name: "Design Sprint",
+        date: "2025-12-12T09:00",
+        venue: "Lab 101",
+        scAssigned: SC_ID
+      }
+    ];
+
+    document.getElementById("scLogoutTop")?.addEventListener("click", () => {
+      if (confirm("Logout from Student Coordinator account?")) {
+        alert("Logged out.");
+      }
+    });
+
+    const eventSelect = document.getElementById("reqEvent");
+    const form = document.getElementById("addRequestForm");
+    const btnBackRoster = document.getElementById("btnBackRoster");
+
+    function initEventOptions() {
+      eventSelect.innerHTML = "";
+      SC_EVENTS.forEach(ev => {
+        const opt = document.createElement("option");
+        opt.value = ev.id;
+        opt.textContent = `${ev.name} (${new Date(ev.date).toLocaleDateString()})`;
+        eventSelect.appendChild(opt);
+      });
+      if (!SC_EVENTS.length) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No assigned events";
+        eventSelect.appendChild(opt);
+      }
+
+      const params = new URLSearchParams(window.location.search); // [web:736]
+      const eventFromUrl = params.get("event"); // [web:736]
+      if (eventFromUrl && SC_EVENTS.some(e => e.id === eventFromUrl)) {
+        eventSelect.value = eventFromUrl;
+      }
+    }
+
+    form.addEventListener("submit", evt => {
+      evt.preventDefault();
+      evt.stopPropagation();
+
+      if (!form.checkValidity()) {
+        form.classList.add("was-validated");
+        return;
+      }
+
+      const ev = SC_EVENTS.find(e => e.id === eventSelect.value);
+      const studentId = document.getElementById("reqStudentId").value.trim();
+      const studentName = document.getElementById("reqStudentName").value.trim();
+      const studentEmail = document.getElementById("reqStudentEmail").value.trim();
+      const reason = document.getElementById("reqReason").value.trim();
+      const teamInfo = document.getElementById("reqTeamInfo").value.trim();
+      const phone = document.getElementById("reqPhone").value.trim();
+
+      alert(
+        "Participant add request submitted with the following details:\n\n" +
+        `Event: ${ev ? ev.name : "N/A"}\n` +
+        `Student ID: ${studentId}\n` +
+        (studentName ? `Student name: ${studentName}\n` : "") +
+        (studentEmail ? `Student email: ${studentEmail}\n` : "") +
+        (teamInfo ? `Team info: ${teamInfo}\n` : "") +
+        (phone ? `Contact: ${phone}\n` : "") +
+        `Reason: ${reason}\n\n` +
+        "This request will be visible to the Teacher Coordinator for approval in the final system."
+      );
+
+      form.reset();
+      form.classList.remove("was-validated");
+      initEventOptions();
+    });
+
+    // Back to roster without stacking history
+    btnBackRoster.addEventListener("click", () => {
+      const params = new URLSearchParams(window.location.search); // [web:736]
+      const eventId = params.get("event");
+      const target = eventId
+        ? `sc-roster.html?event=${encodeURIComponent(eventId)}`
+        : "sc-roster.html";
+      window.location.replace(target); // [web:760][web:762][web:765]
+    });
+
+    initEventOptions();
+  </script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — Participants (Student Coordinator)</title>
+
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared project styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
+      <div class="logo-mark">EE</div>
+      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+        Event Ease
+      </div>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <input
+        id="scPartSearch"
+        class="form-control form-control-sm d-none d-md-block"
+        style="min-width: 260px"
+        placeholder="Search participants by name, ID or team"
+      />
+
+      <!-- User dropdown (no bell) -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            SC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Student Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="sc-dashboard.html">🏠 Dashboard</a>
+        <a href="sc-events.html">📅 My Events</a>
+        <a href="sc-teams.html">👥 Manage Teams</a>
+        <a href="sc-participants.html" class="active">📋 Participants</a>
+        <a href="sc-notifications.html">
+          🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="scNotifCountBadge">3</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Participants (Assigned Events)</h4>
+          <div class="muted">
+            View and manage participants for events where you are Student Coordinator.
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" id="btnBack" class="btn btn-outline btn-sm">
+            ← Back
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters / event selector -->
+      <div class="card-compact mb-3">
+        <div class="row g-2">
+          <div class="col-12 col-md-4">
+            <label class="form-label small mb-1">Event</label>
+            <select id="scPartEvent" class="form-select"></select>
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Status</label>
+            <select id="scPartStatus" class="form-select">
+              <option value="all">All</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Waitlist">Waitlist</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Team filter</label>
+            <input id="scPartTeamFilter" class="form-control" placeholder="Team name or ID" />
+          </div>
+          <div class="col-12 col-md-2 d-flex align-items-end">
+            <button id="scPartClear" class="btn btn-outline w-100">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Participants table -->
+      <div class="card-compact">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong>Participants list</strong>
+            <div class="muted small" id="scPartSummary"></div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary btn-sm" id="scPartNotify">Send update</button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="table table-fixed align-middle">
+            <thead>
+              <tr>
+                <th style="width: 130px;">Student ID</th>
+                <th class="table-col--name">Name</th>
+                <th style="width: 130px;">Team</th>
+                <th style="width: 110px;">Status</th>
+                <th style="width: 140px;">Joined on</th>
+                <th style="width: 180px;" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="scPartTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const SC_ID = "SC01";
+    const SC_EVENTS = [
+      {
+        id: "E101",
+        name: "Hackathon — Team Coordination",
+        date: "2025-12-05T10:00",
+        venue: "Auditorium A",
+        scAssigned: SC_ID
+      },
+      {
+        id: "E102",
+        name: "Design Sprint",
+        date: "2025-12-12T09:00",
+        venue: "Lab 101",
+        scAssigned: SC_ID
+      }
+    ];
+
+    const PARTICIPANTS = [
+      {
+        eventId: "E101",
+        studentId: "S101",
+        name: "John Doe",
+        team: "Code Warriors",
+        status: "Confirmed",
+        joinedAt: "2025-11-20T10:15:00"
+      },
+      {
+        eventId: "E101",
+        studentId: "S102",
+        name: "Jane Smith",
+        team: "Code Warriors",
+        status: "Confirmed",
+        joinedAt: "2025-11-20T10:20:00"
+      },
+      {
+        eventId: "E101",
+        studentId: "S103",
+        name: "Bob Wilson",
+        team: "Solo",
+        status: "Waitlist",
+        joinedAt: "2025-11-22T09:00:00"
+      },
+      {
+        eventId: "E102",
+        studentId: "S106",
+        name: "Alice Brown",
+        team: "Design Ninjas",
+        status: "Confirmed",
+        joinedAt: "2025-11-21T14:30:00"
+      },
+      {
+        eventId: "E102",
+        studentId: "S107",
+        name: "Mike Chen",
+        team: "Design Ninjas",
+        status: "Pending",
+        joinedAt: "2025-11-23T16:00:00"
+      }
+    ];
+
+    document.getElementById("scLogoutTop").addEventListener("click", () => {
+      if (confirm("Logout from Student Coordinator account?")) {
+        alert("Logged out.");
+      }
+    });
+
+    // demo notification count
+    const notifBadge = document.getElementById("scNotifCountBadge");
+    if (notifBadge) notifBadge.textContent = "3";
+
+    const params = new URLSearchParams(window.location.search);
+    const preEventId = params.get("event");
+
+    const eventSelect = document.getElementById("scPartEvent");
+    const statusSelect = document.getElementById("scPartStatus");
+    const teamFilterInput = document.getElementById("scPartTeamFilter");
+    const searchInput = document.getElementById("scPartSearch");
+    const clearBtn = document.getElementById("scPartClear");
+    const tbody = document.getElementById("scPartTbody");
+    const summaryLabel = document.getElementById("scPartSummary");
+    const notifyBtn = document.getElementById("scPartNotify");
+    const btnBack = document.getElementById("btnBack");
+
+    function initEventOptions() {
+      eventSelect.innerHTML = "";
+      SC_EVENTS.forEach(ev => {
+        const opt = document.createElement("option");
+        opt.value = ev.id;
+        opt.textContent = `${ev.name} (${new Date(ev.date).toLocaleDateString()})`;
+        eventSelect.appendChild(opt);
+      });
+      if (!SC_EVENTS.length) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No assigned events";
+        eventSelect.appendChild(opt);
+      }
+      if (preEventId && SC_EVENTS.some(e => e.id === preEventId)) {
+        eventSelect.value = preEventId;
+      } else if (SC_EVENTS.length) {
+        eventSelect.value = SC_EVENTS[0].id;
+      }
+    }
+
+    function applyFilters() {
+      const eventId = eventSelect.value;
+      const status = statusSelect.value;
+      const teamQ = teamFilterInput.value.trim().toLowerCase();
+      const searchQ = searchInput.value.trim().toLowerCase();
+
+      let list = PARTICIPANTS.filter(p => p.eventId === eventId);
+
+      if (status !== "all") {
+        list = list.filter(p => p.status === status);
+      }
+      if (teamQ) {
+        list = list.filter(p => p.team.toLowerCase().includes(teamQ));
+      }
+      if (searchQ) {
+        list = list.filter(
+          p =>
+            p.name.toLowerCase().includes(searchQ) ||
+            p.studentId.toLowerCase().includes(searchQ) ||
+            p.team.toLowerCase().includes(searchQ)
+        );
+      }
+
+      renderTable(list);
+      updateSummary(eventId, list);
+    }
+
+    function renderTable(list) {
+      tbody.innerHTML = "";
+
+      if (!list.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" class="text-center muted">No participants match your filters.</td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+
+      list.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.studentId}</td>
+          <td class="table-col--name">
+            <div style="font-weight:600">${p.name}</div>
+          </td>
+          <td>${p.team}</td>
+          <td>
+            <span class="badge ${
+              p.status === "Confirmed"
+                ? "bg-success"
+                : p.status === "Waitlist"
+                ? "bg-warning text-dark"
+                : "bg-secondary"
+            }">${p.status}</span>
+          </td>
+          <td>${new Date(p.joinedAt).toLocaleDateString()}</td>
+          <td style="width: 180px;" class="text-end">
+            <div class="d-flex justify-content-end gap-1">
+              <button class="btn btn-outline btn-sm" onclick="viewParticipant('${p.studentId}','${p.eventId}')">View</button>
+              <button class="btn btn-outline btn-sm" onclick="messageParticipant('${p.studentId}','${p.eventId}')">Message</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateSummary(eventId, list) {
+      const ev = SC_EVENTS.find(e => e.id === eventId);
+      if (!ev) {
+        summaryLabel.textContent = "No event selected.";
+        return;
+      }
+      const total = list.length;
+      const confirmed = list.filter(p => p.status === "Confirmed").length;
+      const waitlist = list.filter(p => p.status === "Waitlist").length;
+      const pending = list.filter(p => p.status === "Pending").length;
+
+      summaryLabel.textContent =
+        `${ev.name} — ${total} participants (${confirmed} confirmed, ` +
+        `${waitlist} waitlist, ${pending} pending).`;
+    }
+
+    function clearFilters() {
+      statusSelect.value = "all";
+      teamFilterInput.value = "";
+      searchInput.value = "";
+      applyFilters();
+    }
+
+    function notifyCurrentParticipants() {
+      const eventId = eventSelect.value;
+      if (!eventId) {
+        alert("Select an event first.");
+        return;
+      }
+      window.location.href = `sc-notifications-send.html?eventId=${encodeURIComponent(eventId)}`;
+    }
+
+    function viewParticipant(pid, eventId) {
+      if (!eventId) {
+        alert("Event not found for this participant.");
+        return;
+      }
+      window.location.href = `participant-detail.html?id=${encodeURIComponent(pid)}&event=${encodeURIComponent(eventId)}`;
+    }
+
+    function messageParticipant(studentId, eventId) {
+      if (!eventId) {
+        alert("Event not found for this participant.");
+        return;
+      }
+      const params = new URLSearchParams();
+      params.set("participantId", studentId);
+      params.set("eventId", eventId);
+      window.location.href = "sc-notifications-send.html?" + params.toString();
+    }
+
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        if (document.referrer) {
+          window.history.back();
+        } else {
+          window.location.href = "sc-dashboard.html";
+        }
+      });
+    }
+
+    eventSelect.addEventListener("change", applyFilters);
+    statusSelect.addEventListener("change", applyFilters);
+    teamFilterInput.addEventListener("input", applyFilters);
+    searchInput.addEventListener("input", applyFilters);
+    clearBtn.addEventListener("click", clearFilters);
+    notifyBtn.addEventListener("click", notifyCurrentParticipants);
+
+    initEventOptions();
+    applyFilters();
+
+    window.viewParticipant = viewParticipant;
+    window.messageParticipant = messageParticipant;
+  </script>
+</body>
+</html>
