@@ -61,7 +61,7 @@
 			</a>
 			<div class="d-flex align-items-center gap-3">
 				<input
-					id="evtSearch"
+					id="searchUserTop"
 					class="form-control form-control-sm d-none d-md-block"
 					placeholder="Search events..."
 					style="min-width: 260px"
@@ -82,12 +82,32 @@
 						>
 							ST
 						</div>
+						<div class="d-none d-md-block text-start">
+							<div style="font-weight: 600">Student</div>
+							<div class="muted">you@college.edu</div>
+						</div>
 					</button>
 					<ul class="dropdown-menu dropdown-menu-end">
 						<li>
-							<a class="dropdown-item" href="user-home.html"
-								>Home</a
+							<a class="dropdown-item" href="user-profile.html"
+								>Profile</a
 							>
+						</li>
+						<li>
+							<a
+								class="dropdown-item"
+								href="user-registrations.html"
+								>My Registrations</a
+							>
+						</li>
+						<li><hr class="dropdown-divider" /></li>
+						<li>
+							<button
+								class="dropdown-item text-danger"
+								onclick="userLogout()"
+							>
+								Logout
+							</button>
 						</li>
 					</ul>
 				</div>
@@ -109,6 +129,8 @@
 						href="user-registrations.html"
 						>📋 My Registrations</a
 					>
+					<a href="user-notification.html" class="text-white-95 p-2 rounded active">🔔 Notifications</a>
+				    <a href="user-profile.html" class="text-white-95 p-2 rounded">👤 Profile</a>
 				</nav>
 			</aside>
 
@@ -163,139 +185,206 @@
 		</div>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-		<script>
-			const EVENTS = [
-				{
-					id: "E101",
-					name: "Inter-College Hackathon",
-					date: "2025-12-05T10:00",
-					venue: "Auditorium A",
-					type: "tech",
-					teamParticipation: true,
-					requiresApproval: true,
-					capacity: 200,
-					participants: 120,
-				},
-				{
-					id: "E102",
-					name: "Food Fest",
-					date: "2025-12-12T16:00",
-					venue: "Hall B",
-					type: "cultural",
-					teamParticipation: false,
-					requiresApproval: false,
-					capacity: 80,
-					participants: 45,
-				},
-				{
-					id: "E103",
-					name: "Design Sprint",
-					date: "2025-12-10T09:00",
-					venue: "Lab 101",
-					type: "tech",
-					teamParticipation: true,
-					requiresApproval: false,
-					capacity: 40,
-					participants: 22,
-				},
-			];
+<script>
+	const EVENTS = [
+		{
+			id: "E101",
+			name: "Inter-College Hackathon",
+			date: "2025-12-05T10:00",
+			venue: "Auditorium A",
+			type: "tech",
+			teamParticipation: true,
+			requiresApproval: true,
+			capacity: 200,
+			participants: 120,
+		},
+		{
+			id: "E102",
+			name: "Food Fest",
+			date: "2025-12-12T16:00",
+			venue: "Hall B",
+			type: "cultural",
+			teamParticipation: false,
+			requiresApproval: false,
+			capacity: 80,
+			participants: 45,
+		},
+		{
+			id: "E103",
+			name: "Design Sprint",
+			date: "2025-12-10T09:00",
+			venue: "Lab 101",
+			type: "tech",
+			teamParticipation: true,
+			requiresApproval: false,
+			capacity: 40,
+			participants: 22,
+		},
+	];
 
-			/* same student registrations store */
-			let registrations = [];
+	/* SAME student registrations store */
+	let registrations = [];
 
-			function render() {
-				const tbody = document.getElementById("eventsTable");
-				tbody.innerHTML = "";
-				const q = (
-					document.getElementById("evtSearch").value || ""
-				).toLowerCase();
-				const tfilter = document.getElementById("typeFilter").value;
-				const afilter = document.getElementById("approvalFilter").value;
-				EVENTS.filter((e) => {
-					if (tfilter !== "all" && e.type !== tfilter) return false;
-					if (afilter === "requires" && !e.requiresApproval)
-						return false;
-					if (afilter === "auto" && e.requiresApproval) return false;
-					if (
-						q &&
-						!(e.name + " " + e.venue + " " + e.id)
-							.toLowerCase()
-							.includes(q)
-					)
-						return false;
-					return true;
-				}).forEach((e) => {
-					const tr = document.createElement("tr");
-					tr.innerHTML = `
-      <td style="font-weight:600">${e.name}<div class="small muted">${
-						e.id
-					}</div></td>
-      <td>${new Date(e.date).toLocaleString()}</td>
-      <td>${e.venue}</td>
-      <td>${e.participants}/${e.capacity}</td>
-      <td><span class="badge ${
-			e.requiresApproval ? "bg-warning text-dark" : "bg-success"
-		}">${e.requiresApproval ? "Requires approval" : "Auto"}</span></td>
-      <td class="text-end">
-        <button class="btn btn-sm btn-outline me-1" onclick="viewDetails('${
-			e.id
-		}')">Details</button>
-        <button class="btn btn-sm btn-primary" onclick="register('${
-			e.id
-		}')">Register</button>
-      </td>`;
-					tbody.appendChild(tr);
-				});
-			}
+	function render() {
+	const tbody = document.getElementById("eventsTable");
+	tbody.innerHTML = "";
 
-			function viewDetails(eventId) {
-				const e = EVENTS.find((x) => x.id === eventId);
-				alert(
-					`${e.name}\n${new Date(e.date).toLocaleString()}\n${
-						e.venue
-					}\nTeams: ${
-						e.teamParticipation ? "Allowed" : "No"
-					}\nApproval: ${e.requiresApproval ? "Required" : "None"}`
-				);
-			}
-			function register(eventId) {
-				const e = EVENTS.find((x) => x.id === eventId);
-				if (!e) return;
-				if (
-					!confirm(
-						e.requiresApproval
-							? "This event requires teacher approval. Submit registration request?"
-							: "Register for this event? (auto-approved)"
-					)
-				)
-					return;
-				const reg = {
-					regId: "R" + Math.floor(Math.random() * 9000 + 1000),
-					eventId,
-					status: e.requiresApproval ? "pending" : "approved",
-					createdAt: new Date().toISOString(),
-				};
-				registrations.push(reg);
-				if (reg.status === "approved") {
-					e.participants = (e.participants || 0) + 1;
-					alert("Registered — approved.");
-				} else alert("Request submitted — pending approval.");
-				render();
-			}
+	const q = (
+		document.getElementById("searchUserTop")?.value || ""
+	).toLowerCase();
+	const tfilter = document.getElementById("typeFilter").value;
+	const afilter = document.getElementById("approvalFilter").value;
 
-			document
-				.getElementById("evtSearch")
-				.addEventListener("keydown", (e) => {
-					if (e.key === "Enter") render();
-				});
-			document
-				.getElementById("typeFilter")
-				.addEventListener("change", render);
-			document
-				.getElementById("approvalFilter")
-				.addEventListener("change", render);
+	EVENTS.filter((e) => {
+		if (tfilter !== "all" && e.type !== tfilter) return false;
+		if (afilter === "requires" && !e.requiresApproval) return false;
+		if (afilter === "auto" && e.requiresApproval) return false;
+		if (
+			q &&
+			!(
+				e.name + " " + e.venue + " " + e.id
+			).toLowerCase().includes(q)
+		)
+			return false;
+		return true;
+	}).forEach((e) => {
+		const tr = document.createElement("tr");
 
-			render();
-		</script>
+		const alreadyRegistered = registrations.some(
+			(r) => r.eventId === e.id && r.status !== "cancelled"
+		);
+
+		tr.innerHTML = `
+			<td style="font-weight:600">
+				${e.name}
+				<div class="small muted">${e.id}</div>
+			</td>
+			<td>${new Date(e.date).toLocaleString()}</td>
+			<td>${e.venue}</td>
+			<td>${e.participants}/${e.capacity}</td>
+			<td>
+				<span class="badge ${
+					e.requiresApproval
+						? "bg-warning text-dark"
+						: "bg-success"
+				}">
+					${e.requiresApproval ? "Requires approval" : "Auto"}
+				</span>
+			</td>
+			<td class="text-end">
+				<button class="btn btn-sm btn-outline me-1"
+					onclick="viewDetails('${e.id}')">
+					Details
+				</button>
+				<button class="btn btn-sm btn-primary"
+					${alreadyRegistered ? "disabled" : ""}
+					onclick="registerEvent('${e.id}')">
+					${
+						alreadyRegistered
+							? "Registered"
+							: e.teamParticipation
+							? "Team Register"
+							: "Register"
+					}
+				</button>
+			</td>
+		`;
+		tbody.appendChild(tr);
+	});
+}
+
+document
+	.getElementById("searchUserTop")
+	.addEventListener("keydown", (e) => {
+		if (e.key === "Enter") render();
+	});
+
+	/* DETAILS POPUP (unchanged) */
+	function viewDetails(eventId) {
+		const e = EVENTS.find((x) => x.id === eventId);
+		alert(
+			`${e.name}\n${new Date(e.date).toLocaleString()}\nVenue: ${
+				e.venue
+			}\nTeams: ${
+				e.teamParticipation ? "Allowed" : "No"
+			}\nApproval: ${
+				e.requiresApproval ? "Required" : "None"
+			}`
+		);
+	}
+
+	/* MAIN REGISTRATION LOGIC */
+	function registerEvent(eventId) {
+		const e = EVENTS.find((x) => x.id === eventId);
+		if (!e) return;
+
+		/* 🔒 DUPLICATE CHECK */
+		const alreadyRegistered = registrations.some(
+			(r) => r.eventId === eventId && r.status !== "cancelled"
+		);
+
+		if (alreadyRegistered) {
+			alert("You are already registered for this event.");
+			return;
+		}
+
+		/* TEAM EVENT → redirect */
+		if (e.teamParticipation) {
+			alert(
+				"This is a team-based event. You will be redirected to team registration."
+			);
+			location.href =
+				"user-team-registration.html?eventId=" + eventId;
+			return;
+		}
+
+		/* INDIVIDUAL EVENT */
+		const confirmMsg = e.requiresApproval
+			? "Your profile details will be used.\nThis event requires teacher approval.\nSubmit registration request?"
+			: "Your profile details will be used.\nRegister for this event? (Auto-approved)";
+
+		if (!confirm(confirmMsg)) return;
+
+		const reg = {
+			regId: "R" + Math.floor(Math.random() * 9000 + 1000),
+			eventId,
+			status: e.requiresApproval ? "pending" : "approved",
+			createdAt: new Date().toISOString(),
+		};
+
+		registrations.push(reg);
+
+		if (reg.status === "approved") {
+			e.participants++;
+			alert("Registered successfully (Approved).");
+		} else {
+			alert("Registration request submitted (Pending approval).");
+		}
+
+		render();
+	}
+
+	document
+	.getElementById("searchUserTop")
+	.addEventListener("keydown", (e) => {
+		if (e.key === "Enter") render();
+	});
+
+	document
+		.getElementById("typeFilter")
+		.addEventListener("change", render);
+	document
+		.getElementById("approvalFilter")
+		.addEventListener("change", render);
+
+	render();
+
+	function userLogout() {
+		alert("You have been logged out.");
+		location.href = "../login.html";
+	}
+</script>
+
+
 	</body>
 </html>

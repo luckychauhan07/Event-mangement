@@ -27,7 +27,11 @@
 			}
 			.app-sidebar {
 				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
+				background: linear-gradient(
+					180deg,
+					var(--sidebar-gradient-start),
+					var(--sidebar-gradient-end)
+				);
 				color: #fff;
 				padding: 28px 20px;
 				display: flex;
@@ -60,7 +64,13 @@
 				class="d-flex align-items-center text-decoration-none"
 			>
 				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+				<div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
+				>
 					Event Ease
 				</div>
 			</a>
@@ -123,22 +133,20 @@
 		<div class="app-shell">
 			<aside class="app-sidebar d-none d-lg-flex">
 				<nav class="sidebar-nav">
+					<a href="user-home.html" class="active">🏠 Home</a>
+					<a href="user-events.html">📅 Browse Events</a>
+					<a href="user-registrations.html">📋 My Registrations</a>
 					<a
-						href="user-home.html"
-						class="active"
-						>🏠 Home</a
-					>
-					<a href="user-events.html"
-						>📅 Browse Events</a
-					>
-					<a
-						href="user-registrations.html"
-						>📋 My Registrations</a
+						href="user-notification.html"
+						class="text-white-95 p-2 rounded active"
+						>🔔 Notifications</a
 					>
 					<a
 						href="user-profile.html"
+						class="text-white-95 p-2 rounded"
 						>👤 Profile</a
 					>
+					<a href="user-profile.html">👤 Profile</a>
 				</nav>
 				<div class="sidebar-footer">
 					© <span id="userYear"></span> Event Ease
@@ -150,7 +158,7 @@
 					class="d-flex justify-content-between align-items-center mb-3"
 				>
 					<div>
-						<h4 class="mb-0">Welcome — Student</h4>
+						<h4 class="mb-0">Welcome, Student 👋</h4>
 						<div class="muted">
 							Browse events, request participation and track your
 							registrations.
@@ -245,7 +253,7 @@
 									<th>Date</th>
 									<th>Venue</th>
 									<th>Type</th>
-									<th class="text-end">Action</th>
+									<th class="text-end">Explore</th>
 								</tr>
 							</thead>
 							<tbody id="eventsPreview"></tbody>
@@ -355,12 +363,18 @@
       <td><span class="badge ${
 			e.requiresApproval ? "bg-warning text-dark" : "bg-success"
 		}">${e.requiresApproval ? "Requires approval" : "Auto"}</span></td>
-      <td class="text-end"><button class="btn btn-sm btn-outline me-1" onclick="openEventDetails('${
-			e.id
-		}')">Details</button>
-        <button class="btn btn-sm btn-primary" onclick="openRegisterModal('${
-			e.id
-		}')">Register</button></td>
+      <td class="text-end">
+	<button class="btn btn-sm btn-outline me-1"
+		onclick="openEventDetails('${e.id}')">
+		Details
+	</button>
+
+	<button class="btn btn-sm btn-primary"
+		onclick="location.href='user-events.html'">
+		Browse
+	</button>
+</td>
+
     `;
 					tbody.appendChild(tr);
 				});
