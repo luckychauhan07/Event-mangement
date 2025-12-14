@@ -185,42 +185,46 @@
 	</head>
 	<body>
 		<!-- TOPBAR -->
-		<header class="topbar" role="banner">
-			<div class="d-flex align-items-center gap-3">
-				<button
-					class="menu-toggle d-lg-none"
-					id="sidebarToggle"
-					aria-label="Open navigation"
+		<header class="topbar">
+			<a
+				class="d-flex align-items-center text-decoration-none"
+				href="admin.html"
+				aria-label="Event Ease Home"
+			>
+				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
+				<div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
 				>
-					☰
-				</button>
-				<a
-					href="admin.html"
-					class="d-flex align-items-center text-decoration-none"
-					aria-label="Event Ease Home"
-				>
-					<div class="logo"><img src="../logo.svg" alt="EE" /></div>
-					<div
-						style="
-							margin-left: 10px;
-							font-weight: 700;
-							color: var(--text-dark);
-						"
-					>
-						Event Ease
-					</div>
-				</a>
-			</div>
+					Event Ease
+				</div>
+			</a>
 
 			<div class="d-flex align-items-center gap-3">
-				<div class="d-none d-md-block" style="min-width: 260px">
+				<div class="d-none d-md-block" style="min-width: 280px">
 					<input
 						id="globalSearch"
 						class="form-control form-control-sm"
-						placeholder="Search (users, emails, ids) — /"
-						aria-label="Global search"
+						placeholder="Search (events, users, IDs) — /"
 					/>
 				</div>
+				<a
+					href="notifications.html"
+					class="position-relative btn btn-light"
+					title="Notifications"
+				>
+					🔔
+					<span
+						id="adminNotifCount"
+						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+						style="font-size: 11px"
+					>
+						2
+					</span>
+				</a>
 
 				<div class="dropdown">
 					<button
@@ -236,7 +240,7 @@
 						</div>
 						<div class="d-none d-md-block text-start">
 							<div style="font-weight: 600">Admin</div>
-							<div class="muted small">admin@college.edu</div>
+							<div class="small muted">admin@college.edu</div>
 						</div>
 					</button>
 					<ul class="dropdown-menu dropdown-menu-end">
@@ -252,12 +256,12 @@
 						</li>
 						<li><hr class="dropdown-divider" /></li>
 						<li>
-							<button
+							<a
 								class="dropdown-item text-danger"
-								id="logoutTop"
+								href="#"
+								id="logoutBtn"
+								>Logout</a
 							>
-								Logout
-							</button>
 						</li>
 					</ul>
 				</div>
@@ -280,6 +284,7 @@
 					<a href="events.html">📅 Events</a>
 					<a href="add-event.html">➕ Add Event</a>
 					<a href="reports.html">📊 Reports</a>
+					<a href="notifications.html">🔔 Notifications</a>
 					<a href="profile.html">👤 Profile</a>
 				</nav>
 

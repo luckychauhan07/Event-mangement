@@ -3,7 +3,8 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Reports</title>
+		<title>Reports — Event Ease</title>
+
 		<link
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
 			rel="stylesheet"
@@ -13,49 +14,47 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="admin-common.css" />
+
 		<style>
 			body {
 				font-family: Inter, system-ui, Arial;
 				background: var(--bg-light);
 				color: var(--text-dark);
 			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(
-					180deg,
-					var(--sidebar-gradient-start),
-					var(--sidebar-gradient-end)
-				);
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
+			.card-proto {
+				background: #fff;
+				padding: 18px;
+				border-radius: 10px;
 				box-shadow: var(--shadow-md);
 			}
-			.app-main {
-				flex: 1;
-				padding: 32px;
+			.kpi-value {
+				font-size: 1.4rem;
+				font-weight: 700;
 			}
-			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
-				.app-main {
-					padding: 24px;
-				}
+			.kpi-label {
+				color: #6b7280;
+				font-size: 0.85rem;
+			}
+			.chart-placeholder {
+				height: 220px;
+				border: 1px dashed #cbd5e1;
+				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #64748b;
+				font-size: 0.9rem;
 			}
 		</style>
 	</head>
+
 	<body>
+		<!-- HEADER -->
 		<header class="topbar">
 			<a
 				class="d-flex align-items-center text-decoration-none"
 				href="admin.html"
-				aria-label="Event Ease Home"
 			>
 				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
 				<div
@@ -68,105 +67,179 @@
 					Event Ease
 				</div>
 			</a>
-
-			<div class="d-flex align-items-center gap-3">
-				<div class="d-none d-md-block" style="min-width: 280px">
-					<input
-						id="globalSearch"
-						class="form-control form-control-sm"
-						placeholder="Search (events, users, IDs) — /"
-					/>
-				</div>
-
-				<div class="dropdown">
-					<button
-						class="btn d-flex align-items-center gap-2"
-						data-bs-toggle="dropdown"
-						aria-expanded="false"
-					>
-						<div
-							class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-							style="width: 36px; height: 36px"
-						>
-							AD
-						</div>
-						<div class="d-none d-md-block text-start">
-							<div style="font-weight: 600">Admin</div>
-							<div class="small muted">admin@college.edu</div>
-						</div>
-					</button>
-					<ul class="dropdown-menu dropdown-menu-end">
-						<li>
-							<a class="dropdown-item" href="profile.html"
-								>Profile</a
-							>
-						</li>
-						<li>
-							<a class="dropdown-item" href="settings.html"
-								>Settings</a
-							>
-						</li>
-						<li><hr class="dropdown-divider" /></li>
-						<li>
-							<a
-								class="dropdown-item text-danger"
-								href="#"
-								id="logoutBtn"
-								>Logout</a
-							>
-						</li>
-					</ul>
-				</div>
-			</div>
 		</header>
 
 		<div class="app-shell">
-			<aside
-				class="app-sidebar d-none d-lg-flex"
-				aria-label="Main navigation"
-			>
+			<!-- SIDEBAR -->
+			<aside class="app-sidebar d-none d-lg-flex">
 				<nav class="sidebar-nav">
 					<a href="admin.html">🏠 Home</a>
 					<a href="users.html">👥 Users</a>
-					<a href="events.html">📅 Events</a
-					><a href="add-event.html">➕ Add Event</a>
+					<a href="events.html">📅 Events</a>
+					<a href="add-event.html">➕ Add Event</a>
 					<a href="reports.html" class="active">📊 Reports</a>
-					<a href="profile.html">👤 Profile</a>
+					<a href="notifications.html">🔔 Notifications</a>
 				</nav>
-
-				<div class="sidebar-footer">
-					<a
-						id="logoutSide"
-						class="text-danger"
-						style="display: block; margin-bottom: 12px"
-						>🔒 Logout</a
-					>
-					v1.0 • © <span id="year"></span>
-				</div>
 			</aside>
 
+			<!-- MAIN -->
 			<main class="app-main">
-				<div class="card-compact">
-					<h4>Reports</h4>
-					<p class="muted">
-						Quick report generation & downloads (placeholder).
-					</p>
-					<div class="d-flex gap-2">
-						<button
-							class="btn btn-primary"
-							onclick="alert('Generate Monthly Participation (demo)')"
-						>
-							Monthly Participation</button
-						><button
-							class="btn btn-outline"
-							onclick="alert('Generate Event Summary (demo)')"
-						>
-							Event Summary
+				<div class="container">
+					<!-- HEADER -->
+					<div
+						class="d-flex justify-content-between align-items-center mb-3"
+					>
+						<h3 class="fw-bold mb-0">Reports & Analytics</h3>
+						<button class="btn btn-outline-secondary">
+							← Back
 						</button>
+					</div>
+
+					<!-- FILTERS -->
+					<div class="card-proto mb-3">
+						<div class="row g-2">
+							<div class="col-md-3">
+								<input
+									type="date"
+									class="form-control form-control-sm"
+								/>
+							</div>
+							<div class="col-md-3">
+								<input
+									type="date"
+									class="form-control form-control-sm"
+								/>
+							</div>
+							<div class="col-md-3">
+								<select class="form-select form-select-sm">
+									<option>All Categories</option>
+									<option>Technical</option>
+									<option>Cultural</option>
+									<option>Sports</option>
+								</select>
+							</div>
+							<div class="col-md-3">
+								<select class="form-select form-select-sm">
+									<option>All Types</option>
+									<option>Free</option>
+									<option>Paid</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- KPI CARDS -->
+					<div class="row g-3 mb-3">
+						<div class="col-md-3">
+							<div class="card-proto">
+								<div class="kpi-value">24</div>
+								<div class="kpi-label">Total Events</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="card-proto">
+								<div class="kpi-value">1,284</div>
+								<div class="kpi-label">Total Registrations</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="card-proto">
+								<div class="kpi-value">₹84,500</div>
+								<div class="kpi-label">Revenue Generated</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="card-proto">
+								<div class="kpi-value">53</div>
+								<div class="kpi-label">
+									Avg. Participants / Event
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- CHARTS -->
+					<div class="row g-3 mb-3">
+						<div class="col-md-6">
+							<div class="card-proto">
+								<h6 class="fw-bold mb-2">Events by Category</h6>
+								<div class="chart-placeholder">
+									[ Chart Placeholder ]
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="card-proto">
+								<h6 class="fw-bold mb-2">
+									Registrations Trend
+								</h6>
+								<div class="chart-placeholder">
+									[ Chart Placeholder ]
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- REPORT TABLE -->
+					<div class="card-proto">
+						<div
+							class="d-flex justify-content-between align-items-center mb-2"
+						>
+							<h6 class="fw-bold mb-0">Event Performance</h6>
+							<div class="d-flex gap-2">
+								<button class="btn btn-sm btn-outline-primary">
+									Export CSV
+								</button>
+								<button class="btn btn-sm btn-outline-primary">
+									Export PDF
+								</button>
+							</div>
+						</div>
+
+						<div class="table-responsive">
+							<table class="table table-sm align-middle">
+								<thead>
+									<tr>
+										<th>Event</th>
+										<th>Category</th>
+										<th>Type</th>
+										<th>Registrations</th>
+										<th>Revenue</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Ideathon-2025</td>
+										<td>Technical</td>
+										<td>Paid</td>
+										<td>87</td>
+										<td>₹17,400</td>
+										<td>
+											<span
+												class="badge bg-warning text-dark"
+												>Upcoming</span
+											>
+										</td>
+									</tr>
+									<tr>
+										<td>Cultural Night</td>
+										<td>Cultural</td>
+										<td>Free</td>
+										<td>240</td>
+										<td>—</td>
+										<td>
+											<span class="badge bg-secondary"
+												>Completed</span
+											>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 			</main>
 		</div>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>

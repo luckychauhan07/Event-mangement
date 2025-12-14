@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Send Notification — Event Ease (Admin)</title>
+
+		<!-- Bootstrap -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+
+		<!-- Global Styles -->
+		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="admin-common.css" />
+		<style>
+			body {
+				font-family: Inter, system-ui, Arial;
+				background: var(--bg-light);
+				color: var(--text-dark);
+			}
+			.page-wrap {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 24px;
+			}
+			.div-costum {
+				max-width: 1160px;
+				margin: 0 auto;
+				padding: 10px 40px;
+				background: var(--bg-surface);
+				border-radius: var(--card-radius);
+				border: 1px solid var(--border);
+				box-shadow: var(--shadow-sm);
+				display: flex;
+				justify-content: space-between;
+			}
+			.btn-costum {
+				/* background-color: #ff9800; Orange */
+				/* color: #fff; White text */
+				padding: 10px 16px;
+				border: none;
+				border-radius: 6px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+				box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+			}
+
+			.btn-costum:hover {
+				transform: translateY(-2px);
+				/* background-color: #e68900; Darker orange */
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- TOPBAR -->
+		<header class="topbar">
+			<a
+				class="d-flex align-items-center text-decoration-none"
+				href="admin.html"
+				aria-label="Event Ease Home"
+			>
+				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
+				<div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
+				>
+					Event Ease
+				</div>
+			</a>
+
+			<div class="d-flex align-items-center gap-3">
+				<div class="d-none d-md-block" style="min-width: 280px">
+					<input
+						id="globalSearch"
+						class="form-control form-control-sm"
+						placeholder="Search (events, users, IDs) — /"
+					/>
+				</div>
+				<a
+					href="notifications.html"
+					class="position-relative btn btn-light"
+					title="Notifications"
+				>
+					🔔
+					<span
+						id="adminNotifCount"
+						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+						style="font-size: 11px"
+					>
+						2
+					</span>
+				</a>
+
+				<div class="dropdown">
+					<button
+						class="btn d-flex align-items-center gap-2"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+					>
+						<div
+							class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+							style="width: 36px; height: 36px"
+						>
+							AD
+						</div>
+						<div class="d-none d-md-block text-start">
+							<div style="font-weight: 600">Admin</div>
+							<div class="small muted">admin@college.edu</div>
+						</div>
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li>
+							<a class="dropdown-item" href="profile.html"
+								>Profile</a
+							>
+						</li>
+						<li>
+							<a class="dropdown-item" href="settings.html"
+								>Settings</a
+							>
+						</li>
+						<li><hr class="dropdown-divider" /></li>
+						<li>
+							<a
+								class="dropdown-item text-danger"
+								href="#"
+								id="logoutBtn"
+								>Logout</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</header>
+		<!-- <header class="topbar">
+			<div
+				class="d-flex align-items-center justify-content-between w-100 px-3"
+			>
+				<div class="d-flex align-items-center gap-2">
+					<div class="logo">
+						<img src="../logo.svg" alt="EE" />
+					</div>
+					<strong>Event Ease</strong>
+				</div>
+
+				<button
+					class="btn btn-outline-secondary btn-sm"
+					onclick="goBack()"
+				>
+					⬅ Back to Notifications
+				</button>
+			</div>
+		</header> -->
+
+		<main>
+			<div class="div-costum mt-3">
+				<div>
+					<h1>📢 Send Notification</h1>
+					<p class="muted mb-0">
+						Send announcements, reminders, or event updates to users
+					</p>
+				</div>
+				<div>
+					<button
+						class="btn btn-outline-secondary btn-costum btn-sm mt-3"
+						onclick="goBack()"
+					>
+						⬅ Back to Notifications
+					</button>
+				</div>
+			</div>
+
+			<div class="page-wrap">
+				<form id="notificationForm" class="row g-4">
+					<!-- Step 1: Select Recipients -->
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title mb-4">
+									<span class="step-number">1</span> Select
+									Recipients
+								</h5>
+
+								<!-- Primary Selection Method -->
+								<div class="mb-4">
+									<label class="form-label fw-semibold"
+										>Who should receive this
+										notification?</label
+									>
+									<div class="row g-3">
+										<div class="col-md-4">
+											<div
+												class="form-check form-check-card"
+											>
+												<input
+													class="form-check-input"
+													type="radio"
+													name="recipientType"
+													id="allUsers"
+													value="all"
+													checked
+												/>
+												<label
+													class="form-check-label w-100"
+													for="allUsers"
+												>
+													<strong
+														>🌐 All Users</strong
+													>
+													<br /><small
+														class="text-muted"
+														>Send to everyone in the
+														system</small
+													>
+												</label>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div
+												class="form-check form-check-card"
+											>
+												<input
+													class="form-check-input"
+													type="radio"
+													name="recipientType"
+													id="byRole"
+													value="role"
+												/>
+												<label
+													class="form-check-label w-100"
+													for="byRole"
+												>
+													<strong>👥 By Role</strong>
+													<br /><small
+														class="text-muted"
+														>Target specific user
+														roles</small
+													>
+												</label>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div
+												class="form-check form-check-card"
+											>
+												<input
+													class="form-check-input"
+													type="radio"
+													name="recipientType"
+													id="byEvent"
+													value="event"
+												/>
+												<label
+													class="form-check-label w-100"
+													for="byEvent"
+												>
+													<strong>📅 By Event</strong>
+													<br /><small
+														class="text-muted"
+														>Send to event
+														participants</small
+													>
+												</label>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Role-based Targeting -->
+								<div
+									id="roleTargeting"
+									class="targeting-section"
+									style="display: none"
+								>
+									<div class="row g-3">
+										<div class="col-md-6">
+											<label
+												for="userRoles"
+												class="form-label fw-semibold"
+												>Select User Roles</label
+											>
+											<div class="role-checkboxes">
+												<div class="form-check">
+													<input
+														class="form-check-input"
+														type="checkbox"
+														id="roleStudent"
+														name="roles"
+														value="student"
+													/>
+													<label
+														class="form-check-label"
+														for="roleStudent"
+													>
+														Students (All enrolled
+														students)
+													</label>
+												</div>
+												<div class="form-check">
+													<input
+														class="form-check-input"
+														type="checkbox"
+														id="roleTeacher"
+														name="roles"
+														value="teacher"
+													/>
+													<label
+														class="form-check-label"
+														for="roleTeacher"
+													>
+														Teachers (Faculty
+														coordinators)
+													</label>
+												</div>
+												<div class="form-check">
+													<input
+														class="form-check-input"
+														type="checkbox"
+														id="roleCoordinator"
+														name="roles"
+														value="coordinator"
+													/>
+													<label
+														class="form-check-label"
+														for="roleCoordinator"
+													>
+														Student Coordinators
+													</label>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<label
+												for="department"
+												class="form-label fw-semibold"
+												>Filter by Department
+												(Optional)</label
+											>
+											<select
+												id="department"
+												name="department"
+												class="form-select"
+											>
+												<option value="">
+													All Departments
+												</option>
+												<option value="cse">
+													Computer Science &
+													Engineering
+												</option>
+												<option value="ece">
+													Electronics & Communication
+												</option>
+												<option value="me">
+													Mechanical Engineering
+												</option>
+												<option value="ce">
+													Civil Engineering
+												</option>
+												<option value="ee">
+													Electrical Engineering
+												</option>
+											</select>
+
+											<label
+												for="year"
+												class="form-label fw-semibold mt-3"
+												>Filter by Year
+												(Optional)</label
+											>
+											<select
+												id="year"
+												name="year"
+												class="form-select"
+											>
+												<option value="">
+													All Years
+												</option>
+												<option value="1">
+													1st Year
+												</option>
+												<option value="2">
+													2nd Year
+												</option>
+												<option value="3">
+													3rd Year
+												</option>
+												<option value="4">
+													4th Year
+												</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<!-- Event-based Targeting -->
+								<div
+									id="eventTargeting"
+									class="targeting-section"
+									style="display: none"
+								>
+									<div class="row g-3">
+										<div class="col-md-6">
+											<label
+												for="eventSelect"
+												class="form-label fw-semibold required"
+												>Select Event</label
+											>
+											<select
+												id="eventSelect"
+												name="eventId"
+												class="form-select"
+											>
+												<option value="">
+													-- Choose an event --
+												</option>
+												<option value="evt001">
+													Hackathon 2025 (200
+													participants)
+												</option>
+												<option value="evt002">
+													Cultural Fest 2025 (150
+													participants)
+												</option>
+												<option value="evt003">
+													AI Workshop (50
+													participants)
+												</option>
+												<option value="evt004">
+													Sports Day 2025 (300
+													participants)
+												</option>
+											</select>
+										</div>
+
+										<div class="col-md-6">
+											<label
+												for="eventParticipants"
+												class="form-label fw-semibold"
+												>Participant Type</label
+											>
+											<select
+												id="eventParticipants"
+												name="participantType"
+												class="form-select"
+											>
+												<option value="all">
+													All Participants
+												</option>
+												<option value="registered">
+													Registered Only
+												</option>
+												<option value="approved">
+													Approved Participants
+												</option>
+												<option value="pending">
+													Pending Approval
+												</option>
+												<option value="waitlist">
+													Waitlist
+												</option>
+												<option value="team_leaders">
+													Team Leaders Only
+												</option>
+												<option value="coordinators">
+													Event Coordinators
+												</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<!-- Recipient Summary -->
+								<div class="alert alert-info mt-4">
+									<div class="d-flex align-items-center">
+										<span class="me-2">📊</span>
+										<div>
+											<strong
+												>Estimated Recipients:</strong
+											>
+											<span id="recipientCount"
+												>All users in the system</span
+											>
+											<br /><small
+												id="recipientDetails"
+												class="text-muted"
+												>This notification will be sent
+												to everyone</small
+											>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Step 2: Compose Message -->
+					<div class="col-lg-7">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title mb-4">
+									<span class="step-number">2</span> Compose
+									Message
+								</h5>
+
+								<div class="mb-3">
+									<label
+										for="notificationTitle"
+										class="form-label fw-semibold required"
+										>Notification Title</label
+									>
+									<input
+										type="text"
+										id="notificationTitle"
+										name="title"
+										class="form-control"
+										placeholder="e.g., Important: Registration Deadline Extended"
+										maxlength="100"
+										required
+									/>
+									<small class="text-muted"
+										>Keep it clear and concise (max 100
+										characters)</small
+									>
+								</div>
+
+								<div class="mb-3">
+									<label
+										for="notificationMessage"
+										class="form-label fw-semibold required"
+										>Message Content</label
+									>
+									<textarea
+										id="notificationMessage"
+										name="message"
+										class="form custom-textarea"
+										rows="4"
+										placeholder="Write your message here... Be clear about what action users need to take."
+										maxlength="500"
+										required
+									></textarea>
+									<div
+										class="d-flex justify-content-between mt-1"
+									>
+										<small class="text-muted"
+											>Explain clearly what users need to
+											know or do</small
+										>
+										<small class="text-muted"
+											><span id="charCount">0</span> /
+											500</small
+										>
+									</div>
+								</div>
+
+								<div class="row g-3">
+									<div class="col-md-6">
+										<label
+											for="priority"
+											class="form-label fw-semibold"
+											>Priority Level</label
+										>
+										<select
+											id="priority"
+											name="priority"
+											class="form-select"
+										>
+											<option value="low">
+												🟢 Low - General information
+											</option>
+											<option value="medium" selected>
+												🟡 Medium - Important update
+											</option>
+											<option value="high">
+												🔴 High - Urgent action required
+											</option>
+										</select>
+										<small class="text-muted"
+											>High priority notifications appear
+											at the top</small
+										>
+									</div>
+
+									<div class="col-md-6">
+										<label
+											for="actionUrl"
+											class="form-label fw-semibold"
+											>Action Link (Optional)</label
+										>
+										<input
+											type="url"
+											id="actionUrl"
+											name="actionUrl"
+											class="form-control"
+											placeholder="https://example.com/event-details"
+										/>
+										<small class="text-muted"
+											>Add a link for users to take
+											action</small
+										>
+									</div>
+								</div>
+
+								<div class="mt-4">
+									<div class="form-check form-switch">
+										<input
+											class="form-check-input"
+											type="checkbox"
+											id="scheduleLater"
+											name="scheduleLater"
+										/>
+										<label
+											class="form-check-label fw-semibold"
+											for="scheduleLater"
+										>
+											Schedule for later delivery
+										</label>
+									</div>
+
+									<div
+										id="scheduleSection"
+										style="display: none"
+										class="mt-3"
+									>
+										<label
+											for="scheduleTime"
+											class="form-label fw-semibold"
+											>Scheduled Date & Time</label
+										>
+										<input
+											type="datetime-local"
+											id="scheduleTime"
+											name="scheduleTime"
+											class="form-control"
+										/>
+										<small class="text-muted"
+											>Notification will be sent
+											automatically at the specified
+											time</small
+										>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<input
+						type="hidden"
+						id="notificationCategory"
+						value="ANNOUNCEMENT"
+					/>
+
+					<!-- Step 3: Preview & Send -->
+					<div class="col-lg-5">
+						<div class="card sticky-top" style="top: 20px">
+							<div class="card-body">
+								<h5 class="card-title mb-3">
+									<span class="step-number">3</span> Preview
+								</h5>
+
+								<div class="notification-preview">
+									<div class="preview-header">
+										<span class="preview-icon">🔔</span>
+										<span class="preview-time"
+											>Just now</span
+										>
+									</div>
+									<div class="preview-content">
+										<div
+											class="preview-title"
+											id="previewTitle"
+										>
+											Your notification title will appear
+											here
+										</div>
+										<div
+											class="preview-message"
+											id="previewMessage"
+										>
+											Your message content will be
+											displayed here. Make sure it's clear
+											and actionable.
+										</div>
+										<div class="preview-footer">
+											<span
+												class="badge"
+												id="previewPriority"
+												>🟡 Medium Priority</span
+											>
+											<span
+												class="preview-action"
+												id="previewAction"
+												style="display: none"
+											>
+												<a
+													href="#"
+													class="text-decoration-none"
+													>View Details →</a
+												>
+											</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="preview-meta mt-3">
+									<small class="text-muted">
+										<strong>Will be sent to:</strong><br />
+										<span id="previewRecipients"
+											>All users</span
+										>
+									</small>
+								</div>
+
+								<hr class="my-4" />
+
+								<div class="d-grid gap-2">
+									<button
+										type="submit"
+										class="btn btn-primary btn-lg"
+										id="sendBtn"
+									>
+										<span id="sendBtnText"
+											>📤 Send Notification</span
+										>
+									</button>
+									<button
+										type="button"
+										class="btn btn-outline-secondary"
+										id="saveDraftBtn"
+									>
+										💾 Save as Draft
+									</button>
+									<button
+										type="button"
+										class="btn btn-outline-danger"
+										id="cancelBtn"
+									>
+										Cancel
+									</button>
+								</div>
+
+								<div class="alert alert-warning mt-3 mb-0">
+									<small>
+										<strong>⚠️ Note:</strong> Notifications
+										cannot be recalled once sent. Please
+										review carefully before sending.
+									</small>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</main>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			// Set current year
+			document.getElementById("year").textContent =
+				new Date().getFullYear();
+
+			// DOM Elements
+			const notificationForm =
+				document.getElementById("notificationForm");
+			const recipientTypeRadios = document.querySelectorAll(
+				'input[name="recipientType"]'
+			);
+			const roleTargeting = document.getElementById("roleTargeting");
+			const eventTargeting = document.getElementById("eventTargeting");
+			const notificationTitle =
+				document.getElementById("notificationTitle");
+			const notificationMessage = document.getElementById(
+				"notificationMessage"
+			);
+			const priority = document.getElementById("priority");
+			const actionUrl = document.getElementById("actionUrl");
+			const scheduleLater = document.getElementById("scheduleLater");
+			const scheduleSection = document.getElementById("scheduleSection");
+			const charCount = document.getElementById("charCount");
+			const recipientCount = document.getElementById("recipientCount");
+			const recipientDetails =
+				document.getElementById("recipientDetails");
+
+			// Preview elements
+			const previewTitle = document.getElementById("previewTitle");
+			const previewMessage = document.getElementById("previewMessage");
+			const previewPriority = document.getElementById("previewPriority");
+			const previewAction = document.getElementById("previewAction");
+			const previewRecipients =
+				document.getElementById("previewRecipients");
+
+			// Toggle recipient targeting sections
+			recipientTypeRadios.forEach((radio) => {
+				radio.addEventListener("change", function () {
+					roleTargeting.style.display = "none";
+					eventTargeting.style.display = "none";
+
+					if (this.value === "role") {
+						roleTargeting.style.display = "block";
+						updateRecipientSummary("role");
+					} else if (this.value === "event") {
+						eventTargeting.style.display = "block";
+						updateRecipientSummary("event");
+					} else {
+						updateRecipientSummary("all");
+					}
+				});
+			});
+
+			// Update recipient summary based on selection
+			function updateRecipientSummary(type) {
+				if (type === "all") {
+					recipientCount.textContent = "All users in the system";
+					recipientDetails.textContent =
+						"This notification will be sent to everyone";
+					previewRecipients.textContent = "All users";
+				} else if (type === "role") {
+					const selectedRoles = Array.from(
+						document.querySelectorAll('input[name="roles"]:checked')
+					).map((cb) =>
+						cb.nextElementSibling.textContent.split("(")[0].trim()
+					);
+
+					if (selectedRoles.length > 0) {
+						recipientCount.textContent = selectedRoles.join(", ");
+						recipientDetails.textContent = `Filtered by role${
+							selectedRoles.length > 1 ? "s" : ""
+						}`;
+						previewRecipients.textContent =
+							selectedRoles.join(", ");
+					} else {
+						recipientCount.textContent = "No roles selected";
+						recipientDetails.textContent =
+							"Please select at least one role";
+						previewRecipients.textContent = "No roles selected";
+					}
+				} else if (type === "event") {
+					const eventSelect = document.getElementById("eventSelect");
+					const selectedEvent =
+						eventSelect.options[eventSelect.selectedIndex];
+
+					if (eventSelect.value) {
+						recipientCount.textContent = selectedEvent.textContent;
+						recipientDetails.textContent =
+							"Event participants will receive this notification";
+						previewRecipients.textContent =
+							selectedEvent.textContent;
+					} else {
+						recipientCount.textContent = "No event selected";
+						recipientDetails.textContent = "Please select an event";
+						previewRecipients.textContent = "No event selected";
+					}
+				}
+			}
+
+			// Listen to role checkbox changes
+			document
+				.querySelectorAll('input[name="roles"]')
+				.forEach((checkbox) => {
+					checkbox.addEventListener("change", () =>
+						updateRecipientSummary("role")
+					);
+				});
+
+			// Listen to event selection
+			document
+				.getElementById("eventSelect")
+				.addEventListener("change", () => {
+					updateRecipientSummary("event");
+				});
+
+			// Schedule toggle
+			scheduleLater.addEventListener("change", function () {
+				scheduleSection.style.display = this.checked ? "block" : "none";
+				const sendBtn = document.getElementById("sendBtnText");
+				sendBtn.textContent = this.checked
+					? "📅 Schedule Notification"
+					: "📤 Send Notification";
+			});
+
+			// Character counter
+			notificationMessage.addEventListener("input", function () {
+				charCount.textContent = this.value.length;
+				updatePreview();
+			});
+
+			// Update preview on input
+			notificationTitle.addEventListener("input", updatePreview);
+			priority.addEventListener("change", updatePreview);
+			actionUrl.addEventListener("input", updatePreview);
+
+			function updatePreview() {
+				const title =
+					notificationTitle.value ||
+					"Your notification title will appear here";
+				const message =
+					notificationMessage.value ||
+					"Your message content will be displayed here. Make sure it's clear and actionable.";
+				const priorityValue = priority.value;
+				const url = actionUrl.value;
+
+				previewTitle.textContent = title;
+				previewMessage.textContent = message;
+
+				// Update priority badge
+				if (priorityValue === "low") {
+					previewPriority.textContent = "🟢 Low Priority";
+					previewPriority.className = "badge bg-success";
+				} else if (priorityValue === "medium") {
+					previewPriority.textContent = "🟡 Medium Priority";
+					previewPriority.className = "badge bg-warning text-dark";
+				} else {
+					previewPriority.textContent = "🔴 High Priority";
+					previewPriority.className = "badge bg-danger";
+				}
+
+				// Show/hide action link
+				if (url) {
+					previewAction.style.display = "inline-block";
+					previewAction.querySelector("a").href = url;
+				} else {
+					previewAction.style.display = "none";
+				}
+			}
+
+			// Form submission
+			notificationForm.addEventListener("submit", function (e) {
+				e.preventDefault();
+
+				// Validation
+				if (!this.checkValidity()) {
+					this.classList.add("was-validated");
+					alert("⚠️ Please fill in all required fields");
+					return;
+				}
+
+				// Check if recipients are selected for role/event type
+				const selectedType = document.querySelector(
+					'input[name="recipientType"]:checked'
+				).value;
+
+				if (selectedType === "role") {
+					const selectedRoles = document.querySelectorAll(
+						'input[name="roles"]:checked'
+					);
+					if (selectedRoles.length === 0) {
+						alert(
+							"⚠️ Please select at least one role to send notification"
+						);
+						return;
+					}
+				}
+
+				if (selectedType === "event") {
+					const eventSelect = document.getElementById("eventSelect");
+					if (!eventSelect.value) {
+						alert("⚠️ Please select an event to send notification");
+						return;
+					}
+				}
+
+				const formData = new FormData(this);
+				const data = Object.fromEntries(formData.entries());
+
+				// Add role checkboxes
+				if (selectedType === "role") {
+					data.roles = Array.from(
+						document.querySelectorAll('input[name="roles"]:checked')
+					).map((cb) => cb.value);
+				}
+
+				console.log("Notification Data:", data);
+
+				const isScheduled = scheduleLater.checked;
+				const confirmMessage = isScheduled
+					? `Are you sure you want to schedule this notification?\n\nIt will be sent at: ${
+							document.getElementById("scheduleTime").value
+					  }`
+					: "Are you sure you want to send this notification?\n\nThis action cannot be undone.";
+
+				if (confirm(confirmMessage)) {
+					// Simulate sending
+					const sendBtn = document.getElementById("sendBtn");
+					sendBtn.disabled = true;
+					sendBtn.innerHTML =
+						'<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+
+					setTimeout(() => {
+						alert(
+							isScheduled
+								? "✅ Notification scheduled successfully!"
+								: "✅ Notification sent successfully!"
+						);
+						const title = encodeURIComponent(
+							notificationTitle.value
+						);
+						window.location.href = `notification-logs.html?title=${title}&type=ANNOUNCEMENT`;
+					}, 1500);
+				}
+			});
+			function goBack() {
+				window.location.href = "notifications.html";
+			}
+			// Save draft
+			document
+				.getElementById("saveDraftBtn")
+				.addEventListener("click", function () {
+					const formData = new FormData(notificationForm);
+					const data = Object.fromEntries(formData.entries());
+					console.log("Draft saved:", data);
+					alert("💾 Draft saved successfully!");
+				});
+
+			// Cancel
+			document
+				.getElementById("cancelBtn")
+				.addEventListener("click", function () {
+					if (
+						confirm(
+							"Are you sure you want to cancel? All unsaved changes will be lost."
+						)
+					) {
+						window.location.href = "admin.html";
+					}
+				});
+
+			// Logout handlers
+			document
+				.getElementById("logoutBtn")
+				?.addEventListener("click", function (e) {
+					e.preventDefault();
+					if (confirm("Are you sure you want to logout?")) {
+						window.location.href = "login.html";
+					}
+				});
+
+			document
+				.getElementById("logoutSide")
+				?.addEventListener("click", function (e) {
+					e.preventDefault();
+					if (confirm("Are you sure you want to logout?")) {
+						window.location.href = "login.html";
+					}
+				});
+
+			// Initialize
+			updatePreview();
+		</script>
+	</body>
+</html>
