@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — Participant Details</title>
+
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
+      <div class="logo-mark">EE</div>
+      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+        Event Ease
+      </div>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <!-- User dropdown (no bell, no search) -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            SC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Student Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="sc-dashboard.html">🏠 Dashboard</a>
+        <a href="sc-events.html">📅 My Events</a>
+        <a href="sc-teams.html">👥 Manage Teams</a>
+        <a href="sc-participants.html">📋 Participants</a>
+        <a href="sc-notifications.html">
+          🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="scNotifCountBadge">3</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Participant details</h4>
+          <div class="muted" id="pdEventContext">
+            Loading event and participant information…
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" id="btnBack" class="btn btn-outline btn-sm">
+            ← Back
+          </button>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <!-- Left: basic info -->
+        <div class="col-12 col-lg-4">
+          <div class="card-compact">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div
+                class="rounded-circle bg-primary text-white"
+                style="width: 64px; height: 64px; display: grid; place-items: center; font-size: 24px; font-weight: 600;"
+                id="pdAvatar"
+              >
+                P
+              </div>
+              <div>
+                <div style="font-weight: 600; font-size: 18px;" id="pdName">Participant Name</div>
+                <div class="muted small" id="pdStudentId">Student ID</div>
+                <div class="muted small" id="pdDept">Department / Year</div>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <div class="muted small">Email</div>
+              <div id="pdEmail">-</div>
+            </div>
+            <div class="mb-2">
+              <div class="muted small">Phone</div>
+              <div id="pdPhone">-</div>
+            </div>
+            <div class="mb-3">
+              <div class="muted small">Team (for this event)</div>
+              <div id="pdTeam">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: event-specific + history -->
+        <div class="col-12 col-lg-8">
+          <div class="card-compact mb-3">
+            <h6 class="mb-3">Event participation</h6>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <div class="muted small">Event</div>
+                <div id="pdEventName" style="font-weight:600;">-</div>
+                <div class="muted small" id="pdEventMeta">-</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="muted small">Status</div>
+                <div id="pdStatusBadge"></div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="muted small">Attendance</div>
+                <div id="pdAttendanceBadge"></div>
+              </div>
+              <div class="col-12">
+                <div class="muted small">Notes</div>
+                <div id="pdNotes">No additional notes recorded for this participant in this event.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-compact">
+            <h6 class="mb-3">Other information</h6>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <div class="muted small">Registered on</div>
+                <div id="pdRegisteredOn">-</div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="muted small">Last attendance update</div>
+                <div id="pdAttendanceUpdated">-</div>
+              </div>
+              <div class="col-12">
+                <div class="muted small">All events for this participant (demo data)</div>
+                <ul class="mb-0" id="pdAllEventsList" style="padding-left: 18px; font-size: 13px;"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-compact mt-3">
+            <h6 class="mb-3">Change history (this event)</h6>
+            <div id="pdHistoryContainer">
+              <div class="muted small">No changes recorded yet.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const SC_ID = "SC01";
+
+    const EVENTS = [
+      {
+        id: "E101",
+        name: "Hackathon — Team Coordination",
+        date: "2025-12-05T10:00",
+        venue: "Auditorium A",
+        scAssigned: SC_ID,
+        teamSize: 4,
+        attendance: { S101: true, S102: true, S103: false, S104: false }
+      },
+      {
+        id: "E102",
+        name: "Design Sprint",
+        date: "2025-12-12T09:00",
+        venue: "Lab 101",
+        scAssigned: SC_ID,
+        teamSize: 3,
+        attendance: { S106: true, S107: false }
+      }
+    ];
+
+    const PARTICIPANTS = {
+      S101: {
+        id: "S101",
+        name: "Asha Kumar",
+        email: "asha@college.edu",
+        phone: "+91-9XXXXXXXX1",
+        dept: "CSE, 3rd year",
+        events: [
+          { eventId: "E101", status: "Confirmed", team: "Code Warriors", joinedAt: "2025-11-20T10:15:00" }
+        ]
+      },
+      S102: {
+        id: "S102",
+        name: "Rahul Mehta",
+        email: "rahul@college.edu",
+        phone: "+91-9XXXXXXXX2",
+        dept: "CSE, 3rd year",
+        events: [
+          { eventId: "E101", status: "Confirmed", team: "Code Warriors", joinedAt: "2025-11-20T10:20:00" }
+        ]
+      },
+      S103: {
+        id: "S103",
+        name: "Priya Singh",
+        email: "priya@college.edu",
+        phone: "+91-9XXXXXXXX3",
+        dept: "IT, 2nd year",
+        events: [
+          { eventId: "E101", status: "Waitlist", team: "Solo", joinedAt: "2025-11-22T09:00:00" }
+        ]
+      },
+      S104: {
+        id: "S104",
+        name: "Dev Sharma",
+        email: "dev@college.edu",
+        phone: "+91-9XXXXXXXX4",
+        dept: "ECE, 3rd year",
+        events: [
+          { eventId: "E101", status: "Pending", team: "-", joinedAt: "2025-11-23T09:00:00" }
+        ]
+      },
+      S106: {
+        id: "S106",
+        name: "Arjun Varma",
+        email: "arjun@college.edu",
+        phone: "+91-9XXXXXXXX6",
+        dept: "CSE, 4th year",
+        events: [
+          { eventId: "E102", status: "Confirmed", team: "Design Ninjas", joinedAt: "2025-11-21T14:30:00" }
+        ]
+      },
+      S107: {
+        id: "S107",
+        name: "Nisha Patel",
+        email: "nisha@college.edu",
+        phone: "+91-9XXXXXXXX7",
+        dept: "IT, 3rd year",
+        events: [
+          { eventId: "E102", status: "Pending", team: "Design Ninjas", joinedAt: "2025-11-23T16:00:00" }
+        ]
+      }
+    };
+
+    const HISTORY = [
+      {
+        eventId: "E101",
+        participantId: "S101",
+        when: "2025-12-05T09:00:00",
+        by: "SC01",
+        action: "Attendance marked Present"
+      },
+      {
+        eventId: "E101",
+        participantId: "S101",
+        when: "2025-11-28T18:10:00",
+        by: "Teacher Coordinator",
+        action: "Status changed from Pending to Confirmed"
+      },
+      {
+        eventId: "E102",
+        participantId: "S106",
+        when: "2025-12-12T09:05:00",
+        by: "SC01",
+        action: "Team updated to Design Ninjas"
+      }
+    ];
+
+    document.getElementById("scLogoutTop")?.addEventListener("click", () => {
+      if (confirm("Logout from Student Coordinator account?")) {
+        alert("Logged out.");
+      }
+    });
+
+    const notifBadge = document.getElementById("scNotifCountBadge");
+    if (notifBadge) notifBadge.textContent = "3";
+
+    const params = new URLSearchParams(window.location.search);
+    const studentId = params.get("id");
+    const eventId = params.get("event");
+
+    const nameEl = document.getElementById("pdName");
+    const idEl = document.getElementById("pdStudentId");
+    const deptEl = document.getElementById("pdDept");
+    const emailEl = document.getElementById("pdEmail");
+    const phoneEl = document.getElementById("pdPhone");
+    const teamEl = document.getElementById("pdTeam");
+    const avatarEl = document.getElementById("pdAvatar");
+
+    const eventContextEl = document.getElementById("pdEventContext");
+    const eventNameEl = document.getElementById("pdEventName");
+    const eventMetaEl = document.getElementById("pdEventMeta");
+    const statusBadgeEl = document.getElementById("pdStatusBadge");
+    const attendanceBadgeEl = document.getElementById("pdAttendanceBadge");
+    const registeredOnEl = document.getElementById("pdRegisteredOn");
+    const attendanceUpdatedEl = document.getElementById("pdAttendanceUpdated");
+    const allEventsListEl = document.getElementById("pdAllEventsList");
+    const historyContainerEl = document.getElementById("pdHistoryContainer");
+
+    const btnBack = document.getElementById("btnBack");
+
+    function loadData() {
+      const p = PARTICIPANTS[studentId];
+      const ev = EVENTS.find(e => e.id === eventId);
+
+      if (!p) {
+        nameEl.textContent = "Participant not found";
+        idEl.textContent = studentId || "-";
+        eventContextEl.textContent = "No participant data available.";
+        historyContainerEl.innerHTML =
+          '<div class="muted small">No history available.</div>';
+        return;
+      }
+
+      nameEl.textContent = p.name;
+      idEl.textContent = p.id;
+      deptEl.textContent = p.dept || "-";
+      emailEl.textContent = p.email || "-";
+      phoneEl.textContent = p.phone || "-";
+
+      const initials = p.name
+        .split(" ")
+        .map(part => part[0])
+        .join("")
+        .substring(0, 2)
+        .toUpperCase();
+      avatarEl.textContent = initials || "P";
+
+      const evParticipation = p.events.find(e => e.eventId === eventId);
+
+      if (ev && evParticipation) {
+        eventContextEl.textContent = `Event: ${ev.name} (${ev.id})`;
+        eventNameEl.textContent = ev.name;
+        const dateStr = new Date(ev.date).toLocaleString();
+        eventMetaEl.textContent = `${ev.venue} • ${dateStr}`;
+
+        const teamName = evParticipation.team || "-";
+        teamEl.textContent = teamName === "-" ? "-" : teamName;
+
+        const st = evParticipation.status;
+        const badgeClass =
+          st === "Confirmed"
+            ? "badge bg-success"
+            : st === "Waitlist"
+            ? "badge bg-warning text-dark"
+            : "badge bg-secondary";
+        statusBadgeEl.innerHTML = `<span class="${badgeClass}">${st}</span>`;
+
+        registeredOnEl.textContent = new Date(evParticipation.joinedAt).toLocaleString();
+      } else if (ev) {
+        eventContextEl.textContent = `Event: ${ev.name} (${ev.id})`;
+        eventNameEl.textContent = ev.name;
+        eventMetaEl.textContent = `${ev.venue} • ${new Date(ev.date).toLocaleString()}`;
+        teamEl.textContent = "-";
+        statusBadgeEl.innerHTML = `<span class="badge bg-secondary">Not registered</span>`;
+        registeredOnEl.textContent = "-";
+      } else {
+        eventContextEl.textContent = "Participant details (no specific event selected).";
+        eventNameEl.textContent = "-";
+        eventMetaEl.textContent = "-";
+        teamEl.textContent = "-";
+        statusBadgeEl.innerHTML = `<span class="badge bg-secondary">Unknown</span>`;
+        registeredOnEl.textContent = "-";
+      }
+
+      let lastAttendanceUpdate = "-";
+      if (ev && ev.attendance && Object.prototype.hasOwnProperty.call(ev.attendance, p.id)) {
+        const present = !!ev.attendance[p.id];
+        attendanceBadgeEl.innerHTML = `<span class="badge ${
+          present ? "bg-success" : "bg-secondary"
+        }">${present ? "Present" : "Absent"}</span>`;
+        lastAttendanceUpdate = new Date().toLocaleString();
+      } else {
+        attendanceBadgeEl.innerHTML = `<span class="badge bg-secondary">Not marked</span>`;
+      }
+      attendanceUpdatedEl.textContent = lastAttendanceUpdate;
+
+      allEventsListEl.innerHTML = "";
+      if (p.events && p.events.length) {
+        p.events.forEach(eRef => {
+          const eObj = EVENTS.find(e => e.id === eRef.eventId);
+          const li = document.createElement("li");
+          li.textContent = `${eObj ? eObj.name : eRef.eventId} — ${eRef.status}`;
+          allEventsListEl.appendChild(li);
+        });
+      } else {
+        const li = document.createElement("li");
+        li.textContent = "No other events recorded.";
+        allEventsListEl.appendChild(li);
+      }
+
+      if (eventId) {
+        const historyItems = HISTORY
+          .filter(h => h.eventId === eventId && h.participantId === p.id)
+          .sort((a, b) => new Date(b.when) - new Date(a.when));
+
+        historyContainerEl.innerHTML = "";
+
+        if (!historyItems.length) {
+          historyContainerEl.innerHTML =
+            '<div class="muted small">No changes recorded yet for this participant in this event.</div>';
+        } else {
+          const list = document.createElement("ul");
+          list.style.paddingLeft = "18px";
+          list.style.fontSize = "13px";
+
+          historyItems.forEach(h => {
+            const li = document.createElement("li");
+            li.innerHTML =
+              `<strong>${new Date(h.when).toLocaleString()}</strong> — ${h.action} <span class="muted small">(by ${h.by})</span>`;
+            list.appendChild(li);
+          });
+
+          historyContainerEl.appendChild(list);
+        }
+      } else {
+        historyContainerEl.innerHTML =
+          '<div class="muted small">Select a specific event to view history.</div>';
+      }
+    }
+
+    // Back behavior: try to go back; fallback to Participants
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        if (document.referrer) {
+          window.history.back();
+        } else {
+          window.location.href = "sc-participants.html";
+        }
+      });
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
+

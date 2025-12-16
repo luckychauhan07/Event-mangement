@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — Manage Teams (Student Coordinator)</title>
+
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
+      <div class="logo-mark">EE</div>
+      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+        Event Ease
+      </div>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <input
+        id="scTeamsSearch"
+        class="form-control form-control-sm d-none d-md-block"
+        style="min-width: 260px"
+        placeholder="Search teams or members"
+      />
+
+      <!-- User dropdown (no bell) -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            SC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Student Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="sc-dashboard.html">🏠 Dashboard</a>
+        <a href="sc-events.html">📅 My Events</a>
+        <a href="sc-teams.html" class="active">👥 Manage Teams</a>
+        <a href="sc-participants.html">📋 Participants</a>
+        <a href="sc-notifications.html">
+          🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="scNotifCountBadge">3</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Manage Teams</h4>
+          <div class="muted">
+            Create and manage teams for events where you are Student Coordinator.
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" id="btnBack" class="btn btn-outline btn-sm">
+            ← Back
+          </button>
+        </div>
+      </div>
+
+      <!-- Event selector + actions -->
+      <div class="card-compact mb-3">
+        <div class="row g-2">
+          <div class="col-12 col-md-5">
+            <label class="form-label small mb-1">Event</label>
+            <select id="scTeamsEvent" class="form-select"></select>
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Team size limit</label>
+            <div id="scTeamsSize" class="form-control" style="background: #f9fafb;">–</div>
+          </div>
+          <div class="col-6 col-md-4 d-flex align-items-end justify-content-end">
+            <button id="btnCreateTeam" class="btn btn-primary">
+              <span class="bi bi-plus-circle me-1"></span>Create team
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teams table -->
+      <div class="card-compact">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong>Teams</strong>
+            <div class="muted small" id="scTeamsSummary"></div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="table table-fixed align-middle">
+            <thead>
+              <tr>
+                <th class="table-col--name">Team</th>
+                <th style="width: 110px;">Members</th>
+                <th style="width: 140px;">Leader</th>
+                <th style="width: 130px;">Status</th>
+                <th style="width: 120px;">Last updated</th>
+                <th style="width: 190px;" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="scTeamsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create / Edit team modal -->
+  <div class="modal fade" id="teamModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="teamForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="teamModalTitle">Create team</h5>
+            <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="teamId" />
+            <div class="mb-3">
+              <label for="teamName" class="form-label">Team name</label>
+              <input id="teamName" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label for="teamLeader" class="form-label">Team leader (student ID)</label>
+              <input id="teamLeader" class="form-control" required />
+              <div class="form-text">Student must already be a participant in this event.</div>
+            </div>
+            <div class="mb-3">
+              <label for="teamStatus" class="form-label">Status</label>
+              <select id="teamStatus" class="form-select">
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+                <option value="Disbanded">Disbanded</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" type="button" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-primary" type="submit">Save team</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage members modal -->
+  <div class="modal fade" id="membersModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="membersModalTitle">Team members</h5>
+          <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 d-flex justify-content-between align-items-center">
+            <div>
+              <div class="muted small">Current members</div>
+            </div>
+            <div class="d-flex gap-2">
+              <input
+                id="memberSearch"
+                class="form-control form-control-sm"
+                style="width: 220px;"
+                placeholder="Search by ID or name"
+              />
+              <button class="btn btn-primary btn-sm" id="btnAddMemberManual" type="button">
+                Add member (ID)
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrapper mb-3">
+            <table class="table table-fixed align-middle">
+              <thead>
+                <tr>
+                  <th style="width: 130px;">Student ID</th>
+                  <th class="table-col--name">Name</th>
+                  <th style="width: 110px;">Role</th>
+                  <th style="width: 100px;" class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="membersTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="muted small">
+            Members are limited by the event’s maximum team size and must already be registered for this event.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" type="button" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const SC_ID = "SC01";
+
+    const SC_EVENTS = [
+      {
+        id: "E101",
+        name: "Hackathon — Team Coordination",
+        date: "2025-12-05T10:00",
+        venue: "Auditorium A",
+        teamSize: 4,
+        scAssigned: SC_ID
+      },
+      {
+        id: "E102",
+        name: "Design Sprint",
+        date: "2025-12-12T09:00",
+        venue: "Lab 101",
+        teamSize: 3,
+        scAssigned: SC_ID
+      }
+    ];
+
+    let TEAMS = [
+      {
+        id: "T001",
+        eventId: "E101",
+        name: "Code Warriors",
+        leaderId: "S101",
+        members: ["S101", "S102"],
+        status: "Active",
+        updatedAt: "2025-11-25T10:00:00"
+      },
+      {
+        id: "T002",
+        eventId: "E101",
+        name: "Bug Smashers",
+        leaderId: "S103",
+        members: ["S103"],
+        status: "Pending",
+        updatedAt: "2025-11-26T15:30:00"
+      },
+      {
+        id: "T003",
+        eventId: "E102",
+        name: "Design Ninjas",
+        leaderId: "S106",
+        members: ["S106", "S107"],
+        status: "Active",
+        updatedAt: "2025-11-27T11:45:00"
+      }
+    ];
+
+    document.getElementById("scLogoutTop").addEventListener("click", () => {
+      if (confirm("Logout from Student Coordinator account?")) {
+        alert("Logged out.");
+      }
+    });
+
+    const notifBadge = document.getElementById("scNotifCountBadge");
+    if (notifBadge) notifBadge.textContent = "3";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const preEventId = urlParams.get("event");
+
+    const eventSelect = document.getElementById("scTeamsEvent");
+    const teamsSearchInput = document.getElementById("scTeamsSearch");
+    const teamsTbody = document.getElementById("scTeamsTbody");
+    const teamsSummary = document.getElementById("scTeamsSummary");
+    const teamSizeDisplay = document.getElementById("scTeamsSize");
+    const btnCreateTeam = document.getElementById("btnCreateTeam");
+    const btnBack = document.getElementById("btnBack");
+
+    const teamModalEl = document.getElementById("teamModal");
+    const teamModal = new bootstrap.Modal(teamModalEl);
+    const teamForm = document.getElementById("teamForm");
+    const teamModalTitle = document.getElementById("teamModalTitle");
+    const teamIdInput = document.getElementById("teamId");
+    const teamNameInput = document.getElementById("teamName");
+    const teamLeaderInput = document.getElementById("teamLeader");
+    const teamStatusSelect = document.getElementById("teamStatus");
+
+    const membersModalEl = document.getElementById("membersModal");
+    const membersModal = new bootstrap.Modal(membersModalEl);
+    const membersModalTitle = document.getElementById("membersModalTitle");
+    const membersTbody = document.getElementById("membersTbody");
+    const memberSearchInput = document.getElementById("memberSearch");
+    const btnAddMemberManual = document.getElementById("btnAddMemberManual");
+
+    let currentMembersTeamId = null;
+
+    function initEventOptions() {
+      eventSelect.innerHTML = "";
+      SC_EVENTS.forEach(ev => {
+        const opt = document.createElement("option");
+        opt.value = ev.id;
+        opt.textContent = `${ev.name} (${new Date(ev.date).toLocaleDateString()})`;
+        eventSelect.appendChild(opt);
+      });
+      if (SC_EVENTS.length) {
+        if (preEventId && SC_EVENTS.some(e => e.id === preEventId)) {
+          eventSelect.value = preEventId;
+        } else {
+          eventSelect.value = SC_EVENTS[0].id;
+        }
+        updateTeamSizeDisplay();
+      }
+    }
+
+    function updateTeamSizeDisplay() {
+      const ev = SC_EVENTS.find(e => e.id === eventSelect.value);
+      teamSizeDisplay.textContent = ev ? `${ev.teamSize} members` : "–";
+    }
+
+    function applyTeamFilters() {
+      const eventId = eventSelect.value;
+      const q = (teamsSearchInput.value || "").toLowerCase();
+
+      let list = TEAMS.filter(t => t.eventId === eventId);
+
+      if (q) {
+        list = list.filter(
+          t =>
+            t.name.toLowerCase().includes(q) ||
+            t.id.toLowerCase().includes(q) ||
+            t.leaderId.toLowerCase().includes(q)
+        );
+      }
+
+      renderTeamsTable(list);
+      updateTeamsSummary(eventId, list);
+    }
+
+    function renderTeamsTable(list) {
+      teamsTbody.innerHTML = "";
+
+      if (!list.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" class="text-center muted">No teams for this event yet.</td>`;
+        teamsTbody.appendChild(tr);
+        return;
+      }
+
+      list.forEach(team => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="table-col--name">
+            <div style="font-weight:600">${team.name}</div>
+            <div class="small muted">${team.id}</div>
+          </td>
+          <td>${team.members.length}</td>
+          <td>${team.leaderId}</td>
+          <td>
+            <span class="badge ${
+              team.status === "Active"
+                ? "bg-success"
+                : team.status === "Pending"
+                ? "bg-warning text-dark"
+                : "bg-secondary"
+            }">${team.status}</span>
+          </td>
+          <td>${new Date(team.updatedAt).toLocaleDateString()}</td>
+          <td style="width: 190px;" class="text-end">
+            <div class="d-flex justify-content-end gap-1">
+              <button class="btn btn-outline btn-sm" onclick="openMembers('${team.id}')">Members</button>
+              <button class="btn btn-outline btn-sm" onclick="openEditTeam('${team.id}')">Edit</button>
+              <button class="btn btn-outline btn-sm" onclick="deleteTeam('${team.id}')">Delete</button>
+            </div>
+          </td>
+        `;
+        teamsTbody.appendChild(tr);
+      });
+    }
+
+    function updateTeamsSummary(eventId, list) {
+      const ev = SC_EVENTS.find(e => e.id === eventId);
+      if (!ev) {
+        teamsSummary.textContent = "No event selected.";
+        return;
+      }
+      const totalTeams = list.length;
+      const totalMembers = list.reduce((sum, t) => sum + t.members.length, 0);
+      teamsSummary.textContent =
+        `${ev.name} — ${totalTeams} team(s), ${totalMembers} member(s) total.`;
+    }
+
+    function openCreateTeam() {
+      teamModalTitle.textContent = "Create team";
+      teamIdInput.value = "";
+      teamNameInput.value = "";
+      teamLeaderInput.value = "";
+      teamStatusSelect.value = "Active";
+      teamModal.show();
+    }
+
+    function openEditTeam(teamId) {
+      const team = TEAMS.find(t => t.id === teamId);
+      if (!team) return;
+
+      teamModalTitle.textContent = "Edit team";
+      teamIdInput.value = team.id;
+      teamNameInput.value = team.name;
+      teamLeaderInput.value = team.leaderId;
+      teamStatusSelect.value = team.status;
+      teamModal.show();
+    }
+
+    function deleteTeam(teamId) {
+      const team = TEAMS.find(t => t.id === teamId);
+      if (!team) return;
+      if (!confirm(`Delete team "${team.name}"? This will not remove participants from the event.`)) {
+        return;
+      }
+      TEAMS = TEAMS.filter(t => t.id !== teamId);
+      applyTeamFilters();
+    }
+
+    teamForm.addEventListener("submit", evt => {
+      evt.preventDefault();
+
+      const eventId = eventSelect.value;
+      const id = teamIdInput.value;
+      const name = teamNameInput.value.trim();
+      const leaderId = teamLeaderInput.value.trim();
+      const status = teamStatusSelect.value;
+
+      if (!name || !leaderId) return;
+
+      if (id) {
+        const idx = TEAMS.findIndex(t => t.id === id);
+        if (idx >= 0) {
+          TEAMS[idx] = {
+            ...TEAMS[idx],
+            name,
+            leaderId,
+            status,
+            updatedAt: new Date().toISOString()
+          };
+        }
+      } else {
+        const newId = "T" + String(TEAMS.length + 1).padStart(3, "0");
+        TEAMS.push({
+          id: newId,
+          eventId,
+          name,
+          leaderId,
+          members: [leaderId],
+          status,
+          updatedAt: new Date().toISOString()
+        });
+      }
+
+      teamModal.hide();
+      applyTeamFilters();
+    });
+
+    function openMembers(teamId) {
+      currentMembersTeamId = teamId;
+      const team = TEAMS.find(t => t.id === teamId);
+      if (!team) return;
+
+      membersModalTitle.textContent = `Members — ${team.name} (${team.id})`;
+      renderMembersTable();
+      membersModal.show();
+    }
+
+    function renderMembersTable() {
+      membersTbody.innerHTML = "";
+      const team = TEAMS.find(t => t.id === currentMembersTeamId);
+      if (!team) return;
+
+      team.members.forEach(studentId => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${studentId}</td>
+          <td class="table-col--name">
+            <div style="font-weight:600">Student ${studentId}</div>
+          </td>
+          <td>${studentId === team.leaderId ? "Leader" : "Member"}</td>
+          <td class="text-end">
+            ${
+              studentId === team.leaderId
+                ? `<button class="btn btn-outline btn-sm" disabled>Leader</button>`
+                : `<button class="btn btn-outline btn-sm" onclick="removeMember('${studentId}')">Remove</button>`
+            }
+          </td>
+        `;
+        membersTbody.appendChild(tr);
+      });
+
+      if (!team.members.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4" class="text-center muted">No members in this team yet.</td>`;
+        membersTbody.appendChild(tr);
+      }
+    }
+
+    function removeMember(studentId) {
+      const team = TEAMS.find(t => t.id === currentMembersTeamId);
+      if (!team) return;
+      if (!confirm(`Remove ${studentId} from ${team.name}?`)) return;
+      team.members = team.members.filter(m => m !== studentId);
+      team.updatedAt = new Date().toISOString();
+      renderMembersTable();
+      applyTeamFilters();
+    }
+
+    function addMemberManual() {
+      const team = TEAMS.find(t => t.id === currentMembersTeamId);
+      if (!team) return;
+
+      const studentId = prompt("Enter student ID to add:");
+      if (!studentId) return;
+
+      if (team.members.includes(studentId)) {
+        alert("This student is already in the team.");
+        return;
+      }
+
+      const ev = SC_EVENTS.find(e => e.id === team.eventId);
+      if (ev && team.members.length >= ev.teamSize) {
+        alert("This team has reached the maximum size for this event.");
+        return;
+      }
+
+      team.members.push(studentId);
+      team.updatedAt = new Date().toISOString();
+      renderMembersTable();
+      applyTeamFilters();
+    }
+
+    function memberSearchChanged() {
+      const q = (memberSearchInput.value || "").toLowerCase();
+      Array.from(membersTbody.children).forEach(tr => {
+        const text = tr.textContent.toLowerCase();
+        tr.style.display = text.includes(q) ? "" : "none";
+      });
+    }
+
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        if (document.referrer) {
+          window.history.back(); // standard back behavior[web:733][web:730]
+        } else {
+          window.location.href = "sc-dashboard.html";
+        }
+      });
+    }
+
+    eventSelect.addEventListener("change", () => {
+      updateTeamSizeDisplay();
+      applyTeamFilters();
+    });
+
+    teamsSearchInput.addEventListener("input", applyTeamFilters);
+    btnCreateTeam.addEventListener("click", openCreateTeam);
+    btnAddMemberManual.addEventListener("click", addMemberManual);
+    memberSearchInput.addEventListener("input", memberSearchChanged);
+
+    initEventOptions();
+    applyTeamFilters();
+
+    window.openMembers = openMembers;
+    window.openEditTeam = openEditTeam;
+    window.deleteTeam = deleteTeam;
+    window.removeMember = removeMember;
+  </script>
+</body>
+</html>

@@ -1,290 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Event Ease — Student Coordinator Events</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — Student Coordinator Events</title>
 
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="../style.css" />
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared project styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
+      <div class="logo-mark">EE</div>
+      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
+        Event Ease
+      </div>
+    </a>
 
-		<style>
-			body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
-			}
-			.app-main {
-				flex: 1;
-				padding: 32px;
-			}
-			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
-				.app-main {
-					padding: 24px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<header class="topbar">
-			<a
-				class="d-flex align-items-center text-decoration-none"
-				href="sc-home.html"
-			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
-					Event Ease
-				</div>
-			</a>
+    <div class="d-flex align-items-center gap-3">
+      <input
+        id="scEvtSearch"
+        class="form-control form-control-sm d-none d-md-block"
+        style="min-width: 260px"
+        placeholder="Search assigned events"
+      />
 
-			<div class="d-flex align-items-center gap-3">
-				<input
-					id="scEvtSearch"
-					class="form-control form-control-sm d-none d-md-block"
-					style="min-width: 260px"
-					placeholder="Search assigned events"
-				/>
-				<div class="dropdown">
-					<button
-						class="btn d-flex align-items-center gap-2"
-						data-bs-toggle="dropdown"
-					>
-						<div
-							class="rounded-circle bg-primary text-white"
-							style="
-								width: 36px;
-								height: 36px;
-								display: grid;
-								place-items: center;
-							"
-						>
-							SC
-						</div>
-					</button>
-					<ul class="dropdown-menu dropdown-menu-end">
-						<li>
-							<a class="dropdown-item" href="sc-home.html"
-								>Home</a
-							>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</header>
+      <!-- User dropdown (no bell) -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            SC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Student Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
 
-		<div class="app-shell">
-			<aside class="app-sidebar d-none d-lg-flex">
-				<nav class="sidebar-nav">
-					<a href="sc-home.html"
-						>🏠 Home</a
-					>
-					<a
-						href="sc-events.html"
-						class="active"
-						>📅 My Events</a
-					>
-					<a href="sc-roster.html"
-						>📋 Rosters</a
-					>
-				</nav>
-			</aside>
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="sc-dashboard.html">🏠 Dashboard</a>
+        <a href="sc-events.html" class="active">📅 My Events</a>
+        <a href="sc-teams.html">👥 Manage Teams</a>
+        <a href="sc-participants.html">📋 Participants</a>
+        <a href="sc-notifications.html">
+          🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="scNotifCountBadge">3</span>
+        </a>
+      </nav>
+    </aside>
 
-			<main class="app-main">
-				<div
-					class="d-flex justify-content-between align-items-center mb-3"
-				>
-					<div>
-						<h4 class="mb-0">My Events</h4>
-						<div class="muted">
-							Events where you're listed as student coordinator
-						</div>
-					</div>
-					<div class="d-flex gap-2">
-						<select
-							id="filterStatus"
-							class="form-select form-select-sm"
-						>
-							<option value="all">All</option>
-							<option value="upcoming">Upcoming</option>
-							<option value="ongoing">Ongoing</option>
-						</select>
-						<button
-							class="btn btn-outline btn-sm"
-							id="btnExportAll"
-						>
-							Export All
-						</button>
-					</div>
-				</div>
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">My Events</h4>
+          <div class="muted">Events where you're listed as Student Coordinator.</div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <select id="filterStatus" class="form-select form-select-sm">
+            <option value="all">All</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="ongoing">Ongoing</option>
+          </select>
+          <button type="button" id="btnBack" class="btn btn-outline btn-sm">
+            ← Back
+          </button>
+        </div>
+      </div>
 
-				<div class="card-compact">
-					<div class="table-responsive">
-						<table class="table align-middle">
-							<thead>
-								<tr>
-									<th>Event</th>
-									<th>Date</th>
-									<th>Venue</th>
-									<th>Participants</th>
-									<th>Status</th>
-									<th class="text-end">Actions</th>
-								</tr>
-							</thead>
-							<tbody id="scEventsTbody"></tbody>
-						</table>
-					</div>
-				</div>
-			</main>
-		</div>
+      <div class="card-compact">
+        <div class="table-wrapper">
+          <table class="table table-fixed align-middle">
+            <thead>
+              <tr>
+                <th class="table-col--name">Event</th>
+                <th style="width: 120px;">Date</th>
+                <th style="width: 120px;">Venue</th>
+                <th style="width: 130px;">Participants</th>
+                <th style="width: 140px;">Registration</th>
+                <th style="width: 190px;" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="scEventsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
 
-		<!-- Roster & attendance modals reused from previous file via same ids if opened separately -->
-		<div class="modal fade" id="rosterModalSmall" tabindex="-1">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Roster</h5>
-						<button
-							class="btn-close"
-							data-bs-dismiss="modal"
-						></button>
-					</div>
-					<div class="modal-body" id="rosterModalSmallBody"></div>
-					<div class="modal-footer">
-						<button class="btn btn-outline" data-bs-dismiss="modal">
-							Close
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
+  <!-- Roster modal (no longer used, optional to keep) -->
+  <div class="modal fade" id="rosterModalSmall" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Roster</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="rosterModalSmallBody"></div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" data-bs-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-		<script>
-			const SC_ID = "SC01";
-			const allEvents = [
-				{
-					id: "E101",
-					name: "Hackathon — Team Coordination",
-					date: "2025-12-05T10:00",
-					venue: "Auditorium A",
-					requiresApproval: true,
-					teamParticipation: true,
-					scAssigned: SC_ID,
-					participants: ["S101", "S102", "S103"],
-				},
-				{
-					id: "E102",
-					name: "Design Sprint",
-					date: "2025-12-12T09:00",
-					venue: "Lab 101",
-					requiresApproval: false,
-					teamParticipation: true,
-					scAssigned: SC_ID,
-					participants: ["S106", "S107"],
-				},
-			];
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const SC_ID = "SC01";
+    const allEvents = [
+      {
+        id: "E101",
+        name: "Hackathon — Team Coordination",
+        date: "2025-12-05T10:00",
+        venue: "Auditorium A",
+        requiresApproval: true,
+        teamParticipation: true,
+        scAssigned: SC_ID,
+        participants: ["S101", "S102", "S103"]
+      },
+      {
+        id: "E102",
+        name: "Design Sprint",
+        date: "2025-12-12T09:00",
+        venue: "Lab 101",
+        requiresApproval: false,
+        teamParticipation: true,
+        scAssigned: SC_ID,
+        participants: ["S106", "S107"]
+      }
+    ];
 
-			function render() {
-				const tbody = document.getElementById("scEventsTbody");
-				tbody.innerHTML = "";
-				const q = (
-					document.getElementById("scEvtSearch").value || ""
-				).toLowerCase();
-				const st = document.getElementById("filterStatus").value;
-				const list = allEvents
-					.filter((e) => e.scAssigned === SC_ID)
-					.filter((e) => {
-						if (st !== "all") {
-							if (
-								st === "upcoming" &&
-								new Date(e.date) <= new Date()
-							)
-								return false;
-							if (
-								st === "ongoing" &&
-								new Date(e.date) > new Date()
-							)
-								return false;
-						}
-						if (
-							q &&
-							!(e.name + " " + e.id + " " + e.venue)
-								.toLowerCase()
-								.includes(q)
-						)
-							return false;
-						return true;
-					});
-				list.forEach((ev) => {
-					const tr = document.createElement("tr");
-					tr.innerHTML = `<td style="font-weight:600">${
-						ev.name
-					}<div class="small muted">${ev.id}</div></td>
+    document.getElementById("scLogoutTop").addEventListener("click", () => {
+      if (confirm("Logout from Student Coordinator account?")) {
+        alert("Logged out.");
+      }
+    });
+
+    const notifBadge = document.getElementById("scNotifCountBadge");
+    if (notifBadge) notifBadge.textContent = "3";
+
+    function render() {
+      const tbody = document.getElementById("scEventsTbody");
+      tbody.innerHTML = "";
+
+      const q = (document.getElementById("scEvtSearch").value || "").toLowerCase();
+      const st = document.getElementById("filterStatus").value;
+      const now = new Date();
+
+      const list = allEvents
+        .filter(e => e.scAssigned === SC_ID)
+        .filter(e => {
+          const date = new Date(e.date);
+          if (st !== "all") {
+            if (st === "upcoming" && date <= now) return false;
+            if (st === "ongoing" && date > now) return false;
+          }
+          if (
+            q &&
+            !(e.name + " " + e.id + " " + e.venue)
+              .toLowerCase()
+              .includes(q)
+          ) {
+            return false;
+          }
+          return true;
+        });
+
+      list.forEach(ev => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="table-col--name">
+            <div style="font-weight:600">${ev.name}</div>
+            <div class="small muted">${ev.id}</div>
+          </td>
           <td>${new Date(ev.date).toLocaleDateString()}</td>
           <td>${ev.venue}</td>
           <td>${ev.participants.length}</td>
-          <td><span class="badge ${
-				ev.requiresApproval ? "bg-warning text-dark" : "bg-success"
-			}">${ev.requiresApproval ? "Requires approval" : "Auto"}</span></td>
-          <td class="text-end"><button class="btn btn-sm btn-outline me-1" onclick="openRoster('${
-				ev.id
-			}')">Roster</button><button class="btn btn-sm btn-primary" onclick="exportRoster('${
-						ev.id
-					}')">Export</button></td>`;
-					tbody.appendChild(tr);
-				});
-			}
+          <td>
+            <span class="badge ${
+              ev.requiresApproval ? "bg-warning text-dark" : "bg-success"
+            }">${ev.requiresApproval ? "Requires approval" : "Auto"}</span>
+          </td>
+          <td style="width: 190px;" class="text-end">
+            <div class="d-flex justify-content-end gap-1">
+              <button class="btn btn-outline btn-sm" onclick="openRoster('${ev.id}')">Roster</button>
+              <button class="btn btn-outline btn-sm" onclick="openNotify('${ev.id}')">Notify</button>
+              <button class="btn btn-outline btn-sm" onclick="openTeams('${ev.id}')">Teams</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
 
-			function openRoster(id) {
-				const ev = allEvents.find((e) => e.id === id);
-				const body = document.getElementById("rosterModalSmallBody");
-				body.innerHTML = "";
-				ev.participants.forEach((pid) => {
-					const div = document.createElement("div");
-					div.className =
-						"d-flex justify-content-between align-items-center mb-2";
-					div.innerHTML = `<div><strong>${pid}</strong></div><div><button class="btn btn-sm btn-outline" onclick="alert('view participant (demo)')">View</button></div>`;
-					body.appendChild(div);
-				});
-				new bootstrap.Modal(
-					document.getElementById("rosterModalSmall")
-				).show();
-			}
+      if (!list.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" class="text-center muted">No events match your filters.</td>`;
+        tbody.appendChild(tr);
+      }
+    }
 
-			function exportRoster(id) {
-				alert("Export roster (demo) for " + id);
-			}
+    function openRoster(id) {
+      // Navigate to full roster page with event preselected
+      window.location.href = `sc-roster.html?event=${encodeURIComponent(id)}`; // [web:736]
+    }
 
-			document
-				.getElementById("filterStatus")
-				.addEventListener("change", render);
-			document
-				.getElementById("scEvtSearch")
-				.addEventListener("input", render);
-			render();
-		</script>
-	</body>
+    function openParticipant(pid, eventId) {
+      window.location.href = `participant-detail.html?id=${encodeURIComponent(pid)}&event=${encodeURIComponent(eventId)}`;
+    }
+
+    function openNotify(eventId) {
+      window.location.href = `sc-notifications-send.html?eventId=${encodeURIComponent(eventId)}`;
+    }
+
+    function openTeams(eventId) {
+      window.location.href = `sc-teams.html?event=${encodeURIComponent(eventId)}`;
+    }
+
+    document.getElementById("filterStatus").addEventListener("change", render);
+    document.getElementById("scEvtSearch").addEventListener("input", render);
+
+    const btnBack = document.getElementById("btnBack");
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        if (document.referrer) {
+          window.history.back(); // [web:733][web:730]
+        } else {
+          window.location.href = "sc-dashboard.html";
+        }
+      });
+    }
+
+    render();
+
+    window.openRoster = openRoster;
+    window.openNotify = openNotify;
+    window.openTeams = openTeams;
+    window.openParticipant = openParticipant;
+  </script>
+</body>
 </html>
