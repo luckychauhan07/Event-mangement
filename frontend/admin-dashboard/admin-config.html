@@ -1223,13 +1223,12 @@
 
 				// Validate dates
 				if (new Date(data.startAt) >= new Date(data.endAt)) {
-					showToast("End date must be after start date", "warning");
-
+					alert("⚠️ End date must be after start date");
 					return;
 				}
 
 				console.log("Quick Event Created:", data);
-				showToast("Quick event created successfully!", "success");
+				alert("✅ Event created successfully with basic details");
 
 				// In production, send to API:
 				// fetch('/api/events', { method: 'POST', body: JSON.stringify(data) })
@@ -1342,14 +1341,12 @@
 				for (let input of requiredInputs) {
 					if (!input.value.trim()) {
 						input.focus();
-						showToast(
-							`Please fill in: ${
+						alert(
+							`⚠️ Please fill in: ${
 								input.previousElementSibling?.textContent ||
 								"this field"
-							}`,
-							"warning"
+							}`
 						);
-
 						return false;
 					}
 				}
@@ -1362,10 +1359,7 @@
 						eventForm.querySelector('[name="endAt"]').value;
 
 					if (new Date(startAt) >= new Date(endAt)) {
-						showToast(
-							"End date must be after start date",
-							"warning"
-						);
+						alert("⚠️ End date must be after start date");
 						return false;
 					}
 				}
@@ -1742,8 +1736,7 @@
 				};
 
 				console.log("🎉 Event Created:", finalPayload);
-				showToast("Event created successfully", "success");
-				window.location.href = "events.html";
+				alert("✅ Event created successfully with all details!");
 
 				// In production:
 				// fetch('/api/events', { method: 'POST', body: JSON.stringify(finalPayload) })
@@ -1826,61 +1819,10 @@
 						window.location.href = "login.html";
 					}
 				});
-			function showToast(message, type = "success") {
-				const toastEl = document.getElementById("appToast");
-				const toastMsg = document.getElementById("toastMessage");
-
-				toastMsg.textContent = message;
-
-				// Reset classes
-				toastEl.className = "toast align-items-center border-0";
-
-				// Apply type
-				switch (type) {
-					case "success":
-						toastEl.classList.add("text-bg-success");
-						break;
-					case "error":
-						toastEl.classList.add("text-bg-danger");
-						break;
-					case "warning":
-						toastEl.classList.add("text-bg-warning");
-						break;
-					case "info":
-						toastEl.classList.add("text-bg-primary");
-						break;
-				}
-
-				const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-				toast.show();
-			}
 
 			// Initialize
 			showStep(0);
 			updatePreview();
 		</script>
-		<!-- Toast Container -->
-		<div
-			class="toast-container position-fixed top-0 end-0 p-3"
-			style="z-index: 1080"
-		>
-			<div
-				id="appToast"
-				class="toast align-items-center text-bg-success border-0"
-				role="alert"
-				aria-live="assertive"
-				aria-atomic="true"
-			>
-				<div class="d-flex">
-					<div class="toast-body" id="toastMessage">Message here</div>
-					<button
-						type="button"
-						class="btn-close btn-close-white me-2 m-auto"
-						data-bs-dismiss="toast"
-						aria-label="Close"
-					></button>
-				</div>
-			</div>
-		</div>
 	</body>
 </html>
