@@ -1,283 +1,539 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Event Ease — Team Registration</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event Ease — Team Registration</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./user-style.css" />
 
-    <style>
-        :root {
-            --header-h: 64px;
-        }
-        body {
-            font-family: Inter, system-ui, Arial;
-            background: var(--bg-light);
-            color: var(--text-dark);
-        }
-        .topbar {
-            height: var(--header-h);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            background: #fff;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
-        .app-shell {
-            display: flex;
-            min-height: calc(100vh - var(--header-h));
-        }
-        .app-sidebar {
-            width: 220px;
-            background: linear-gradient(180deg, #0b1220, #071028);
-            color: #fff;
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-        }
-        .app-main {
-            flex: 1;
-            padding: 22px;
-        }
-        .card-compact {
-            background: var(--bg-surface);
-            border-radius: 10px;
-            padding: 16px;
-            border: 1px solid var(--border);
-        }
-    </style>
+  <style>
+    body {
+      font-family: Inter, system-ui, Arial;
+      background: var(--bg-light);
+      color: var(--text-dark);
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    .app-sidebar {
+      width: var(--sidebar-width);
+      background: linear-gradient(
+        180deg,
+        var(--sidebar-gradient-start),
+        var(--sidebar-gradient-end)
+      );
+      color: #fff;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+    }
+
+    .app-main {
+      flex: 1;
+      padding: 32px;
+      background: var(--bg-light);
+    }
+
+    @media (max-width: 991px) {
+      .app-sidebar {
+        display: none;
+      }
+      .app-main {
+        padding: 24px 16px;
+      }
+    }
+
+    .muted {
+      color: var(--text-muted);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+
+    .page-header .btn {
+      border-radius: 999px;
+    }
+
+    .card-compact {
+      background: #fff;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+      border: 1px solid #e5e7eb;
+    }
+
+    .event-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4f46e5;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .team-progress {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .team-progress .progress {
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .pill-counter {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      color: #166534;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .member-form-row input {
+      font-size: 0.85rem;
+    }
+
+    .member-form-row .btn {
+      border-radius: 999px;
+    }
+
+    /* Member chips instead of plain table look */
+    .member-list {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .member-chip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      font-size: 0.85rem;
+      transition: 0.2s ease;
+    }
+
+    .member-chip:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      background: #ffffff;
+    }
+
+    .member-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .member-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #4f46e5, #3b82f6);
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .member-meta {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    .member-chip .btn-sm {
+      border-radius: 999px;
+      font-size: 0.75rem;
+    }
+
+    .alert-inline {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      display: none;
+    }
+
+    .alert-inline.show {
+      display: block;
+    }
+
+    .btn-wide {
+      min-width: 150px;
+      border-radius: 999px;
+    }
+  </style>
 </head>
 
 <body>
+<header class="topbar">
+  <a
+    href="user-home.html"
+    class="d-flex align-items-center text-decoration-none"
+  >
+    <div class="logo-mark">EE</div>
+    <div
+      style="
+        margin-left: 10px;
+        font-weight: 700;
+        color: var(--text-dark);
+      "
+    >
+      Event Ease
+    </div>
+  </a>
 
-    <!-- TOP BAR -->
-    <header class="topbar">
-        <a href="user-home.html" class="d-flex align-items-center text-decoration-none">
-            <div class="logo-mark"
-                 style="width: 36px; height: 36px; border-radius: 8px;
-                 background: linear-gradient(180deg,#3b82f6,#2b6ee6);
-                 display: grid; place-items: center; color: #fff;">
-                EE
-            </div>
-            <div style="margin-left: 10px; font-weight: 700">Event Ease</div>
-        </a>
-
-        <div class="d-flex align-items-center gap-3">
-            <input class="form-control form-control-sm d-none d-md-block"
-                   placeholder="Search events..." style="min-width: 260px" />
-
-            <div class="dropdown">
-                <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                    <div class="rounded-circle bg-primary text-white"
-                         style="width: 36px; height: 36px; display: grid; place-items: center;">
-                        ST
-                    </div>
-                    <div class="d-none d-md-block text-start">
-                        <div style="font-weight: 600">Student</div>
-                        <div class="muted">you@college.edu</div>
-                    </div>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="user-profile.html">Profile</a></li>
-                    <li><a class="dropdown-item" href="user-registrations.html">My Registrations</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><button class="dropdown-item text-danger">Logout</button></li>
-                </ul>
-            </div>
+  <div class="d-flex align-items-center gap-3">
+    <input
+      id="searchUserTop"
+      class="form-control form-control-sm d-none d-md-block"
+      placeholder="Search events..."
+      style="min-width: 260px"
+    />
+    <div class="dropdown">
+      <button
+        class="btn d-flex align-items-center gap-2"
+        data-bs-toggle="dropdown"
+      >
+        <div
+          class="rounded-circle bg-primary text-white"
+          style="
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+          "
+        >
+          ST
         </div>
-    </header>
+        <div class="d-none d-md-block text-start">
+          <div style="font-weight: 600">Student</div>
+          <div class="muted">you@college.edu</div>
+        </div>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a class="dropdown-item" href="user-profile.html">Profile</a>
+        </li>
+        <li>
+          <a
+            class="dropdown-item"
+            href="user-registrations.html"
+          >My Registrations</a>
+        </li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+          <button
+            class="dropdown-item text-danger"
+            id="userLogout"
+          >
+            Logout
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
 
-    <div class="app-shell">
+<div class="app-shell">
+  <aside class="app-sidebar d-none d-lg-flex">
+    <nav class="sidebar-nav">
+      <a href="user-home.html">🏠 Home</a>
+      <a href="user-events.html" class="active">📅 Browse Events</a>
+      <a href="user-registrations.html">📋 My Registrations</a>
+      <a href="user-notification.html">🔔 Notifications</a>
+      <a href="user-profile.html">👤 Profile</a>
+    </nav>
+    <div class="sidebar-footer">
+      © <span id="userYear"></span> Event Ease
+    </div>
+  </aside>
 
-        <!-- SIDEBAR -->
-        <aside class="app-sidebar d-none d-lg-flex">
-            <nav style="display:flex; flex-direction:column; gap:10px;">
-                <a href="user-home.html" class="text-white-95 p-2 rounded">🏠 Home</a>
-                <a href="user-events.html" class="text-white-95 p-2 rounded">📅 Browse Events</a>
-                <a href="user-registrations.html" class="text-white-95 p-2 rounded">📋 My Registrations</a>
-                <a href="user-notification.html" class="text-white-95 p-2 rounded active">🔔 Notifications</a>
-				<a href="user-profile.html" class="text-white-95 p-2 rounded">👤 Profile</a>
-            </nav>
-            <div style="margin-top:auto">
-                <div class="small text-white-75">© <span id="year"></span> Event Ease</div>
-            </div>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="app-main">
-
-            <h4 class="mb-2">Team Registration</h4>
-            <div class="muted mb-3">Create and submit your team for this event.</div>
-
-            <div class="card-compact mb-3">
-
-                <!-- EVENT INFO -->
-                <h5 id="eventName">Event Name</h5>
-                <p class="muted small" id="eventMeta">Event details appear here…</p>
-
-                <hr />
-
-                <!-- TEAM NAME -->
-                <div class="mb-3">
-                    <label class="form-label">Team Name</label>
-                    <input id="teamName" class="form-control" placeholder="Enter team name" />
-                </div>
-
-                <!-- ADD MEMBER -->
-                <h6>Team Members</h6>
-
-                <div class="row g-2 align-items-end mb-2">
-                    <div class="col-md-4">
-                        <label class="form-label small">Student Name</label>
-                        <input id="memberName" class="form-control" placeholder="Enter name" />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label small">Student Email</label>
-                        <input id="memberEmail" class="form-control" placeholder="Enter email" />
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label small">Student ID</label>
-                        <input id="memberId" class="form-control" placeholder="Enter ID" />
-                    </div>
-                    <div class="col-md-1">
-                        <button id="addMember" class="btn btn-primary w-100">+</button>
-                    </div>
-                </div>
-
-                <!-- MEMBERS TABLE -->
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>ID</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="teamTable"></tbody>
-                    </table>
-                </div>
-
-                <!-- SUBMIT -->
-                <div class="text-end mt-3">
-                    <button id="submitTeam" class="btn btn-primary">Submit Team</button>
-                </div>
-
-            </div>
-
-        </main>
-
+  <!-- MAIN CONTENT -->
+  <main class="app-main">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Team Registration</div>
+        <div class="page-subtitle">
+          Create your team and submit a single registration for this event.
+        </div>
+      </div>
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        onclick="location.href='user-events.html'"
+      >
+        ← Back to events
+      </button>
     </div>
 
-    <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    <div class="card-compact">
+      <!-- EVENT INFO -->
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <span class="event-chip">Hackathon • Team event</span>
+          <h5 class="mt-2 mb-1" id="eventName">Event Name</h5>
+          <p class="muted small mb-1" id="eventMeta">Event details appear here…</p>
+          <div class="team-progress">
+            <span id="teamCountLabel">0 / 0 members added</span>
+            <div class="progress mt-1">
+              <div
+                id="teamProgressBar"
+                class="progress-bar bg-primary"
+                role="progressbar"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="text-end">
+          <span class="pill-counter" id="teamSizeBadge">Max team size: 0</span>
+        </div>
+      </div>
 
-    const EVENT = {
-        id: "E101",
-        name: "Inter-College Hackathon",
-        date: "2025-12-05T10:00",
-        venue: "Auditorium A",
-        maxTeam: 5
-    };
+      <hr />
 
-    document.getElementById("eventName").textContent = EVENT.name;
-    document.getElementById("eventMeta").textContent =
-        `${new Date(EVENT.date).toLocaleString()} • ${EVENT.venue} • Max members: ${EVENT.maxTeam}`;
+      <!-- TEAM NAME -->
+      <div class="mb-3">
+        <label class="form-label">Team Name</label>
+        <input id="teamName" class="form-control" placeholder="Enter team name" />
+      </div>
 
-    let teamMembers = [];
-    let isRegistered = false; // Flag to prevent multiple registrations
+      <!-- ADD MEMBER -->
+      <h6 class="mb-2">Team members</h6>
+      <div class="row g-2 align-items-end member-form-row">
+        <div class="col-md-4">
+          <label class="form-label small">Student Name</label>
+          <input id="memberName" class="form-control" placeholder="Enter name" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Student Email</label>
+          <input id="memberEmail" class="form-control" placeholder="Enter email" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small">Student ID</label>
+          <input id="memberId" class="form-control" placeholder="Enter ID" />
+        </div>
+        <div class="col-md-1 d-grid">
+          <button id="addMember" class="btn btn-primary">Add</button>
+        </div>
+      </div>
 
-    const addMemberBtn = document.getElementById("addMember");
-    const submitBtn = document.getElementById("submitTeam");
+      <div id="formAlert" class="alert alert-danger alert-inline" role="alert"></div>
 
-    // Add member
-    addMemberBtn.onclick = () => {
-        if (isRegistered) return; // Prevent adding after registration
+      <!-- MEMBERS LIST -->
+      <div class="member-list mt-3" id="teamList"></div>
+      <div id="emptyState" class="text-muted small mt-2">
+        No members added yet. Add at least one member to submit.
+      </div>
 
-        const name = memberName.value.trim();
-        const email = memberEmail.value.trim();
-        const id = memberId.value.trim();
+      <!-- SUBMIT -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="text-muted small">
+          Once submitted, the team details cannot be edited from here.
+        </div>
+        <button id="submitTeam" class="btn btn-primary btn-wide">
+          Submit team
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
 
-        if (!name || !email || !id) {
-            alert("Please fill all fields.");
-            return;
-        }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.getElementById("userYear").textContent = new Date().getFullYear();
 
-        if (teamMembers.length >= EVENT.maxTeam) {
-            alert("Team member limit reached.");
-            return;
-        }
+  const EVENT = {
+    id: "E101",
+    name: "Inter-College Hackathon",
+    date: "2025-12-05T10:00",
+    venue: "Auditorium A",
+    maxTeam: 5
+  };
 
-        teamMembers.push({ name, email, id });
-        renderTable();
+  document.getElementById("eventName").textContent = EVENT.name;
+  document.getElementById("eventMeta").textContent =
+    `${new Date(EVENT.date).toLocaleString()} • ${EVENT.venue}`;
+  document.getElementById("teamSizeBadge").textContent =
+    `Max team size: ${EVENT.maxTeam}`;
 
-        memberName.value = "";
-        memberEmail.value = "";
-        memberId.value = "";
-    };
+  let teamMembers = [];
+  let isRegistered = false;
 
-    function renderTable() {
-        const tbody = document.getElementById("teamTable");
-        tbody.innerHTML = "";
+  const addMemberBtn = document.getElementById("addMember");
+  const submitBtn = document.getElementById("submitTeam");
+  const formAlert = document.getElementById("formAlert");
 
-        teamMembers.forEach((m, index) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${m.name}</td>
-                <td>${m.email}</td>
-                <td>${m.id}</td>
-                <td>
-                    <button class="btn btn-sm btn-danger" onclick="removeMember(${index})" ${isRegistered ? "disabled" : ""}>Remove</button>
-                </td>`;
-            tbody.appendChild(tr);
-        });
+  function showError(message) {
+    formAlert.textContent = message;
+    formAlert.classList.add("show");
+  }
+
+  function clearError() {
+    formAlert.classList.remove("show");
+    formAlert.textContent = "";
+  }
+
+  function initialsFromName(name) {
+    return name
+      .split(" ")
+      .filter(Boolean)
+      .map(n => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  }
+
+  function updateTeamProgress() {
+    const countLabel = document.getElementById("teamCountLabel");
+    const bar = document.getElementById("teamProgressBar");
+
+    const current = teamMembers.length;
+    const max = EVENT.maxTeam;
+    const percent = Math.min(100, Math.round((current / max) * 100) || 0);
+
+    countLabel.textContent = `${current} / ${max} members added`;
+    bar.style.width = percent + "%";
+  }
+
+  function renderTeamList() {
+    const list = document.getElementById("teamList");
+    const emptyState = document.getElementById("emptyState");
+    list.innerHTML = "";
+
+    if (!teamMembers.length) {
+      emptyState.style.display = "block";
+    } else {
+      emptyState.style.display = "none";
     }
 
-    function removeMember(i) {
-        if (isRegistered) return; // Prevent removal after registration
-        teamMembers.splice(i, 1);
-        renderTable();
+    teamMembers.forEach((m, index) => {
+      const chip = document.createElement("div");
+      chip.className = "member-chip";
+
+      chip.innerHTML = `
+        <div class="member-main">
+          <div class="member-avatar">${initialsFromName(m.name)}</div>
+          <div>
+            <div><strong>${m.name}</strong></div>
+            <div class="member-meta">${m.email} • ${m.id}</div>
+          </div>
+        </div>
+        <button
+          class="btn btn-sm btn-outline-danger"
+          onclick="removeMember(${index})"
+          ${isRegistered ? "disabled" : ""}
+        >
+          Remove
+        </button>
+      `;
+
+      list.appendChild(chip);
+    });
+
+    updateTeamProgress();
+  }
+
+  function removeMember(i) {
+    if (isRegistered) return;
+    teamMembers.splice(i, 1);
+    renderTeamList();
+  }
+
+  // Add member
+  addMemberBtn.onclick = () => {
+    if (isRegistered) return;
+    clearError();
+
+    const name = memberName.value.trim();
+    const email = memberEmail.value.trim();
+    const id = memberId.value.trim();
+
+    if (!name || !email || !id) {
+      showError("Please fill all member fields before adding.");
+      return;
     }
 
-    // Submit team
-    submitBtn.onclick = () => {
-        if (isRegistered) {
-            alert("You have already registered a team for this event.");
-            return;
-        }
+    if (teamMembers.length >= EVENT.maxTeam) {
+      showError("Team member limit reached for this event.");
+      return;
+    }
 
-        if (!teamName.value.trim()) {
-            alert("Team name is required.");
-            return;
-        }
+    teamMembers.push({ name, email, id });
+    renderTeamList();
 
-        if (teamMembers.length === 0) {
-            alert("Add at least one team member.");
-            return;
-        }
+    memberName.value = "";
+    memberEmail.value = "";
+    memberId.value = "";
+  };
 
-        alert("Team registered successfully!");
+  // Submit team
+  submitBtn.onclick = () => {
+    if (isRegistered) {
+      showError("You have already registered a team for this event.");
+      return;
+    }
+    clearError();
 
-        // Disable form after registration
-        isRegistered = true;
-        teamName.disabled = true;
-        memberName.disabled = true;
-        memberEmail.disabled = true;
-        memberId.disabled = true;
-        addMemberBtn.disabled = true;
-        submitBtn.disabled = true;
-        renderTable(); // Update remove buttons
-    };
+    if (!teamName.value.trim()) {
+      showError("Team name is required.");
+      return;
+    }
+
+    if (teamMembers.length === 0) {
+      showError("Add at least one team member before submitting.");
+      return;
+    }
+
+    alert("Team registered successfully!");
+
+    isRegistered = true;
+    teamName.disabled = true;
+    memberName.disabled = true;
+    memberEmail.disabled = true;
+    memberId.disabled = true;
+    addMemberBtn.disabled = true;
+    submitBtn.disabled = true;
+    renderTeamList();
+  };
 </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
+

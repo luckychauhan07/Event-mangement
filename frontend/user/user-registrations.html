@@ -1,366 +1,785 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Event Ease — My Registrations (Student)</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Event Ease — My Registrations (Student)</title>
 
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="../style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+<style>
+  :root {
+    --gradient-tech: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-cultural: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
 
-		<style>
-			body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(
-					180deg,
-					var(--sidebar-gradient-start),
-					var(--sidebar-gradient-end)
-				);
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
-			}
-			.app-main {
-				flex: 1;
-				padding: 32px;
-			}
-			.card-compact {
-				background: var(--bg-surface);
-				border-radius: 10px;
-				padding: 16px;
-				border: 1px solid var(--border);
-			}
-			.status-box {
-				padding: 8px 16px;
-				border-radius: 8px;
-				font-size: 14px;
-				font-weight: 700;
-				text-transform: uppercase;
-				display: inline-block;
-				min-width: 140px;
-				text-align: center;
-			}
+  body {
+    font-family: Inter, system-ui, Arial;
+    background: var(--bg-light);
+    color: var(--text-dark);
+  }
 
-			.status-approved {
-				background-color: #198754;
-				color: white;
-			}
+  .app-shell {
+    display: flex;
+    min-height: calc(100vh - var(--header-height));
+  }
 
-			.status-pending {
-				background-color: #ffc107;
-				color: #000;
-			}
+  .app-sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(
+      180deg,
+      var(--sidebar-gradient-start),
+      var(--sidebar-gradient-end)
+    );
+    color: #fff;
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-md);
+  }
 
-			.status-cancelled {
-				background-color: #dc3545;
-				color: white;
-			}
+  .app-main {
+    flex: 1;
+    padding: 32px;
+    background: var(--bg-light);
+  }
 
-			/* Team info styling */
-			.team-box {
-				font-size: 14px;
-				font-weight: 600;
-				padding: 6px 10px;
-				border-radius: 6px;
-				background: #f1f3f5;
-				display: inline-block;
-			}
+  @media (max-width: 900px) {
+    .app-sidebar {
+      display: none;
+    }
+    .app-main {
+      padding: 20px 16px;
+    }
+  }
 
-			.muted {
-				color: var(--text-muted);
-			}
-			@media (max-width: 900px) {
-				.app-sidebar {
-					display: none;
-				}
-				.app-main {
-					padding: 24px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<header class="topbar">
-			<a
-				href="user-home.html"
-				class="d-flex align-items-center text-decoration-none"
-			>
-				<div class="logo-mark">EE</div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
-					Event Ease
-				</div>
-			</a>
-			<div class="d-flex align-items-center gap-3">
-				<input
-					id="searchUserTop"
-					class="form-control form-control-sm d-none d-md-block"
-					placeholder="Search events..."
-					style="min-width: 260px"
-				/>
-				<div class="dropdown">
-					<button
-						class="btn d-flex align-items-center gap-2"
-						data-bs-toggle="dropdown"
-					>
-						<div
-							class="rounded-circle bg-primary text-white"
-							style="
-								width: 36px;
-								height: 36px;
-								display: grid;
-								place-items: center;
-							"
-						>
-							ST
-						</div>
-						<div class="d-none d-md-block text-start">
-							<div style="font-weight: 600">Student</div>
-							<div class="muted">you@college.edu</div>
-						</div>
-					</button>
-					<ul class="dropdown-menu dropdown-menu-end">
-						<li>
-							<a class="dropdown-item" href="user-profile.html"
-								>Profile</a
-							>
-						</li>
-						<li>
-							<a
-								class="dropdown-item"
-								href="user-registrations.html"
-								>My Registrations</a
-							>
-						</li>
-						<li><hr class="dropdown-divider" /></li>
-						<li>
-							<button
-								class="dropdown-item text-danger"
-								onclick="userLogout()"
-							>
-								Logout
-							</button>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</header>
+  .muted {
+    color: var(--text-muted);
+  }
 
-		<div class="app-shell">
-			<aside class="app-sidebar d-none d-lg-flex">
-				<nav class="sidebar-nav">
-					<a href="user-home.html">🏠 Home</a>
-					<a href="user-events.html">📅 Browse Events</a>
-					<a href="user-registrations.html" class="active"
-						>📋 My Registrations</a
-					>
-					<a
-						href="user-notification.html"
-						class="text-white-95 p-2 rounded active"
-						>🔔 Notifications</a
-					>
-					<a
-						href="user-profile.html"
-						class="text-white-95 p-2 rounded"
-						>👤 Profile</a
-					>
-				</nav>
-			</aside>
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
 
-			<main class="app-main">
-				<div class="card-compact">
-					<h5 class="mb-2">Your registrations</h5>
-					<div id="regsList" class="muted small">Loading...</div>
-				</div>
-			</main>
-		</div>
+  .page-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-		<script>
-			/* For demo we reuse the EVENTS array from other pages; make local copy to keep standalone */
-			const EVENTS = [
-				{
-					id: "E101",
-					name: "Inter-College Hackathon",
-					requiresApproval: true,
-				},
-				{ id: "E102", name: "Food Fest", requiresApproval: false },
-				{ id: "E103", name: "Design Sprint", requiresApproval: false },
-			];
-			/* registrations persisted here in-memory. In a real app these would be fetched from backend */
-			let registrations = [
-				{
-					regId: "R100",
-					eventId: "E101",
-					status: "pending",
-					createdAt: "2025-11-20T10:00:00Z",
-					team: null, // not assigned yet
-				},
-				{
-					regId: "R101",
-					eventId: "E102",
-					status: "approved",
-					createdAt: "2025-11-21T11:00:00Z",
-					team: {
-						name: "Alpha Squad",
-						role: "Member",
-					},
-				},
-			];
+  .page-subtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+  }
 
-			// Add deadline to registrations
-			registrations = registrations.map((r) => ({
-				...r,
-				deadline: r.deadline || "2025-12-16T23:59",
-			}));
+  .page-header-actions .btn {
+    border-radius: 999px;
+  }
 
-			function renderRegs() {
-				const box = document.getElementById("regsList");
-				box.innerHTML = "";
+  /* Summary bar */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
 
-				if (registrations.length === 0) {
-					box.innerHTML =
-						'<div class="muted">No registrations yet.</div>';
-					return;
-				}
+  .summary-card {
+    background: var(--bg-surface);
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-				registrations.forEach((r) => {
-					const e = EVENTS.find((x) => x.id === r.eventId) || {
-						name: r.eventId,
-					};
+  .summary-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
 
-					const statusClass =
-						r.status === "approved"
-							? "status-approved"
-							: r.status === "pending"
-							? "status-pending"
-							: "status-cancelled";
+  .summary-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
 
-					const row = document.createElement("div");
+  /* Filter + search row */
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
 
-					/* card-like gap between events */
-					row.className =
-						"d-flex justify-content-between align-items-center mb-4 p-3 border rounded";
+  .filter-row .form-select,
+  .filter-row .form-control {
+    max-width: 220px;
+  }
 
-					row.innerHTML = `
-		<div>
-			<div style="font-weight:600; font-size:16px">
-				${e.name}
-			</div>
+  /* Registration list container */
+  .regs-container {
+    background: var(--bg-surface);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  }
 
-			<div class="muted small mb-2">
-				${r.regId} • ${new Date(r.createdAt).toLocaleString()}
-			</div>
+  .regs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+    color: #6b7280;
+  }
 
-			<!-- STATUS -->
-			<div class="status-box ${statusClass} mb-2">
-				${r.status}
-			</div>
+  .reg-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 12px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    background: #f9fafb;
+    border: 1px solid transparent;
+    transition: 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
 
-			<!-- TEAM INFO -->
-			<div class="team-box">
-				Team:
-				${r.team ? `${r.team.name} (${r.team.role})` : "Not Assigned"}
-			</div>
-		</div>
+  .reg-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    background: linear-gradient(135deg, rgba(96,165,250,0.4), rgba(168,85,247,0.4));
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
 
-		<div class="text-end">
-			<button class="btn btn-sm btn-outline me-2"
-				onclick="viewReg('${r.regId}')">
-				View
-			</button>
+  .reg-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    background: #ffffff;
+  }
 
-			<button
-				class="btn btn-sm btn-danger"
-				${
-					new Date() <= new Date(r.deadline) &&
-					r.status !== "cancelled"
-						? ""
-						: "disabled"
-				}
-				onclick="withdrawRegistration('${r.regId}')"
-			>
-				Withdraw
-			</button>
-		</div>
-		`;
+  .reg-card:hover::before {
+    opacity: 1;
+  }
 
-					box.appendChild(row);
-				});
-			}
+  .reg-content {
+    position: relative;
+    z-index: 1;
+  }
 
-			function viewReg(regId) {
-				const r = registrations.find((x) => x.regId === regId);
-				const e = EVENTS.find((x) => x.id === r.eventId);
-				alert(
-					`${e.name}\nRegistration ID: ${r.regId}\nStatus: ${
-						r.status
-					}\nRequested: ${new Date(r.createdAt).toLocaleString()}`
-				);
-			}
+  .reg-main-title {
+    font-weight: 600;
+    font-size: 0.98rem;
+  }
 
-			renderRegs();
-			function withdrawRegistration(regId) {
-				const reg = registrations.find((r) => r.regId === regId);
-				if (!reg) return alert("Registration not found");
+  .reg-meta {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
 
-				// Deadline check
-				if (new Date() > new Date(reg.deadline)) {
-					return alert("Withdrawal deadline has passed");
-				}
+  .reg-tags {
+    margin-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
 
-				if (
-					!confirm(
-						"Are you sure you want to withdraw from this event?"
-					)
-				)
-					return;
+  .status-pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-				// Update status
-				reg.status = "cancelled";
+  .status-approved {
+    background: rgba(22, 163, 74, 0.16);
+    color: #15803d;
+    border: 1px solid rgba(22, 163, 74, 0.3);
+  }
 
-				alert("You have successfully withdrawn from the event.");
+  .status-pending {
+    background: rgba(245, 158, 11, 0.16);
+    color: #b45309;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
 
-				renderRegs();
-			}
-			function userLogout() {
-				if (!confirm("Are you sure you want to logout?")) return;
+  .status-cancelled {
+    background: rgba(220, 38, 38, 0.14);
+    color: #b91c1c;
+    border: 1px solid rgba(220, 38, 38, 0.35);
+  }
 
-				// Clear user session data (if any)
-				localStorage.removeItem("studentSession");
-				localStorage.removeItem("studentProfile");
+  .team-pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    background: #f3f4f6;
+    color: #374151;
+  }
 
-				// Optional: clear everything related to user
-				// localStorage.clear();
+  .deadline-pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
 
-				alert("You have been logged out successfully.");
+  .deadline-pill.overdue {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
 
-				// Redirect to login page (outside user folder)
-				window.location.href = "../login.html";
-			}
-		</script>
-	</body>
+  /* Mini progress / steps */
+  .reg-progress {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  .reg-progress-bar {
+    margin-top: 4px;
+    height: 6px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    overflow: hidden;
+  }
+
+  .reg-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #4f46e5, #22c55e);
+    width: 0;
+    transition: width 0.25s ease;
+  }
+
+  .reg-steps {
+    margin-top: 6px;
+    display: flex;
+    gap: 6px;
+    font-size: 0.7rem;
+  }
+
+  .reg-step {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    color: #4b5563;
+  }
+
+  .reg-step.active {
+    background: #4f46e5;
+    color: #ffffff;
+  }
+
+  .reg-step.done {
+    background: #22c55e;
+    color: #ffffff;
+  }
+
+  .reg-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 150px;
+  }
+
+  .reg-actions small {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  .btn-reg {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    border-radius: 999px;
+  }
+
+  @media (max-width: 768px) {
+    .reg-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .reg-actions {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 30px 10px;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+</style>
+
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a
+        href="user-home.html"
+        class="d-flex align-items-center text-decoration-none"
+      >
+        <div class="logo-mark">EE</div>
+        <div
+          style="
+            margin-left: 10px;
+            font-weight: 700;
+            color: var(--text-dark);
+          "
+        >
+          Event Ease
+        </div>
+      </a>
+      <div class="d-flex align-items-center gap-3">
+        <input
+          id="searchUserTop"
+          class="form-control form-control-sm d-none d-md-block"
+          placeholder="🔍 Search events..."
+          style="min-width: 260px"
+        />
+		<a
+          href="user-notification.html"
+          class="position-relative btn btn-light"
+          title="Notifications"
+        >
+          🔔
+          <span
+            id="adminNotifCount"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 11px"
+          >
+            2
+          </span>
+        </a> 
+        <div class="dropdown">
+          <button
+            class="btn d-flex align-items-center gap-2"
+            data-bs-toggle="dropdown"
+            type="button"
+          >
+            <div
+              class="rounded-circle bg-primary text-white"
+              style="
+                width: 36px;
+                height: 36px;
+                display: grid;
+                place-items: center;
+              "
+            >
+              ST
+            </div>
+            <div class="d-none d-md-block text-start">
+              <div style="font-weight: 600">Student</div>
+              <div class="muted">you@college.edu</div>
+            </div>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="user-profile.html">Profile</a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                href="user-registrations.html"
+                >My Registrations</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <button
+                class="dropdown-item text-danger"
+                onclick="userLogout()"
+              >
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <aside class="app-sidebar d-none d-lg-flex">
+        <nav class="sidebar-nav">
+          <a href="user-home.html">🏠 Home</a>
+          <a href="user-events.html">📅 Browse Events</a>
+          <a href="user-registrations.html" class="active"
+            >📋 My Registrations</a
+          >
+          <a href="user-notification.html">🔔 Notifications</a>
+          <a href="user-profile.html">👤 Profile</a>
+        </nav>
+      </aside>
+
+    <main class="app-main">
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">My Registrations</div>
+      <div class="page-subtitle">
+        Track approvals, team details, and withdrawal deadlines.
+      </div>
+    </div>
+    <div class="page-header-actions">
+      <button
+        class="btn btn-outline-secondary btn-sm me-2"
+        onclick="location.href='user-events.html'"
+      >
+        Browse events
+      </button>
+      <button
+        class="btn btn-primary btn-sm"
+        onclick="location.href='user-notification.html'"
+      >
+        View updates
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary bar -->
+  <div class="summary-bar">
+    <div class="summary-card">
+      <div>
+        <div class="summary-label">Total registrations</div>
+        <div class="summary-value" id="sumTotal">0</div>
+      </div>
+      <span>📋</span>
+    </div>
+    <div class="summary-card">
+      <div>
+        <div class="summary-label">Approved</div>
+        <div class="summary-value text-success" id="sumApproved">0</div>
+      </div>
+      <span>✅</span>
+    </div>
+    <div class="summary-card">
+      <div>
+        <div class="summary-label">Pending</div>
+        <div class="summary-value text-warning" id="sumPending">0</div>
+      </div>
+      <span>⏳</span>
+    </div>
+    <div class="summary-card">
+      <div>
+        <div class="summary-label">Cancelled</div>
+        <div class="summary-value text-danger" id="sumCancelled">0</div>
+      </div>
+      <span>❌</span>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-row">
+    <select id="statusFilter" class="form-select form-select-sm">
+      <option value="all">All statuses</option>
+      <option value="approved">Approved</option>
+      <option value="pending">Pending</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+    <select id="typeFilter" class="form-select form-select-sm">
+      <option value="all">All types</option>
+      <option value="tech">Tech</option>
+      <option value="cultural">Cultural</option>
+    </select>
+    <input
+      id="searchRegs"
+      class="form-control form-control-sm"
+      placeholder="Search by event name or ID..."
+    />
+    <button
+      class="btn btn-sm btn-outline-secondary ms-auto"
+      type="button"
+      onclick="resetFilters()"
+    >
+      Reset
+    </button>
+  </div>
+
+  <!-- Registrations list -->
+  <div class="regs-container">
+    <div class="regs-header">
+      <span id="listTitle">Your recent registrations</span>
+      <span id="listCount"></span>
+    </div>
+    <div id="regsList" class="muted small">Loading...</div>
+    <div id="emptyState" class="empty-state d-none">
+      No registrations found for this filter.
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const EVENTS = [
+    { id: "E101", name: "Inter-College Hackathon", type: "tech" },
+    { id: "E102", name: "Food Fest", type: "cultural" },
+    { id: "E103", name: "Design Sprint", type: "tech" },
+  ];
+
+  let registrations = [
+    {
+      regId: "R100",
+      eventId: "E101",
+      status: "pending",
+      createdAt: "2025-11-20T10:00:00Z",
+      deadline: "2025-12-16T23:59",
+      team: null,
+    },
+    {
+      regId: "R101",
+      eventId: "E102",
+      status: "approved",
+      createdAt: "2025-11-21T11:00:00Z",
+      deadline: "2025-12-18T23:59",
+      team: {
+        name: "Alpha Squad",
+        role: "Member",
+      },
+    },
+  ];
+
+  function statusClass(status) {
+    if (status === "approved") return "status-approved";
+    if (status === "pending") return "status-pending";
+    return "status-cancelled";
+  }
+
+  function statusProgress(status) {
+    // 0 = requested, 50 = pending, 100 = approved/cancelled
+    if (status === "pending") return 50;
+    return 100;
+  }
+
+  function statusSteps(status) {
+    return [
+      { key: "requested", label: "Requested", state: "done" },
+      { key: "review", label: "Under review", state: status === "pending" ? "active" : "done" },
+      { key: "final", label: "Final", state: status === "pending" ? "" : "done" },
+    ];
+  }
+
+  function recalcSummary() {
+    const total = registrations.length;
+    const approved = registrations.filter(r => r.status === "approved").length;
+    const pending = registrations.filter(r => r.status === "pending").length;
+    const cancelled = registrations.filter(r => r.status === "cancelled").length;
+
+    document.getElementById("sumTotal").textContent = total;
+    document.getElementById("sumApproved").textContent = approved;
+    document.getElementById("sumPending").textContent = pending;
+    document.getElementById("sumCancelled").textContent = cancelled;
+  }
+
+  function renderRegs() {
+    const box = document.getElementById("regsList");
+    const empty = document.getElementById("emptyState");
+    const listCount = document.getElementById("listCount");
+    box.innerHTML = "";
+
+    const statusFilter = document.getElementById("statusFilter").value;
+    const typeFilter = document.getElementById("typeFilter").value;
+    const q = document.getElementById("searchRegs").value.toLowerCase();
+
+    const filtered = registrations.filter(r => {
+      const ev = EVENTS.find(e => e.id === r.eventId) || { name: "", type: "" };
+
+      if (statusFilter !== "all" && r.status !== statusFilter) return false;
+      if (typeFilter !== "all" && ev.type !== typeFilter) return false;
+
+      if (
+        q &&
+        !(
+          ev.name.toLowerCase().includes(q) ||
+          r.regId.toLowerCase().includes(q) ||
+          r.eventId.toLowerCase().includes(q)
+        )
+      )
+        return false;
+
+      return true;
+    });
+
+    listCount.textContent = filtered.length
+      ? `${filtered.length} registration(s)`
+      : "";
+
+    if (!filtered.length) {
+      empty.classList.remove("d-none");
+      return;
+    }
+    empty.classList.add("d-none");
+
+    filtered.forEach(r => {
+      const e = EVENTS.find(x => x.id === r.eventId) || { name: r.eventId, type: "tech" };
+      const row = document.createElement("div");
+      row.className = "reg-card";
+
+      const deadlineDate = r.deadline ? new Date(r.deadline) : null;
+      const now = new Date();
+      const overdue = deadlineDate && now > deadlineDate;
+
+      const steps = statusSteps(r.status);
+      const progressVal = statusProgress(r.status);
+
+      row.innerHTML = `
+        <div class="reg-content">
+          <div class="reg-main-title">
+            ${e.name}
+          </div>
+          <div class="reg-meta">
+            ${r.regId} • ${new Date(r.createdAt).toLocaleString()}
+          </div>
+          <div class="reg-tags">
+            <span class="status-pill ${statusClass(r.status)}">
+              ${r.status.toUpperCase()}
+            </span>
+            <span class="team-pill">
+              👥 ${r.team ? `${r.team.name} (${r.team.role})` : "Individual / Not assigned"}
+            </span>
+            ${
+              deadlineDate
+                ? `<span class="deadline-pill ${overdue ? "overdue" : ""}">
+                     ⏱ Withdraw till: ${deadlineDate.toLocaleDateString()}
+                   </span>`
+                : ""
+            }
+          </div>
+          <div class="reg-progress">
+            Status journey
+            <div class="reg-progress-bar">
+              <div class="reg-progress-fill" style="width: ${progressVal}%"></div>
+            </div>
+            <div class="reg-steps">
+              ${steps
+                .map(
+                  s =>
+                    `<span class="reg-step ${s.state}">
+                      ${s.label}
+                     </span>`
+                )
+                .join("")}
+            </div>
+          </div>
+        </div>
+        <div class="reg-actions">
+          <small>${e.type === "tech" ? "Tech event" : "Cultural event"}</small>
+          <div class="d-flex gap-2">
+            <a
+              class="btn btn-sm btn-outline-secondary btn-reg"
+              href="user-event-details.html?id=${e.id}"
+            >
+              Details
+            </a>
+            <button
+              class="btn btn-sm btn-outline-primary btn-reg"
+              onclick="viewReg('${r.regId}')"
+            >
+              View
+            </button>
+            <button
+              class="btn btn-sm btn-danger btn-reg"
+              ${
+                (!deadlineDate || now > deadlineDate || r.status === "cancelled")
+                  ? "disabled"
+                  : ""
+              }
+              onclick="withdrawRegistration('${r.regId}')"
+            >
+              Withdraw
+            </button>
+          </div>
+        </div>
+      `;
+
+      box.appendChild(row);
+    });
+  }
+
+  function viewReg(regId) {
+    const r = registrations.find(x => x.regId === regId);
+    if (!r) return;
+    const e = EVENTS.find(x => x.id === r.eventId) || { name: r.eventId };
+
+    alert(
+      `${e.name}\nRegistration ID: ${r.regId}\nStatus: ${
+        r.status
+      }\nRequested: ${new Date(r.createdAt).toLocaleString()}`
+    );
+  }
+
+  function withdrawRegistration(regId) {
+    const reg = registrations.find(r => r.regId === regId);
+    if (!reg) return alert("Registration not found");
+
+    if (reg.deadline && new Date() > new Date(reg.deadline)) {
+      return alert("Withdrawal deadline has passed");
+    }
+
+    if (!confirm("Are you sure you want to withdraw from this event?")) return;
+
+    reg.status = "cancelled";
+    alert("You have successfully withdrawn from the event.");
+    recalcSummary();
+    renderRegs();
+  }
+
+  function resetFilters() {
+    document.getElementById("statusFilter").value = "all";
+    document.getElementById("typeFilter").value = "all";
+    document.getElementById("searchRegs").value = "";
+    renderRegs();
+  }
+
+  function userLogout() {
+    if (!confirm("Are you sure want to logout?")) return;
+    localStorage.removeItem("studentSession");
+    localStorage.removeItem("studentProfile");
+    alert("You have been logged out successfully.");
+    window.location.href = "../login.html";
+  }
+
+  document.getElementById("statusFilter").addEventListener("change", renderRegs);
+  document.getElementById("typeFilter").addEventListener("change", renderRegs);
+  document.getElementById("searchRegs").addEventListener("input", renderRegs);
+
+  recalcSummary();
+  renderRegs();
+</script>
+
+
+  </body>
 </html>
+
