@@ -7,56 +7,357 @@
 
 		<!-- Bootstrap -->
 		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 		/>
 
-		<!-- Global styles -->
-		<link rel="stylesheet" href="../style.css" />
-		<link rel="stylesheet" href="admin-common.css" />
-
 		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+			:root {
+				--primary: #6366f1;
+				--primary-dark: #4f46e5;
+				--primary-light: #818cf8;
+				--bg-light: #f8fafc;
+				--bg-surface: #ffffff;
+				--text-dark: #0f172a;
+				--text-muted: #64748b;
+				--border: #e2e8f0;
+				--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+				--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+				--card-radius: 16px;
+				--success: #10b981;
+				--warning: #f59e0b;
+				--danger: #ef4444;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
 			body {
+				font-family: "Inter", system-ui, -apple-system, sans-serif;
 				background: var(--bg-light);
 				color: var(--text-dark);
-				font-family: Inter, system-ui, Arial;
+				overflow-x: hidden;
 			}
-			.page-wrap {
-				max-width: 1200px;
-				margin: 0 auto;
-				padding: 32px;
+
+			/* Topbar */
+			.topbar {
+				background: rgba(255, 255, 255, 0.98);
+				backdrop-filter: blur(10px);
+				padding: 16px 32px;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+				border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 			}
-			.header-box {
-				background: var(--bg-surface);
+
+			.topbar a {
+				transition: transform 0.2s ease;
+			}
+
+			.topbar a:hover {
+				transform: translateX(-2px);
+			}
+
+			.logo {
+				width: 40px;
+				height: 40px;
+				background: linear-gradient(
+					135deg,
+					var(--primary),
+					var(--primary-light)
+				);
+				border-radius: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-weight: 700;
+				color: white;
+				font-size: 18px;
+			}
+
+			/* Page Header */
+			.page-header {
+				max-width: 1350px;
+				margin: 24px auto;
+				padding: 20px 32px;
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(10px);
 				border-radius: var(--card-radius);
-				border: 1px solid var(--border);
-				box-shadow: var(--shadow-sm);
-				padding: 24px 32px;
+				border: 1px solid rgba(255, 255, 255, 0.5);
+				box-shadow: var(--shadow-lg);
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				margin-bottom: 28px;
 			}
+
+			.page-header h1 {
+				font-size: 28px;
+				font-weight: 700;
+				margin-bottom: 6px;
+				background: linear-gradient(
+					135deg,
+					var(--primary),
+					var(--primary-light)
+				);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+
+			.muted {
+				color: var(--text-muted);
+				font-size: 14px;
+			}
+
+			/* Main Container - Split View */
+			.split-container {
+				display: flex;
+				max-width: 1400px;
+				margin: 0 auto;
+				padding: 0 24px 24px;
+				gap: 24px;
+				height: calc(100vh - 250px);
+			}
+
+			.left-panel {
+				flex: 1;
+				overflow-y: auto;
+				padding-right: 12px;
+			}
+
+			.right-panel {
+				flex: 1;
+				overflow-y: auto;
+				padding-left: 12px;
+			}
+
+			/* Custom Scrollbar */
+			.left-panel::-webkit-scrollbar,
+			.right-panel::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			.left-panel::-webkit-scrollbar-track,
+			.right-panel::-webkit-scrollbar-track {
+				background: #f1f1f1;
+				border-radius: 10px;
+			}
+
+			.left-panel::-webkit-scrollbar-thumb,
+			.right-panel::-webkit-scrollbar-thumb {
+				background: #888;
+				border-radius: 10px;
+			}
+
+			.left-panel::-webkit-scrollbar-thumb:hover,
+			.right-panel::-webkit-scrollbar-thumb:hover {
+				background: #555;
+			}
+
+			/* Cards */
+			.card {
+				border: none;
+				border-radius: var(--card-radius);
+				box-shadow: var(--shadow-lg);
+				background: rgba(255, 255, 255, 0.98);
+				backdrop-filter: blur(10px);
+				margin-bottom: 24px;
+			}
+
+			/* Form Elements */
+			.form-label {
+				font-weight: 600;
+				color: var(--text-dark);
+				margin-bottom: 8px;
+				font-size: 14px;
+			}
+
+			.form-control,
+			.form-select {
+				border: 2px solid var(--border);
+				border-radius: 10px;
+				padding: 12px 16px;
+				font-size: 15px;
+				transition: all 0.3s ease;
+				background: #fafafa;
+			}
+
+			.form-control:focus,
+			.form-select:focus {
+				border-color: var(--primary);
+				box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+				background: white;
+			}
+
+			textarea.form-control {
+				resize: vertical;
+				min-height: 200px;
+			}
+
+			/* Buttons */
+			.btn {
+				padding: 12px 24px;
+				font-weight: 600;
+				border-radius: 10px;
+				transition: all 0.3s ease;
+				border: none;
+			}
+
+			.btn-primary {
+				background: linear-gradient(
+					135deg,
+					var(--primary),
+					var(--primary-light)
+				);
+				color: white;
+				box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+			}
+
+			.btn-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+				background: linear-gradient(
+					135deg,
+					var(--primary-dark),
+					var(--primary)
+				);
+			}
+
+			.btn-outline-secondary {
+				border: 2px solid var(--border);
+				color: var(--text-dark);
+				background: white;
+			}
+
+			.btn-outline-secondary:hover {
+				background: var(--bg-light);
+				border-color: var(--text-muted);
+				transform: translateY(-1px);
+			}
+
+			/* Alert */
+			.alert-info {
+				background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+				border: 1px solid #93c5fd;
+				color: #1e40af;
+				border-radius: 10px;
+				padding: 12px 16px;
+				font-size: 14px;
+			}
+
+			/* Notification Preview */
 			.notification-preview {
-				border: 1px solid var(--border);
-				border-radius: 12px;
-				padding: 16px;
-				background: #f9fafb;
+				border: 2px solid var(--border);
+				border-radius: 14px;
+				padding: 20px;
+				background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+				box-shadow: var(--shadow-md);
+				transition: all 0.3s ease;
+				position: relative;
+				overflow: hidden;
 			}
+
+			.notification-preview::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 4px;
+				background: linear-gradient(
+					90deg,
+					var(--primary),
+					var(--primary-light)
+				);
+			}
+
 			.preview-header {
 				display: flex;
 				justify-content: space-between;
 				font-size: 13px;
-				color: var(--muted);
-				margin-bottom: 8px;
+				color: var(--text-muted);
+				margin-bottom: 12px;
+				font-weight: 500;
 			}
+
 			.preview-title {
-				font-weight: 600;
-				margin-bottom: 4px;
+				font-weight: 700;
+				margin-bottom: 8px;
+				font-size: 16px;
+				color: var(--text-dark);
 			}
+
 			.preview-message {
 				font-size: 14px;
 				color: #374151;
+				line-height: 1.6;
+				min-height: 60px;
+			}
+
+			.badge {
+				padding: 6px 12px;
+				border-radius: 8px;
+				font-weight: 600;
+				font-size: 12px;
+			}
+
+			hr {
+				border: none;
+				height: 1px;
+				background: linear-gradient(
+					90deg,
+					transparent,
+					var(--border),
+					transparent
+				);
+				margin: 24px 0;
+			}
+
+			/* Event Info Section */
+			.event-info {
+				background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+				padding: 20px;
+				border-radius: 12px;
+				border: 1px solid #bae6fd;
+			}
+			.card-body-lucky {
+				min-width: 600px;
+			}
+			.event-info h4 {
+				background: linear-gradient(135deg, #0284c7, #0369a1);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+
+			/* Character Counter */
+			#charCount {
+				font-weight: 600;
+				color: var(--primary);
+			}
+
+			/* Responsive */
+			@media (max-width: 992px) {
+				.split-container {
+					flex-direction: column;
+					height: auto;
+				}
+
+				.left-panel,
+				.right-panel {
+					overflow-y: visible;
+					padding: 0;
+				}
+
+				.page-header {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 16px;
+				}
 			}
 		</style>
 	</head>
@@ -68,178 +369,180 @@
 				class="d-flex align-items-center text-decoration-none"
 				href="admin.html"
 			>
-				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
-					Event Ease
-				</div>
+				<div class="logo">EE</div>
+				<div class="ms-2 fw-bold text-dark">Event Ease</div>
 			</a>
 		</header>
 
 		<main>
-			<!-- HEADER -->
-			<div class="header-box">
-				<div>
-					<h2 class="mb-1">📢 Send Event Notification</h2>
-					<p class="muted mb-0">
-						Send announcements or updates to participants of this
-						event
-					</p>
+			<!-- PAGE HEADER -->
+			<div class="page-header">
+				<div class="card-body-lucky">
+					<div class="event-info">
+						<div class="small muted mb-1">Event</div>
+						<h4 id="eventName" class="fw-bold mb-1">Event Name</h4>
+						<div class="small muted">
+							Event ID:
+							<span id="eventId" class="fw-semibold"></span>
+						</div>
+					</div>
 				</div>
+
 				<button
-					class="btn-modern btn-outline-modern"
+					class="btn btn-outline-secondary btn-sm"
 					onclick="goBack()"
 				>
-					← Back to Event Details
+					⬅ Back to Event
 				</button>
 			</div>
 
-			<div class="page-wrap">
-				<!-- EVENT CONTEXT -->
-				<div class="card-enhanced mb-4">
-					<div class="muted small">Event</div>
-					<h4 id="eventName" class="fw-bold mb-1">Event Name</h4>
-					<div class="small muted">
-						Event ID: <span id="eventId"></span>
+			<form id="eventNotificationForm">
+				<!-- SPLIT VIEW CONTAINER -->
+				<div class="split-container">
+					<!-- LEFT PANEL: COMPOSE -->
+					<div class="left-panel">
+						<!-- AUDIENCE -->
+						<div class="card">
+							<div class="card-body p-4">
+								<h5 class="fw-bold mb-3">🎯 Audience</h5>
+								<select class="form-select">
+									<option>All Participants</option>
+									<option>Approved Participants</option>
+									<option>Pending Approval</option>
+									<option>Team Leaders</option>
+									<option>Event Coordinators</option>
+								</select>
+
+								<div class="alert alert-info mt-3 mb-0">
+									ℹ️ This notification is limited to this
+									event only.
+								</div>
+							</div>
+							<!-- </div> -->
+
+							<!-- COMPOSE MESSAGE -->
+							<!-- <div class="card"> -->
+							<div class="card-body p-4">
+								<h5 class="fw-bold mb-3">✍️ Compose Message</h5>
+
+								<label class="form-label"
+									>Notification Title</label
+								>
+								<input
+									type="text"
+									id="notifTitle"
+									class="form-control mb-3"
+									placeholder="e.g., Venue changed for tomorrow"
+									required
+								/>
+
+								<label class="form-label"
+									>Message Content</label
+								>
+								<textarea
+									id="notifMessage"
+									class="form-control"
+									rows="6"
+									placeholder="Type your message here..."
+									required
+								></textarea>
+
+								<div
+									class="d-flex justify-content-between mt-2"
+								>
+									<small class="muted"
+										>Max 500 characters</small
+									>
+									<small class="muted">
+										<span id="charCount">0</span>/500
+									</small>
+								</div>
+
+								<label class="form-label mt-3"
+									>Priority Level</label
+								>
+								<select id="notifPriority" class="form-select">
+									<option value="low">🟢 Low Priority</option>
+									<option value="medium" selected>
+										🟡 Medium Priority
+									</option>
+									<option value="high">
+										🔴 High Priority
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- RIGHT PANEL: PREVIEW -->
+					<div class="right-panel">
+						<!-- PREVIEW -->
+						<div class="card">
+							<div class="card-body p-4">
+								<h5 class="fw-bold mb-3">👁️ Live Preview</h5>
+
+								<div class="notification-preview">
+									<div class="preview-header">
+										<span>🔔 Event Notification</span>
+										<span>Just now</span>
+									</div>
+									<div
+										class="preview-title"
+										id="previewTitle"
+									>
+										Notification Title
+									</div>
+									<div
+										class="preview-message"
+										id="previewMessage"
+									>
+										Message preview will appear here as you
+										type.
+									</div>
+									<div class="mt-3">
+										<span
+											id="previewPriority"
+											class="badge bg-warning text-dark"
+										>
+											🟡 Medium
+										</span>
+									</div>
+								</div>
+
+								<div class="mt-4 small muted">
+									<strong>📊 Delivery Information:</strong
+									><br />
+									Will be sent to all event participants
+								</div>
+							</div>
+						</div>
+
+						<!-- ACTION BUTTONS -->
+						<div class="card">
+							<div class="card-body p-4">
+								<div class="d-grid gap-2">
+									<button
+										type="submit"
+										class="btn btn-primary"
+									>
+										📤 Send Notification
+									</button>
+									<button
+										type="button"
+										class="btn btn-outline-secondary"
+										onclick="goBack()"
+									>
+										Cancel
+									</button>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-
-				<form id="eventNotificationForm" class="row g-4">
-					<!-- STEP 1 -->
-					<div class="col-12">
-						<div class="card-enhanced">
-							<h5 class="fw-bold mb-3">
-								<span class="step-number">1</span> Audience
-							</h5>
-							<select class="form-select">
-								<option>All Participants</option>
-								<option>Approved Participants</option>
-								<option>Pending Approval</option>
-								<option>Team Leaders</option>
-								<option>Event Coordinators</option>
-							</select>
-							<div class="alert alert-info mt-3 mb-0">
-								This notification is restricted to this event
-								only.
-							</div>
-						</div>
-					</div>
-
-					<!-- STEP 2 -->
-					<div class="col-lg-7">
-						<div class="card-enhanced h-100">
-							<h5 class="fw-bold mb-3">
-								<span class="step-number">2</span> Compose
-								Message
-							</h5>
-
-							<label class="form-label fw-semibold">
-								Notification Title
-							</label>
-							<input
-								type="text"
-								class="form-control mb-3"
-								id="notifTitle"
-								placeholder="Venue changed for tomorrow"
-								required
-							/>
-
-							<label class="form-label fw-semibold">
-								Message Content
-							</label>
-							<textarea
-								class="form-control"
-								rows="5"
-								id="notifMessage"
-								required
-							></textarea>
-
-							<div class="d-flex justify-content-between mt-2">
-								<small class="muted">Max 500 characters</small>
-								<small class="muted">
-									<span id="charCount">0</span>/500
-								</small>
-							</div>
-
-							<label class="form-label fw-semibold mt-3">
-								Priority
-							</label>
-							<select class="form-select" id="notifPriority">
-								<option value="low">🟢 Low</option>
-								<option value="medium" selected>
-									🟡 Medium
-								</option>
-								<option value="high">🔴 High</option>
-							</select>
-						</div>
-					</div>
-
-					<!-- STEP 3 -->
-					<div class="col-lg-5">
-						<div class="card-enhanced h-100">
-							<h5 class="fw-bold mb-3">
-								<span class="step-number">3</span> Preview
-							</h5>
-
-							<div class="notification-preview">
-								<div class="preview-header">
-									<span>🔔 Event Notification</span>
-									<span>Just now</span>
-								</div>
-								<div class="preview-title" id="previewTitle">
-									Notification Title
-								</div>
-								<div
-									class="preview-message"
-									id="previewMessage"
-								>
-									Message preview will appear here.
-								</div>
-								<div class="mt-2">
-									<span
-										id="previewPriority"
-										class="badge bg-warning text-dark"
-									>
-										🟡 Medium
-									</span>
-								</div>
-							</div>
-
-							<div class="mt-3 small muted">
-								<strong>Will be sent to:</strong><br />
-								Event participants only
-							</div>
-						</div>
-					</div>
-
-					<!-- ACTIONS -->
-					<div class="col-12">
-						<div class="d-flex justify-content-end gap-2">
-							<button
-								type="button"
-								class="btn-modern btn-outline-modern"
-								onclick="goBack()"
-							>
-								Cancel
-							</button>
-							<button
-								type="submit"
-								class="btn-modern btn-primary-modern"
-							>
-								📤 Send Notification
-							</button>
-						</div>
-					</div>
-				</form>
-			</div>
+			</form>
 		</main>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 		<script>
 			const params = new URLSearchParams(window.location.search);
@@ -261,9 +564,20 @@
 				document.getElementById("previewTitle").textContent =
 					titleInput.value || "Notification Title";
 				document.getElementById("previewMessage").textContent =
-					msgInput.value || "Message preview will appear here.";
-				document.getElementById("charCount").textContent =
-					msgInput.value.length;
+					msgInput.value ||
+					"Message preview will appear here as you type.";
+
+				const charCount = msgInput.value.length;
+				document.getElementById("charCount").textContent = charCount;
+
+				const counter = document.getElementById("charCount");
+				if (charCount > 450) {
+					counter.style.color = "var(--danger)";
+				} else if (charCount > 400) {
+					counter.style.color = "var(--warning)";
+				} else {
+					counter.style.color = "var(--primary)";
+				}
 
 				const badge = document.getElementById("previewPriority");
 				if (priorityInput.value === "high") {
@@ -278,17 +592,24 @@
 				}
 			}
 
-			document
-				.getElementById("eventNotificationForm")
-				.addEventListener("submit", (e) => {
-					e.preventDefault();
-					alert("Event notification sent and logged successfully.");
-					window.location.href = "notification-logs.html";
-				});
-
 			function goBack() {
 				window.location.href = `event-details.html?id=${eventId}`;
 			}
+
+			document
+				.getElementById("eventNotificationForm")
+				.addEventListener("submit", function (e) {
+					e.preventDefault();
+
+					const btn = e.target.querySelector('button[type="submit"]');
+					btn.textContent = "✅ Sent!";
+					btn.style.background =
+						"linear-gradient(135deg, var(--success), #059669)";
+
+					setTimeout(() => {
+						goBack();
+					}, 1500);
+				});
 		</script>
 	</body>
 </html>
