@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event Ease – Student Coordinator Dashboard</title>
+
+  <!-- Fonts + Bootstrap -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a href="sc-dashboard.html" class="d-flex align-items-center text-decoration-none">
+      <div class="logo-mark">EE</div>
+      <div style="margin-left: 10px; font-weight: 700;">Event Ease</div>
+    </a>
+
+    <div class="d-flex align-items-center gap-3">
+      <!-- Dashboard: no search, no bell -->
+
+      <!-- User avatar dropdown -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+               style="width: 36px; height: 36px;">
+            SC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Student Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex" aria-label="Student Coordinator navigation">
+      <nav class="sidebar-nav">
+        <a href="sc-dashboard.html" class="active">🏠 Dashboard</a>
+        <a href="sc-events.html">📅 My Events</a>
+        <a href="sc-teams.html">👥 Manage Teams</a>
+        <a href="sc-participants.html">📋 Participants</a>
+        <a href="sc-notifications.html">
+          🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="scNotifCountBadge">3</span>
+        </a>
+        <!-- Profile removed from sidebar -->
+      </nav>
+      <div style="margin-top: auto; font-size: 13px; opacity: 0.9;">
+        <span id="scYear"></span> · Event Ease
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="app-main">
+      <!-- Page heading -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Student Coordinator Dashboard</h4>
+          <div class="muted">Overview of your assigned events, teams, and participant activity.</div>
+        </div>
+      </div>
+
+      <!-- KPI cards row as Bootstrap cards -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <div class="card-compact h-100">
+            <div class="muted small">Assigned events</div>
+            <div class="mt-1" style="font-weight: 700; font-size: 22px;" id="scStatEvents">0</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="card-compact h-100">
+            <div class="muted small">Teams you manage</div>
+            <div class="mt-1" style="font-weight: 700; font-size: 22px;" id="scStatTeams">0</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="card-compact h-100">
+            <div class="muted small">Participants handled</div>
+            <div class="mt-1" style="font-weight: 700; font-size: 22px;" id="scStatParticipants">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next upcoming assigned event -->
+      <div class="card-compact mb-3">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="muted">Next assigned event</div>
+            <h3 id="scNextTitle" class="mb-1">–</h3>
+            <div class="muted" id="scNextMeta">No upcoming events assigned.</div>
+            <p class="muted mt-2" id="scNextDesc"></p>
+            <div class="mt-2 d-flex gap-2">
+              <button class="btn btn-primary btn-sm" id="scNextViewParticipants">View participants</button>
+              <button class="btn btn-outline btn-sm" id="scNextManageTeams">Manage teams</button>
+              <button class="btn btn-outline btn-sm" id="scNextSendUpdate">Send update</button>
+            </div>
+          </div>
+          <div style="text-align: right; min-width: 140px;">
+            <div class="muted">Participants</div>
+            <div style="font-weight: 700;" id="scNextCounts">0 / 0</div>
+            <div class="muted mt-3">Status</div>
+            <div class="mt-1">
+              <span class="badge bg-secondary" id="scNextStatus">No event</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table: My assigned events (compact) -->
+      <div class="card-compact">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong>My assigned events</strong>
+            <div class="muted small">Quick view of events where you are Student Coordinator.</div>
+          </div>
+          <a href="sc-events.html" class="btn btn-outline btn-sm">View all</a>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="table table-fixed align-middle">
+            <thead>
+              <tr>
+                <th class="table-col--name">Event</th>
+                <th style="width: 140px;">Date</th>
+                <th style="width: 120px;">Role</th>
+                <th style="width: 140px;">Participants</th>
+                <th style="width: 100px;">Status</th>
+                <th class="table-col--actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="scEventsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Demo in-memory data for SC
+    const SC_EVENTS = [
+      {
+        id: "E101",
+        name: "Hackathon 2025",
+        date: "2025-12-05T10:00:00",
+        venue: "Auditorium A",
+        role: "Team Coord",
+        status: "Ongoing",
+        participants: 45,
+        capacity: 100,
+        teams: 3
+      },
+      {
+        id: "E102",
+        name: "Tech Workshop",
+        date: "2025-12-10T14:00:00",
+        venue: "Lab 101",
+        role: "Event Helper",
+        status: "Upcoming",
+        participants: 23,
+        capacity: 50,
+        teams: 2
+      }
+    ];
+
+    // Year + notif count
+    document.getElementById("scYear").textContent = new Date().getFullYear();
+    const notifBadge = document.getElementById("scNotifCountBadge");
+    if (notifBadge) notifBadge.textContent = "3";
+
+    // Logout demo
+    document.getElementById("scLogoutTop").addEventListener("click", () => {
+      if (confirm("Logout from Student Coordinator account?")) {
+        alert("Logged out (demo).");
+      }
+    });
+
+    // Populate KPI cards
+    function computeStats() {
+      const totalEvents = SC_EVENTS.length;
+      const totalTeams = SC_EVENTS.reduce((sum, e) => sum + (e.teams || 0), 0);
+      const totalParticipants = SC_EVENTS.reduce((sum, e) => sum + (e.participants || 0), 0);
+
+      document.getElementById("scStatEvents").textContent = totalEvents;
+      document.getElementById("scStatTeams").textContent = totalTeams;
+      document.getElementById("scStatParticipants").textContent = totalParticipants;
+    }
+
+    // Next upcoming event
+    function renderNextEvent() {
+      if (!SC_EVENTS.length) return;
+
+      const sorted = [...SC_EVENTS].sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
+      );
+      const next = sorted[0];
+
+      document.getElementById("scNextTitle").textContent = next.name;
+      document.getElementById("scNextMeta").textContent =
+        new Date(next.date).toLocaleString() + " · " + next.venue;
+      document.getElementById("scNextDesc").textContent =
+        "Role: " + next.role + " • Teams: " + next.teams;
+      document.getElementById("scNextCounts").textContent =
+        next.participants + " / " + next.capacity;
+
+      const badge = document.getElementById("scNextStatus");
+      badge.textContent = next.status;
+      badge.className = "badge " + (next.status === "Ongoing" ? "bg-success" : "bg-secondary");
+
+      document.getElementById("scNextViewParticipants").onclick = () =>
+        openParticipants(next.id);
+      document.getElementById("scNextManageTeams").onclick = () =>
+        openTeams(next.id);
+      document.getElementById("scNextSendUpdate").onclick = () =>
+        openSendUpdate(next.id);
+    }
+
+    // Render table of events
+    function renderEventsTable() {
+      const tbody = document.getElementById("scEventsTbody");
+      tbody.innerHTML = "";
+
+      SC_EVENTS.forEach(e => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="table-col--name">
+            <div style="font-weight: 600;">${e.name}</div>
+            <div class="small muted">${e.id}</div>
+          </td>
+          <td>${new Date(e.date).toLocaleDateString()}</td>
+          <td>${e.role}</td>
+          <td>${e.participants} / ${e.capacity}</td>
+          <td>
+            <span class="badge ${e.status === "Ongoing" ? "bg-success" : "bg-secondary"}">
+              ${e.status}
+            </span>
+          </td>
+          <td class="table-col--actions">
+            <button class="btn btn-outline btn-sm" onclick="openParticipants('${e.id}')">Participants</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Navigation helpers: now go to real pages with event in query
+    function openParticipants(eventId) {
+      window.location.href = `sc-participants.html?event=${encodeURIComponent(eventId)}`;
+    }
+
+    function openTeams(eventId) {
+      window.location.href = `sc-teams.html?event=${encodeURIComponent(eventId)}`;
+    }
+
+    function openSendUpdate(eventId) {
+      window.location.href = `sc-notifications-send.html?eventId=${encodeURIComponent(eventId)}`;
+    }
+
+    // Init
+    computeStats();
+    renderNextEvent();
+    renderEventsTable();
+
+    // expose helpers if needed
+    window.openParticipants = openParticipants;
+    window.openTeams = openTeams;
+    window.openSendUpdate = openSendUpdate;
+  </script>
+</body>
+</html>

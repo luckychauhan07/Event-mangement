@@ -1,446 +1,788 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Event Ease — Home (Student)</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Event Ease — Home (Student)</title>
 
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="../style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./user-style.css" />
 
-		<style>
-			body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(
-					180deg,
-					var(--sidebar-gradient-start),
-					var(--sidebar-gradient-end)
-				);
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
-			}
-			.app-main {
-				flex: 1;
-				padding: 32px;
-			}
-			.small-gap {
-				gap: 8px;
-				display: flex;
-				align-items: center;
-			}
-			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
-				.app-main {
-					padding: 24px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<header class="topbar">
-			<a
-				href="user-home.html"
-				class="d-flex align-items-center text-decoration-none"
-			>
-				<div class="logo-mark">EE</div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
-					Event Ease
-				</div>
-			</a>
+    <style>
+      :root {
+        --gradient-tech: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-cultural: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-food: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-sports: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --gradient-workshop: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      }
 
-			<div class="d-flex align-items-center gap-3">
-				<input
-					id="searchUserTop"
-					class="form-control form-control-sm d-none d-md-block"
-					placeholder="Search events..."
-					style="min-width: 260px"
-				/>
-				<div class="dropdown">
-					<button
-						class="btn d-flex align-items-center gap-2"
-						data-bs-toggle="dropdown"
-					>
-						<div
-							class="rounded-circle bg-primary text-white"
-							style="
-								width: 36px;
-								height: 36px;
-								display: grid;
-								place-items: center;
-							"
-						>
-							ST
-						</div>
-						<div class="d-none d-md-block text-start">
-							<div style="font-weight: 600">Student</div>
-							<div class="muted">you@college.edu</div>
-						</div>
-					</button>
-					<ul class="dropdown-menu dropdown-menu-end">
-						<li>
-							<a class="dropdown-item" href="user-profile.html"
-								>Profile</a
-							>
-						</li>
-						<li>
-							<a
-								class="dropdown-item"
-								href="user-registrations.html"
-								>My Registrations</a
-							>
-						</li>
-						<li><hr class="dropdown-divider" /></li>
-						<li>
-							<button
-								class="dropdown-item text-danger"
-								id="userLogout"
-							>
-								Logout
-							</button>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</header>
+      body {
+        font-family: Inter, sans-serif;
+        background: #f4f6fb;
+      }
 
-		<div class="app-shell">
-			<aside class="app-sidebar d-none d-lg-flex">
-				<nav class="sidebar-nav">
-					<a href="user-home.html" class="active">🏠 Home</a>
-					<a href="user-events.html">📅 Browse Events</a>
-					<a href="user-registrations.html">📋 My Registrations</a>
-					<a
-						href="user-notification.html"
-						class="text-white-95 p-2 rounded active"
-						>🔔 Notifications</a
-					>
-					<a
-						href="user-profile.html"
-						class="text-white-95 p-2 rounded"
-						>👤 Profile</a
-					>
-					<a href="user-profile.html">👤 Profile</a>
-				</nav>
-				<div class="sidebar-footer">
-					© <span id="userYear"></span> Event Ease
-				</div>
-			</aside>
+      .app-main {
+        flex: 1;
+        background: var(--bg-light);
+      }
 
-			<main class="app-main">
-				<div
-					class="d-flex justify-content-between align-items-center mb-3"
-				>
-					<div>
-						<h4 class="mb-0">Welcome, Student 👋</h4>
-						<div class="muted">
-							Browse events, request participation and track your
-							registrations.
-						</div>
-					</div>
-					<div class="small-gap">
-						<button id="btnMyRegs" class="btn btn-outline btn-sm">
-							My Registrations
-						</button>
-						<a
-							href="user-events.html"
-							class="btn btn-primary btn-sm"
-							>Browse Events</a
-						>
-					</div>
-				</div>
+      .app-main-content {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px 34px 40px;
+      }
 
-				<!-- Spotlight: next upcoming event (public view) -->
-				<div class="card-compact mb-3">
-					<div class="d-flex justify-content-between">
-						<div>
-							<div class="muted">Next public event</div>
-							<h3 id="spotTitle">Hackathon — Open Track</h3>
-							<div class="muted small" id="spotMeta">
-								Dec 05, 2025 · Auditorium A
-							</div>
-							<p class="muted mt-2" id="spotDesc">
-								Open 24-hour coding event. Teams allowed.
-								Teacher approval required for some team
-								registrations.
-							</p>
+      /* Header text aligned with Browse Events */
+      .page-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
 
-							<div class="mt-2">
-								<button
-									id="spotRegister"
-									class="btn btn-primary"
-								>
-									Request to Join
-								</button>
-								<button
-									id="spotDetails"
-									class="btn btn-outline"
-								>
-									View Details
-								</button>
-							</div>
-						</div>
+      .page-heading-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
 
-						<div style="text-align: right; min-width: 140px">
-							<div class="muted">Participants</div>
-							<div style="font-weight: 700" id="spotCount">
-								120
-							</div>
-							<div class="muted mt-3">Type</div>
-							<div class="mt-1">
-								<span
-									id="spotType"
-									class="badge bg-warning text-dark"
-									>Requires approval</span
-								>
-							</div>
-						</div>
-					</div>
-				</div>
+      .page-heading-subtitle {
+        font-size: 0.95rem;
+        color: #6b7280;
+      }
 
-				<!-- Events preview -->
-				<div class="card-compact mb-3">
-					<div
-						class="d-flex justify-content-between align-items-center mb-2"
-					>
-						<div>
-							<strong>Upcoming events</strong>
-							<div class="muted">Public & campus events</div>
-						</div>
-						<div>
-							<select
-								id="filterType"
-								class="form-select form-select-sm"
-							>
-								<option value="all">All types</option>
-								<option value="tech">Tech</option>
-								<option value="cultural">Cultural</option>
-							</select>
-						</div>
-					</div>
+      /* Stats cards */
+      .card-ui {
+        background: white;
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+        transition: 0.3s ease;
+      }
 
-					<div class="table-responsive">
-						<table class="table align-middle">
-							<thead>
-								<tr>
-									<th>Event</th>
-									<th>Date</th>
-									<th>Venue</th>
-									<th>Type</th>
-									<th class="text-end">Explore</th>
-								</tr>
-							</thead>
-							<tbody id="eventsPreview"></tbody>
-						</table>
-					</div>
-				</div>
+      .card-ui:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.14);
+      }
 
-				<div class="muted">
-					Remember: registrations for events marked "Requires
-					approval" will show as <strong>Pending</strong> until the
-					teacher approves.
-				</div>
-			</main>
-		</div>
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+      }
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-		<script>
-			/* Demo data: events */
-			const EVENTS = [
-				{
-					id: "E101",
-					name: "Inter-College Hackathon",
-					date: "2025-12-05T10:00",
-					venue: "Auditorium A",
-					type: "tech",
-					teamParticipation: true,
-					requiresApproval: true,
-					manager: "TCH01",
-					capacity: 200,
-					participants: 120,
-				},
-				{
-					id: "E102",
-					name: "Food Fest",
-					date: "2025-12-12T16:00",
-					venue: "Hall B",
-					type: "cultural",
-					teamParticipation: false,
-					requiresApproval: false,
-					manager: "TCH01",
-					capacity: 80,
-					participants: 45,
-				},
-				{
-					id: "E103",
-					name: "Design Sprint",
-					date: "2025-12-10T09:00",
-					venue: "Lab 101",
-					type: "tech",
-					teamParticipation: true,
-					requiresApproval: false,
-					manager: "TCH01",
-					capacity: 40,
-					participants: 22,
-				},
-			];
+      .stat-label {
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
 
-			/* registration store for current student (in-memory) */
-			let registrations = [
-				/* { regId:'R1', eventId:'E101', status:'pending'|'approved'|'cancelled', createdAt:'', notes:'' } */
-			];
+      .stat-num {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
 
-			document.getElementById("userYear").textContent =
-				new Date().getFullYear();
+      /* Next event card aligned with browse cards */
+      .next-event-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #4f46e5, #3b82f6);
+        color: white;
+        padding: 20px;
+        margin-bottom: 22px;
+        box-shadow: 0 20px 45px rgba(37, 99, 235, 0.45);
+      }
 
-			/* Render spot & small list */
-			function renderSpot() {
-				const spot = EVENTS[0];
-				document.getElementById("spotTitle").textContent = spot.name;
-				document.getElementById("spotMeta").textContent = new Date(
-					spot.date
-				).toLocaleString();
-				document.getElementById("spotDesc").textContent = `Type: ${
-					spot.type
-				}. ${
-					spot.teamParticipation ? "Teams allowed." : "Individual."
-				} ${
-					spot.requiresApproval
-						? "Teacher approval required."
-						: "Auto-approved."
-				}`;
-				document.getElementById("spotCount").textContent =
-					spot.participants;
-				document.getElementById("spotType").textContent =
-					spot.requiresApproval ? "Requires approval" : "Auto";
-				document.getElementById("spotRegister").onclick = () =>
-					openRegisterModal(spot.id);
-				document.getElementById("spotDetails").onclick = () =>
-					openEventDetails(spot.id);
-			}
+      .next-event-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -40%;
+        width: 80%;
+        height: 100%;
+        background: radial-gradient(circle at top left, rgba(255,255,255,0.25), transparent 60%);
+        opacity: 0.7;
+      }
 
-			/* Events preview table */
-			function renderEvents() {
-				const tbody = document.getElementById("eventsPreview");
-				tbody.innerHTML = "";
-				const ftype = document.getElementById("filterType").value;
-				EVENTS.filter(
-					(e) => ftype === "all" || e.type === ftype
-				).forEach((e) => {
-					const tr = document.createElement("tr");
-					tr.innerHTML = `
-      <td style="font-weight:600">${e.name}<div class="small muted">${
-						e.id
-					}</div></td>
-      <td>${new Date(e.date).toLocaleDateString()}</td>
-      <td>${e.venue}</td>
-      <td><span class="badge ${
-			e.requiresApproval ? "bg-warning text-dark" : "bg-success"
-		}">${e.requiresApproval ? "Requires approval" : "Auto"}</span></td>
-      <td class="text-end">
-	<button class="btn btn-sm btn-outline me-1"
-		onclick="openEventDetails('${e.id}')">
-		Details
-	</button>
+      .next-event-content {
+        position: relative;
+        z-index: 1;
+      }
 
-	<button class="btn btn-sm btn-primary"
-		onclick="location.href='user-events.html'">
-		Browse
-	</button>
-</td>
+      .next-badge {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
 
-    `;
-					tbody.appendChild(tr);
-				});
-			}
+      .next-event-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
 
-			/* Modal: Register -> behavior depends on requiresApproval */
-			function openRegisterModal(eventId) {
-				const e = EVENTS.find((x) => x.id === eventId);
-				if (!e) return alert("Event not found");
-				const confirmText = e.requiresApproval
-					? `This event requires teacher approval. Submit registration request?`
-					: `This event will be registered automatically (no teacher approval needed). Confirm registration?`;
+      .next-event-meta {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.9);
+      }
 
-				if (!confirm(confirmText)) return;
-				// Demo: create registration
-				const reg = {
-					regId: "R" + Math.floor(Math.random() * 9000 + 1000),
-					eventId: eventId,
-					createdAt: new Date().toISOString(),
-					status: e.requiresApproval ? "pending" : "approved",
-				};
-				registrations.push(reg);
-				// if auto-approved, increment participants count locally
-				if (reg.status === "approved") {
-					e.participants = (e.participants || 0) + 1;
-					alert("Registered (auto-approved).");
-				} else alert("Request sent — status: Pending.");
-				renderEvents();
-			}
+      .next-event-desc {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.9);
+        margin-top: 8px;
+      }
 
-			/* View details (light) */
-			function openEventDetails(eventId) {
-				const e = EVENTS.find((x) => x.id === eventId);
-				if (!e) return;
-				alert(
-					`${e.name}\n${new Date(e.date).toLocaleString()}\nVenue: ${
-						e.venue
-					}\nType: ${e.type}\nTeams: ${
-						e.teamParticipation ? "Allowed" : "No"
-					}\nApproval: ${
-						e.requiresApproval ? "Required" : "Not required"
-					}\nParticipants: ${e.participants}/${e.capacity}`
-				);
-			}
+      .next-event-actions {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
 
-			/* My registrations page quick nav */
-			document
-				.getElementById("btnMyRegs")
-				.addEventListener(
-					"click",
-					() => (location.href = "user-registrations.html")
-				);
-			document
-				.getElementById("filterType")
-				.addEventListener("change", renderEvents);
-			document
-				.getElementById("searchUserTop")
-				.addEventListener("keydown", (e) => {
-					if (e.key === "Enter") {
-						document.getElementById("filterType").value = "all";
-						/* optionally filter by query */ renderEvents();
-					}
-				});
+      .btn-next-outline {
+        border-radius: 999px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        border: 1px solid rgba(255,255,255,0.7);
+        background: transparent;
+        color: white;
+      }
 
-			renderSpot();
-			renderEvents();
-		</script>
-	</body>
+      .btn-next-primary {
+        border-radius: 999px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+        border: none;
+        background: white;
+        color: #1d4ed8;
+        font-weight: 600;
+      }
+
+      .btn-next-outline:hover,
+      .btn-next-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+      }
+
+      /* Quick Actions */
+      .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .action-icon {
+        font-size: 1.8rem;
+      }
+
+      .quick-actions .card-ui h6 {
+        margin-top: 8px;
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      .btn-outline-soft {
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+      }
+
+      /* Upcoming events preview (aligned with browse cards) */
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .section-header h6 {
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .events-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+
+      @media (max-width: 992px) {
+        .events-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 576px) {
+        .app-main-content {
+          padding: 20px 16px 30px;
+        }
+        .events-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .events-grid-card {
+        border-radius: 18px;
+        padding: 16px;
+        background: white;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        transition: 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 220px;
+      }
+
+      .events-grid-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 40px rgba(0,0,0,0.14);
+      }
+
+      .event-type-pill {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: white;
+      }
+
+      .event-type-pill.tech { background: var(--gradient-tech); }
+      .event-type-pill.cultural { background: var(--gradient-cultural); }
+
+      .event-approval-pill {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .event-approval-pill.auto {
+        background: rgba(16, 185, 129, 0.15);
+        color: #15803d;
+        border: 1px solid rgba(16,185,129,0.3);
+      }
+
+      .event-approval-pill.req {
+        background: rgba(245, 158, 11, 0.15);
+        color: #b45309;
+        border: 1px solid rgba(245,158,11,0.3);
+      }
+
+      .events-meta {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-top: 16px;
+      }
+
+      .events-meta strong {
+        color: #111827;
+      }
+
+      .event-progress {
+        margin-top: 8px;
+      }
+
+      .event-progress small {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+
+      .progress {
+        height: 7px;
+        border-radius: 10px;
+      }
+
+      .event-actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+      }
+
+      .empty-state-small {
+        text-align: center;
+        padding: 24px 10px;
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+
+      /* Toast */
+      .toast-success {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        padding: 14px 22px;
+        border-radius: 30px;
+        font-weight: 600;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: 0.4s ease;
+        z-index: 999;
+      }
+
+      .toast-success.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a
+        href="user-home.html"
+        class="d-flex align-items-center text-decoration-none"
+      >
+        <div class="logo-mark">EE</div>
+        <div
+          style="
+            margin-left: 10px;
+            font-weight: 700;
+            color: var(--text-dark);
+          "
+        >
+          Event Ease
+        </div>
+      </a>
+
+      <div class="d-flex align-items-center gap-3">
+        <input
+          id="searchUserTop"
+          class="form-control form-control-sm d-none d-md-block"
+          placeholder="🔍 Search events..."
+          style="min-width: 260px"
+        />
+        <a
+          href="user-notification.html"
+          class="position-relative btn btn-light"
+          title="Notifications"
+        >
+          🔔
+          <span
+            id="adminNotifCount"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 11px"
+          >
+            2
+          </span>
+        </a>
+        <div class="dropdown">
+          <button
+            class="btn d-flex align-items-center gap-2"
+            data-bs-toggle="dropdown"
+            type="button"
+          >
+            <div
+              class="rounded-circle bg-primary text-white"
+              style="
+                width: 36px;
+                height: 36px;
+                display: grid;
+                place-items: center;
+              "
+            >
+              ST
+            </div>
+            <div class="d-none d-md-block text-start">
+              <div style="font-weight: 600">Student</div>
+              <div class="muted">you@college.edu</div>
+            </div>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="user-profile.html">Profile</a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                href="user-registrations.html"
+                >My Registrations</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <button
+                class="dropdown-item text-danger"
+                id="userLogout" onclick="userLogout()"
+              >
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <aside class="app-sidebar d-none d-lg-flex">
+        <nav class="sidebar-nav">
+          <a href="user-home.html" class="active">🏠 Home</a>
+          <a href="user-events.html">📅 Browse Events</a>
+          <a href="user-registrations.html">📋 My Registrations</a>
+          <a href="user-notification.html">🔔 Notifications</a>
+          <a href="user-profile.html">👤 Profile</a>
+        </nav>
+        <div class="sidebar-footer">
+          © <span id="userYear"></span> Event Ease
+        </div>
+      </aside>
+
+      <main class="app-main">
+        <div class="app-main-content">
+          <!-- Page heading -->
+          <div class="page-heading">
+            <div>
+              <div class="page-heading-title"><h2>Welcome, Student 👋</h2></div>
+              <p class="page-heading-subtitle">
+                Discover events, register easily, and track your participation.
+              </p>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-grid">
+            <div class="card-ui text-center">
+              <div class="stat-label">Total Events</div>
+              <div class="stat-num" id="totalEvents">3</div>
+            </div>
+            <div class="card-ui text-center">
+              <div class="stat-label">Registered</div>
+              <div class="stat-num text-success" id="registeredCount">0</div>
+            </div>
+            <div class="card-ui text-center">
+              <div class="stat-label">Pending Approvals</div>
+              <div class="stat-num text-warning" id="pendingCount">0</div>
+            </div>
+          </div>
+
+          <!-- Next event -->
+          <div class="next-event-card">
+            <div class="next-event-content">
+              <div class="next-badge">
+                <span>⏰ Next Event</span>
+                <span id="nextCountdown"></span>
+              </div>
+              <div class="next-event-title" id="nextTitle">
+                Inter-College Hackathon
+              </div>
+              <div class="next-event-meta" id="nextMeta">
+                Dec 05, 2025 · Auditorium A
+              </div>
+              <p class="next-event-desc" id="nextDesc">
+                24-hour coding competition. Teams allowed. Approval required.
+              </p>
+              <div class="next-event-actions">
+                <button
+                  class="btn-next-outline"
+                  onclick="location.href='user-event-details.html?id=E101'"
+                >
+                  View details
+                </button>
+                <button
+                  class="btn-next-primary"
+                  onclick="openRegister('E101')"
+                >
+                  Request to join
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="quick-actions">
+            <div class="card-ui text-center">
+              <div class="action-icon">📅</div>
+              <h6>Browse Events</h6>
+              <button
+                class="btn btn-outline-soft mt-1"
+                onclick="location.href='user-events.html'"
+              >
+                Explore
+              </button>
+            </div>
+            <div class="card-ui text-center">
+              <div class="action-icon">📋</div>
+              <h6>My Registrations</h6>
+              <button
+                class="btn btn-outline-soft mt-1"
+                onclick="location.href='user-registrations.html'"
+              >
+                View
+              </button>
+            </div>
+            <div class="card-ui text-center">
+              <div class="action-icon">🔔</div>
+              <h6>Notifications</h6>
+              <button
+                class="btn btn-outline-soft mt-1"
+                onclick="location.href='user-notification.html'"
+              >
+                Check
+              </button>
+            </div>
+          </div>
+
+          <!-- Upcoming events header -->
+          <div class="section-header">
+            <h6>Upcoming Events</h6>
+            <select id="filterType" class="form-select form-select-sm w-auto">
+              <option value="all">All</option>
+              <option value="tech">Tech</option>
+              <option value="cultural">Cultural</option>
+            </select>
+          </div>
+
+          <!-- Upcoming events preview -->
+          <div class="events-grid" id="eventsPreview"></div>
+          <div id="noEventsState" class="empty-state-small d-none">
+            No events match this filter. Try another type.
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div id="toastSuccess" class="toast-success"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const EVENTS = [
+        {
+          id: "E101",
+          name: "Inter-College Hackathon",
+          date: "2025-12-05T10:00",
+          venue: "Auditorium A",
+          type: "tech",
+          requiresApproval: true,
+          capacity: 200,
+          participants: 120
+        },
+        {
+          id: "E102",
+          name: "Food Fest",
+          date: "2025-12-12T16:00",
+          venue: "Hall B",
+          type: "cultural",
+          requiresApproval: false,
+          capacity: 80,
+          participants: 45
+        },
+        {
+          id: "E103",
+          name: "Design Sprint",
+          date: "2025-12-10T09:00",
+          venue: "Lab 101",
+          type: "tech",
+          requiresApproval: false,
+          capacity: 40,
+          participants: 22
+        }
+      ];
+
+      let registrations = []; // {eventId, status: 'pending'|'approved'}
+
+      function showToast(msg) {
+        const t = document.getElementById("toastSuccess");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2500);
+      }
+
+      function getTypePillClass(type) {
+        if (type === "tech") return "tech";
+        if (type === "cultural") return "cultural";
+        return "tech";
+      }
+
+      function getApprovalPillClass(event) {
+        return event.requiresApproval ? "req" : "auto";
+      }
+
+      function getApprovalPillText(event) {
+        return event.requiresApproval ? "Approval required" : "Auto approved";
+      }
+
+      function recalcStats() {
+        document.getElementById("totalEvents").textContent = EVENTS.length;
+        const approved = registrations.filter(r => r.status === "approved").length;
+        const pending = registrations.filter(r => r.status === "pending").length;
+        document.getElementById("registeredCount").textContent = approved;
+        document.getElementById("pendingCount").textContent = pending;
+      }
+
+      function renderEvents() {
+        const c = document.getElementById("eventsPreview");
+        const noState = document.getElementById("noEventsState");
+        c.innerHTML = "";
+        const f = document.getElementById("filterType").value;
+
+        const filtered = EVENTS.filter(e => f === "all" || e.type === f);
+
+        if (!filtered.length) {
+          noState.classList.remove("d-none");
+          return;
+        }
+        noState.classList.add("d-none");
+
+        filtered.forEach(e => {
+          const div = document.createElement("div");
+          div.className = "events-grid-card";
+
+          const percent = Math.min(
+            Math.round((e.participants / e.capacity) * 100),
+            100
+          );
+
+          const reg = registrations.find(r => r.eventId === e.id);
+          const isRegistered = !!reg;
+
+          div.innerHTML = `
+            <span class="event-type-pill ${getTypePillClass(e.type)}">
+              ${e.type.toUpperCase()}
+            </span>
+            <span class="event-approval-pill ${getApprovalPillClass(e)}">
+              ${getApprovalPillText(e)}
+            </span>
+
+            <div class="events-meta mt-5">
+              <strong>${new Date(e.date).toLocaleDateString()}</strong>
+              · ${e.venue}
+            </div>
+
+            <h5 class="mt-3">${e.name}</h5>
+
+            <div class="event-progress">
+              <small>${e.participants} / ${e.capacity} Registered</small>
+              <div class="progress">
+                <div
+                  class="progress-bar bg-primary"
+                  style="width: ${percent}%"
+                ></div>
+              </div>
+            </div>
+
+            <div class="event-actions">
+              <a
+                href="user-event-details.html?id=${e.id}"
+                class="btn btn-outline-soft flex-fill"
+              >
+                Details
+              </a>
+              ${
+                isRegistered
+                  ? `<button class="btn btn-outline-soft flex-fill" disabled>
+                      ${reg.status === "pending" ? "Pending" : "Registered"}
+                    </button>`
+                  : `<button class="btn btn-primary flex-fill" onclick="openRegister('${e.id}')">
+                      Register
+                    </button>`
+              }
+            </div>
+          `;
+
+          c.appendChild(div);
+        });
+      }
+
+      function openRegister(id) {
+        const e = EVENTS.find(x => x.id === id);
+        if (!e) return;
+
+        const msg = e.requiresApproval
+          ? "This event requires approval. Send request?"
+          : "Confirm registration?";
+
+        if (!confirm(msg)) return;
+
+        if (e.requiresApproval) {
+          registrations.push({ eventId: id, status: "pending" });
+          showToast("Request sent — pending approval ⏳");
+        } else {
+          registrations.push({ eventId: id, status: "approved" });
+          e.participants++;
+          showToast("Registered successfully 🎉");
+        }
+
+        recalcStats();
+        renderEvents();
+      }
+
+      function initNextEvent() {
+        if (!EVENTS.length) return;
+        const next = EVENTS[0];
+        document.getElementById("nextTitle").textContent = next.name;
+        document.getElementById("nextMeta").textContent =
+          `${new Date(next.date).toLocaleDateString()} · ${next.venue}`;
+        document.getElementById("nextDesc").textContent =
+          next.requiresApproval
+            ? "Participation requires coordinator approval."
+            : "Instant registration available for this event.";
+
+        const targetTime = new Date(next.date).getTime();
+        const countdownSpan = document.getElementById("nextCountdown");
+
+        function updateCountdown() {
+          const now = Date.now();
+          const diff = targetTime - now;
+          if (diff <= 0) {
+            countdownSpan.textContent = "Live now";
+            return;
+          }
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const minutes = Math.floor((diff / (1000 * 60)) % 60);
+          countdownSpan.textContent =
+            hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 60000);
+      }
+       function userLogout() {
+    if (!confirm("Are you sure want to logout?")) return;
+    localStorage.removeItem("studentSession");
+    localStorage.removeItem("studentProfile");
+    alert("You have been logged out successfully.");
+    window.location.href = "../login.html";
+  }
+
+      document.getElementById("filterType").addEventListener("change", renderEvents);
+      document.getElementById("searchUserTop").addEventListener("input", renderEvents);
+
+      recalcStats();
+      initNextEvent();
+      renderEvents();
+    </script>
+  </body>
 </html>

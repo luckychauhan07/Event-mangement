@@ -1,390 +1,676 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Event Ease — Browse Events (Student)</title>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Event Ease — Browse Events</title>
 
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="../style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./user-style.css" />
 
-		<style>
-			body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
-			}
-			.app-main {
-				flex: 1;
-				padding: 32px;
-			}
-			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
-				.app-main {
-					padding: 24px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<header class="topbar">
-			<a
-				href="user-home.html"
-				class="d-flex align-items-center text-decoration-none"
-			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
-					Event Ease
-				</div>
-			</a>
-			<div class="d-flex align-items-center gap-3">
-				<input
-					id="searchUserTop"
-					class="form-control form-control-sm d-none d-md-block"
-					placeholder="Search events..."
-					style="min-width: 260px"
-				/>
-				<div class="dropdown">
-					<button
-						class="btn d-flex align-items-center gap-2"
-						data-bs-toggle="dropdown"
-					>
-						<div
-							class="rounded-circle bg-primary text-white"
-							style="
-								width: 36px;
-								height: 36px;
-								display: grid;
-								place-items: center;
-							"
-						>
-							ST
-						</div>
-						<div class="d-none d-md-block text-start">
-							<div style="font-weight: 600">Student</div>
-							<div class="muted">you@college.edu</div>
-						</div>
-					</button>
-					<ul class="dropdown-menu dropdown-menu-end">
-						<li>
-							<a class="dropdown-item" href="user-profile.html"
-								>Profile</a
-							>
-						</li>
-						<li>
-							<a
-								class="dropdown-item"
-								href="user-registrations.html"
-								>My Registrations</a
-							>
-						</li>
-						<li><hr class="dropdown-divider" /></li>
-						<li>
-							<button
-								class="dropdown-item text-danger"
-								onclick="userLogout()"
-							>
-								Logout
-							</button>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</header>
+    <style>
+        :root {
+            --gradient-tech: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-cultural: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-food: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-sports: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-workshop: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --glow-tech: 0 0 30px rgba(102, 126, 234, 0.6);
+            --glow-cultural: 0 0 30px rgba(240, 147, 251, 0.6);
+        }
 
-		<div class="app-shell">
-			<aside class="app-sidebar d-none d-lg-flex">
-				<nav class="sidebar-nav">
-					<a href="user-home.html"
-						>🏠 Home</a
-					>
-					<a
-						href="user-events.html"
-						class="active"
-						>📅 Browse Events</a
-					>
-					<a
-						href="user-registrations.html"
-						>📋 My Registrations</a
-					>
-					<a href="user-notification.html" class="text-white-95 p-2 rounded active">🔔 Notifications</a>
-				    <a href="user-profile.html" class="text-white-95 p-2 rounded">👤 Profile</a>
-				</nav>
-			</aside>
+        .app-main {
+            flex: 1;
+            padding: 40px 24px;
+            background: var(--bg-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-			<main class="app-main">
-				<div
-					class="d-flex justify-content-between align-items-center mb-3"
+        /* Smaller Header */
+        .hero-header {
+            background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(240,147,251,0.08) 100%);
+            border-radius: 20px;
+			padding: 20px 30px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(102,126,234,0.15);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+
+        .hero-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+			margin-bottom: 8px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Filter Tabs - unchanged */
+        .filter-tabs {
+            background: var(--bg-surface);
+            border-radius: 16px;
+            padding: 12px 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .filter-tabs::-webkit-scrollbar { display: none; }
+
+        .filter-tab {
+            padding: 8px 20px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .filter-tab.active, .filter-tab:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Events Grid */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .event-card {
+            background: var(--bg-surface);
+            border-radius: 24px;
+            padding: 0;
+            border: none;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: 440px; /* ✅ INCREASED from 440px */
+            max-width: 100%;
+            width: 100%;
+        }
+
+
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-tech);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+            z-index: 3;
+        }
+
+        .event-card.tech::before { background: var(--gradient-tech); }
+        .event-card.cultural::before { background: var(--gradient-cultural); }
+        .event-card.food::before { background: var(--gradient-food); }
+        .event-card.sports::before { background: var(--gradient-sports); }
+        .event-card.workshop::before { background: var(--gradient-workshop); }
+
+        .event-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .event-card:hover::before { transform: scaleX(1); }
+
+        .card-glow {
+            position: absolute;
+            top: -25%;
+            left: -25%;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
+            opacity: 0;
+            transition: all 0.6s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .event-card:hover .card-glow { opacity: 1; transform: scale(1.02); }
+
+        .card-glow.tech { background: radial-gradient(circle, var(--glow-tech), transparent); }
+        .card-glow.cultural { background: radial-gradient(circle, var(--glow-cultural), transparent); }
+
+        .event-image {
+            height: 180px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .event-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.7s;
+        }
+
+        .event-card:hover .event-image::after { left: 100%; }
+
+        .event-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 3;
+        }
+
+        .badge-tech { background: var(--gradient-tech); color: white; }
+        .badge-cultural { background: var(--gradient-cultural); color: white; }
+        .badge-food { background: var(--gradient-food); color: white; }
+        .badge-sports { background: var(--gradient-sports); color: white; }
+        .badge-workshop { background: var(--gradient-workshop); color: #333; }
+
+        /* NEW: Approval Status Badge */
+        .approval-status {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .approval-auto-status {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .approval-requires-status {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .card-body {
+            padding: 24px;
+            position: relative;
+            z-index: 2;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: var(--text-dark);
+        }
+
+        .event-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .event-meta i { color: var(--primary); width: 16px; flex-shrink: 0; }
+
+        .capacity-bar {
+            height: 8px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .capacity-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .capacity-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .capacity-fill.green { background: linear-gradient(90deg, #10b981, #34d399); }
+        .capacity-fill.orange { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .capacity-fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .seats-info {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        .btn-event {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-event::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-event:hover::before { left: 100%; }
+
+        .btn-primary-event { 
+            background: var(--gradient-tech); 
+            color: white; 
+            box-shadow: 0 6px 20px rgba(102,126,234,0.4); 
+        }
+        .btn-secondary-event { 
+            background: rgba(255,255,255,0.9); 
+            color: var(--text-dark); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+
+        .btn-event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn-event:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Registration Status */
+        .registration-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 12px;
+            margin-top: 4px;
+        }
+
+        .status-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            opacity: 0.7;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .empty-icon { font-size: 4rem; margin-bottom: 20px; }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .events-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 0 10px; }
+        }
+
+        @media (max-width: 768px) {
+            .app-main { padding: 20px 16px; }
+            .events-grid { grid-template-columns: 1fr; gap: 20px; padding: 0; }
+            .event-card { height: 460px; }
+            .event-image { height: 160px; }
+            .card-body { height: 300px; padding: 20px; }
+            .action-buttons { flex-direction: column; }
+            .filter-tabs { justify-content: flex-start; gap: 8px; }
+        }
+
+        /* Staggered Animation */
+        .event-card:nth-child(1) { animation-delay: 0.1s; }
+        .event-card:nth-child(2) { animation-delay: 0.2s; }
+        .event-card:nth-child(3) { animation-delay: 0.3s; }
+        .event-card:nth-child(4) { animation-delay: 0.4s; }
+        .event-card:nth-child(5) { animation-delay: 0.5s; }
+        .event-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .event-card { animation: cardAppear 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+    </style>
+</head>
+
+<body>
+    <!-- YOUR ORIGINAL NAVBAR/HEADER - UNCHANGED -->
+    <header class="topbar">
+        <a href="user-home.html" class="d-flex align-items-center text-decoration-none">
+            <div class="logo-mark">EE</div>
+            <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
+        </a>
+
+        <div class="d-flex align-items-center gap-3">
+            <input id="searchUserTop" class="form-control form-control-sm d-none d-md-block"
+                placeholder="🔍 Search events..." style="min-width: 260px" />
+                <a
+					href="user-notification.html"
+					class="position-relative btn btn-light"
+					title="Notifications"
 				>
-					<div>
-						<h4 class="mb-0">Browse Events</h4>
-						<div class="muted">
-							Filters show approval requirement and team settings
-						</div>
-					</div>
-					<div class="d-flex gap-2">
-						<select
-							id="typeFilter"
-							class="form-select form-select-sm"
-						>
-							<option value="all">All types</option>
-							<option value="tech">Tech</option>
-							<option value="cultural">Cultural</option>
-						</select>
-						<select
-							id="approvalFilter"
-							class="form-select form-select-sm"
-						>
-							<option value="all">All</option>
-							<option value="requires">Requires approval</option>
-							<option value="auto">Auto-approved</option>
-						</select>
-					</div>
-				</div>
+					🔔
+					<span
+						id="adminNotifCount"
+						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+						style="font-size: 11px"
+					>
+						2
+					</span>
+				</a>
+            <div class="dropdown">
+                <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                    <div class="rounded-circle bg-primary text-white" style="
+                        width: 36px;
+                        height: 36px;
+                        display: grid;
+                        place-items: center;
+                    ">
+                        ST
+                    </div>
+                    <div class="d-none d-md-block text-start">
+                        <div style="font-weight: 600">Student</div>
+                        <div class="muted">you@college.edu</div>
+                    </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="user-profile.html">Profile</a></li>
+                    <li><a class="dropdown-item" href="user-registrations.html">My Registrations</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><button class="dropdown-item text-danger" id="userLogout">Logout</button></li>
+                </ul>
+            </div>
+        </div>
+    </header>
 
-				<div class="card-compact">
-					<div class="table-responsive">
-						<table class="table align-middle">
-							<thead>
-								<tr>
-									<th>Event</th>
-									<th>Date</th>
-									<th>Venue</th>
-									<th>Capacity</th>
-									<th>Type</th>
-									<th class="text-end">Action</th>
-								</tr>
-							</thead>
-							<tbody id="eventsTable"></tbody>
-						</table>
-					</div>
-				</div>
-			</main>
-		</div>
+    <div class="app-shell">
+        <!-- YOUR ORIGINAL SIDEBAR - UNCHANGED -->
+        <aside class="app-sidebar d-none d-lg-flex">
+            <nav class="sidebar-nav">
+                <a href="user-home.html">🏠 Home</a>
+                <a href="user-events.html" class="active">📅 Browse Events</a>
+                <a href="user-registrations.html">📋 My Registrations</a>
+                <a href="user-notification.html">🔔 Notifications</a>
+                <a href="user-profile.html">👤 Profile</a>
+            </nav>
+        </aside>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-	const EVENTS = [
-		{
-			id: "E101",
-			name: "Inter-College Hackathon",
-			date: "2025-12-05T10:00",
-			venue: "Auditorium A",
-			type: "tech",
-			teamParticipation: true,
-			requiresApproval: true,
-			capacity: 200,
-			participants: 120,
-		},
-		{
-			id: "E102",
-			name: "Food Fest",
-			date: "2025-12-12T16:00",
-			venue: "Hall B",
-			type: "cultural",
-			teamParticipation: false,
-			requiresApproval: false,
-			capacity: 80,
-			participants: 45,
-		},
-		{
-			id: "E103",
-			name: "Design Sprint",
-			date: "2025-12-10T09:00",
-			venue: "Lab 101",
-			type: "tech",
-			teamParticipation: true,
-			requiresApproval: false,
-			capacity: 40,
-			participants: 22,
-		},
-	];
+        <main class="app-main">
+            <!-- Smaller Header - No approval legend -->
+            <div class="hero-header">
+                <h3 class="hero-title">🎯 Discover Events</h3>
+            </div>
 
-	/* SAME student registrations store */
-	let registrations = [];
+            <!-- Filter Tabs -->
+            <div class="filter-tabs d-flex gap-2">
+                <button class="filter-tab active me-1" data-filter="all">All Events</button>
+                <button class="filter-tab me-1" data-filter="tech">Tech</button>
+                <button class="filter-tab me-1" data-filter="cultural">Cultural</button>
+                <button class="filter-tab me-1" data-filter="food">Food</button>
+                <button class="filter-tab me-1" data-filter="sports">Sports</button>
+                <button class="filter-tab" data-filter="workshop">Workshops</button>
+            </div>
 
-	function render() {
-	const tbody = document.getElementById("eventsTable");
-	tbody.innerHTML = "";
+            <!-- Events Grid -->
+            <div id="eventsGrid" class="events-grid"></div>
 
-	const q = (
-		document.getElementById("searchUserTop")?.value || ""
-	).toLowerCase();
-	const tfilter = document.getElementById("typeFilter").value;
-	const afilter = document.getElementById("approvalFilter").value;
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state d-none">
+                <div class="empty-icon">🎉</div>
+                <h4>No events match your filters</h4>
+                <div class="muted">Try different filters or clear search to see all events</div>
+                <button class="btn btn-primary mt-3" onclick="clearFilters()">Clear All Filters</button>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // PURE FRONTEND
+        const EVENTS = [
+            { id: "E101", name: "Inter-College Hackathon 2025", date: "2025-12-20T10:00", venue: "Main Auditorium A", type: "tech", subtype: "tech", teamParticipation: true, requiresApproval: true, capacity: 200, participants: 120, image: "🔥" },
+            { id: "E102", name: "Grand Food Festival", date: "2025-12-22T16:00", venue: "Central Lawn", type: "food", subtype: "food", teamParticipation: false, requiresApproval: false, capacity: 300, participants: 250, image: "🍕" },
+            { id: "E103", name: "UI/UX Design Sprint", date: "2025-12-18T09:00", venue: "Design Lab 101", type: "workshop", subtype: "workshop", teamParticipation: true, requiresApproval: false, capacity: 40, participants: 32, image: "🎨" },
+            { id: "E104", name: "Annual Sports Day", date: "2025-12-25T08:00", venue: "Sports Complex", type: "sports", subtype: "sports", teamParticipation: true, requiresApproval: true, capacity: 150, participants: 85, image: "⚽" },
+            { id: "E105", name: "Cultural Night Extravaganza", date: "2025-12-23T19:00", venue: "Open Air Theatre", type: "cultural", subtype: "cultural", teamParticipation: false, requiresApproval: false, capacity: 500, participants: 320, image: "🎭" },
+            { id: "E106", name: "AI/ML Workshop Series", date: "2025-12-19T14:00", venue: "AI Lab 302", type: "tech", subtype: "tech", teamParticipation: true, requiresApproval: true, capacity: 60, participants: 45, image: "🤖" },
+        ];
 
-	EVENTS.filter((e) => {
-		if (tfilter !== "all" && e.type !== tfilter) return false;
-		if (afilter === "requires" && !e.requiresApproval) return false;
-		if (afilter === "auto" && e.requiresApproval) return false;
-		if (
-			q &&
-			!(
-				e.name + " " + e.venue + " " + e.id
-			).toLowerCase().includes(q)
-		)
-			return false;
-		return true;
-	}).forEach((e) => {
-		const tr = document.createElement("tr");
+        let currentRegistrations = new Map(); // Store {eventId: 'pending' | 'success'}
 
-		const alreadyRegistered = registrations.some(
-			(r) => r.eventId === e.id && r.status !== "cancelled"
-		);
+        function getCapacityClass(percent) {
+            if (percent < 50) return 'green';
+            if (percent < 80) return 'orange';
+            return 'red';
+        }
 
-		tr.innerHTML = `
-			<td style="font-weight:600">
-				${e.name}
-				<div class="small muted">${e.id}</div>
-			</td>
-			<td>${new Date(e.date).toLocaleString()}</td>
-			<td>${e.venue}</td>
-			<td>${e.participants}/${e.capacity}</td>
-			<td>
-				<span class="badge ${
-					e.requiresApproval
-						? "bg-warning text-dark"
-						: "bg-success"
-				}">
-					${e.requiresApproval ? "Requires approval" : "Auto"}
-				</span>
-			</td>
-			<td class="text-end">
-				<button class="btn btn-sm btn-outline me-1"
-					onclick="viewDetails('${e.id}')">
-					Details
-				</button>
-				<button class="btn btn-sm btn-primary"
-					${alreadyRegistered ? "disabled" : ""}
-					onclick="registerEvent('${e.id}')">
-					${
-						alreadyRegistered
-							? "Registered"
-							: e.teamParticipation
-							? "Team Register"
-							: "Register"
-					}
-				</button>
-			</td>
-		`;
-		tbody.appendChild(tr);
-	});
-}
+        function getBadgeClass(type) {
+            const badges = { tech: 'badge-tech', cultural: 'badge-cultural', food: 'badge-food', sports: 'badge-sports', workshop: 'badge-workshop' };
+            return badges[type] || 'badge-tech';
+        }
 
-document
-	.getElementById("searchUserTop")
-	.addEventListener("keydown", (e) => {
-		if (e.key === "Enter") render();
-	});
+        function getApprovalStatus(event) {
+            return event.requiresApproval ? 
+                '<div class="approval-status approval-requires-status"><i class="bi bi-lock-fill"></i>Requires Approval</div>' :
+                '<div class="approval-status approval-auto-status"><i class="bi bi-check-circle"></i>Auto Approved</div>';
+        }
 
-	/* DETAILS POPUP (unchanged) */
-	function viewDetails(eventId) {
-		const e = EVENTS.find((x) => x.id === eventId);
-		alert(
-			`${e.name}\n${new Date(e.date).toLocaleString()}\nVenue: ${
-				e.venue
-			}\nTeams: ${
-				e.teamParticipation ? "Allowed" : "No"
-			}\nApproval: ${
-				e.requiresApproval ? "Required" : "None"
-			}`
-		);
-	}
+        function render() {
+            const grid = document.getElementById("eventsGrid");
+            const empty = document.getElementById("emptyState");
+            const searchQuery = document.getElementById("searchUserTop").value.toLowerCase();
+            const activeFilter = document.querySelector('.filter-tab.active').dataset.filter;
 
-	/* MAIN REGISTRATION LOGIC */
-	function registerEvent(eventId) {
-		const e = EVENTS.find((x) => x.id === eventId);
-		if (!e) return;
+            const filtered = EVENTS.filter(e => {
+                const matchesSearch = !searchQuery || 
+                    e.name.toLowerCase().includes(searchQuery) || 
+                    e.venue.toLowerCase().includes(searchQuery);
+                const matchesFilter = activeFilter === 'all' || e.subtype === activeFilter;
+                return matchesSearch && matchesFilter;
+            });
 
-		/* 🔒 DUPLICATE CHECK */
-		const alreadyRegistered = registrations.some(
-			(r) => r.eventId === eventId && r.status !== "cancelled"
-		);
+            if (!filtered.length) {
+                empty.classList.remove("d-none");
+                grid.innerHTML = '';
+                return;
+            }
+            empty.classList.add("d-none");
 
-		if (alreadyRegistered) {
-			alert("You are already registered for this event.");
-			return;
-		}
+            grid.innerHTML = filtered.map(event => {
+                const usedPercent = Math.round((event.participants / event.capacity) * 100);
+                const isRegistered = currentRegistrations.has(event.id);
+                const registrationStatus = currentRegistrations.get(event.id);
+                const seatsLeft = event.capacity - event.participants;
 
-		/* TEAM EVENT → redirect */
-		if (e.teamParticipation) {
-			alert(
-				"This is a team-based event. You will be redirected to team registration."
-			);
-			location.href =
-				"user-team-registration.html?eventId=" + eventId;
-			return;
-		}
+                return `
+                    <div class="event-card ${event.subtype}" data-type="${event.subtype}">
+                        <div class="card-glow ${event.subtype}"></div>
+                        <div class="event-image">
+                            <span style="font-size: 3.5rem; line-height: 1;">${event.image}</span>
+                        </div>
+                        <div class="event-badge ${getBadgeClass(event.subtype)}">${event.subtype.toUpperCase()}</div>
+                        ${getApprovalStatus(event)}
+                        <div class="card-body">
+                            <h5 class="event-title pb-4">${event.name}</h5>
+                            <div class="event-meta">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>${new Date(event.date).toLocaleString('en-IN', { 
+                                    weekday: 'short', month: 'short', day: 'numeric', 
+                                    hour: 'numeric', minute: '2-digit' 
+                                })}</span>
+                            </div>
+                            <div class="event-meta">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>${event.venue}</span>
+                            </div>
+                            <div class="capacity-bar">
+                                <div class="capacity-fill ${getCapacityClass(usedPercent)}" style="width: ${usedPercent}%"></div>
+                            </div>
+                            <div class="seats-info text-success">${seatsLeft} seats available</div>
+                            <div class="action-buttons">
+                                <a href="user-event-details.html?id=${event.id}" class="btn btn-primary-event btn-event">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+                                ${isRegistered ? 
+                                    `<button class="btn btn-secondary-event btn-event" disabled>
+                                        <i class="bi bi-check-circle"></i> ${registrationStatus === 'pending' ? 'Pending Review' : 'Registered'}
+                                    </button>` :
+                                    event.teamParticipation ?
+                                    `<a href="user-team-registration.html?id=${event.id}" class="btn btn-secondary-event btn-event">
+                                        <i class="bi bi-people"></i> Team
+                                    </a>` :
+                                    `<button class="btn btn-primary-event btn-event register-btn" data-id="${event.id}">
+                                        <i class="bi bi-plus-circle"></i> Join
+                                    </button>`
+                                }
+                            </div>
+                            ${isRegistered ? `
+                                <div class="registration-status ${registrationStatus === 'pending' ? 'status-pending' : 'status-success'}">
+                                    <i class="bi ${registrationStatus === 'pending' ? 'bi-clock' : 'bi-check-circle-fill'}"></i>
+                                    ${registrationStatus === 'pending' ? 'Pending approval request' : 'Registration successful'}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
-		/* INDIVIDUAL EVENT */
-		const confirmMsg = e.requiresApproval
-			? "Your profile details will be used.\nThis event requires teacher approval.\nSubmit registration request?"
-			: "Your profile details will be used.\nRegister for this event? (Auto-approved)";
+            document.querySelectorAll('.register-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    registerEvent(this.dataset.id);
+                });
+            });
+        }
 
-		if (!confirm(confirmMsg)) return;
+        function registerEvent(eventId) {
+            if (currentRegistrations.has(eventId)) {
+                showToast('Already registered!', 'warning');
+                return;
+            }
+            
+            const event = EVENTS.find(e => e.id === eventId);
+            const status = event.requiresApproval ? 'pending' : 'success';
+            currentRegistrations.set(eventId, status);
+            
+            showToast(
+                status === 'pending' ? 
+                `Pending approval request sent for ${event.name}` : 
+                `Registration successful for ${event.name}! 🎉`, 
+                status
+            );
+            render();
+        }
 
-		const reg = {
-			regId: "R" + Math.floor(Math.random() * 9000 + 1000),
-			eventId,
-			status: e.requiresApproval ? "pending" : "approved",
-			createdAt: new Date().toISOString(),
-		};
+        function clearFilters() {
+            document.querySelector('.filter-tab[data-filter="all"]').click();
+            document.getElementById("searchUserTop").value = '';
+            render();
+        }
 
-		registrations.push(reg);
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `position-fixed start-50 translate-middle-x p-3 rounded-3 shadow-lg ${
+                type === 'success' ? 'bg-success text-white' : 
+                type === 'warning' ? 'bg-warning text-dark' : 'bg-info text-white'
+            }`;
+            toast.style.cssText = 'top: 20px; z-index: 9999; max-width: 400px;';
+            toast.innerHTML = `<strong>${type.charAt(0).toUpperCase() + type.slice(1)}!</strong> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
 
-		if (reg.status === "approved") {
-			e.participants++;
-			alert("Registered successfully (Approved).");
-		} else {
-			alert("Registration request submitted (Pending approval).");
-		}
+        // Event Listeners
+        document.getElementById("searchUserTop").addEventListener("input", render);
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                render();
+            });
+        });
 
-		render();
-	}
-
-	document
-	.getElementById("searchUserTop")
-	.addEventListener("keydown", (e) => {
-		if (e.key === "Enter") render();
-	});
-
-	document
-		.getElementById("typeFilter")
-		.addEventListener("change", render);
-	document
-		.getElementById("approvalFilter")
-		.addEventListener("change", render);
-
-	render();
-
-	function userLogout() {
-		alert("You have been logged out.");
-		location.href = "../login.html";
-	}
-</script>
-
-
-	</body>
+        render();
+    </script>
+</body>
 </html>

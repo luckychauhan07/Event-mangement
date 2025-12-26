@@ -586,7 +586,21 @@
 								${status.icon} ${status.text}
 							</span>
 						</div>
-
+						<button
+							id="editBtn"
+							class="btn-modern btn-primary-modern">
+							✏️ Edit Event
+						</button>
+						<button
+							id="assignBtn"
+							class="btn-modern btn-primary-modern">
+							👥 Assign Coordinators
+						</button>
+						<button
+							id="deleteBtn"
+							class="btn-modern btn-danger-modern">
+							🗑️ Delete Event
+						</button>
 						<!-- RIGHT ACTION -->
 						<button
 							id="notifyEventBtn"
@@ -826,7 +840,7 @@
 
 				// Attach event listeners after rendering
 				document.getElementById("editBtn").onclick = () => {
-					window.location.href = `add-event.html?id=${eventData.id}`;
+					window.location.href = `add-event.html?mode=edit&id=EVT123`;
 				};
 
 				document.getElementById("assignBtn").onclick = () => {

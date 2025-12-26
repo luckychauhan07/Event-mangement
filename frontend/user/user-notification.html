@@ -1,293 +1,536 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Event Ease — Notifications</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Event Ease — Notifications</title>
 
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-	<link rel="stylesheet" href="../style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./user-style.css" />
 
-	<style>
+    <style>
         body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.topbar {
-				height: var(--header-h);
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				padding: 0 20px;
-				background: #fff;
-				border-bottom: 1px solid var(--border);
-				position: sticky;
-				top: 0;
-				z-index: 20;
-			}
-		.card-compact {
-			background: #fff;
-			border: 1px solid var(--border);
-			border-radius: 10px;
-			padding: 16px;
-		}
-		.unread {
-			background: #f1f5ff;
-		}
-        .app-sidebar{
-            width: 220px;
-            background: linear-gradient(180deg, #0b1220, #071028);
+            font-family: Inter, system-ui, Arial;
+            background: var(--bg-light);
+            color: var(--text-dark);
         }
-		.notification-card {
-  padding: 15px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  margin-bottom: 12px;
-  cursor: pointer;
-}
 
-.notification-card.unread {
-  background: #eef4ff;
-  border-left: 4px solid #0d6efd;
-}
+        .app-main {
+            flex: 1;
+            padding: 32px;
+            background: var(--bg-light);
+        }
 
-</style>
+        @media (max-width: 900px) {
+            .app-main {
+                padding: 20px 16px;
+            }
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 0.95rem;
+            color: #6b7280;
+        }
+
+        /* Filter chips */
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .chip {
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .chip span {
+            font-weight: 600;
+        }
+
+        .chip.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+        }
+
+        .chip:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Notification list */
+        .notifications-wrapper {
+            background: var(--bg-surface);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+
+        .notification-card {
+            padding: 14px;
+            border-radius: 12px;
+            background: #f8fafc;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            transition: 0.25s ease;
+            position: relative;
+        }
+
+        .notification-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .notification-card.unread {
+            background: #eef4ff;
+            border-left: 4px solid #2563eb;
+        }
+
+        .notification-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            border-color: #e5e7eb;
+        }
+
+        .notif-main {
+            flex: 1;
+        }
+
+        .notif-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notif-message {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            margin-top: 2px;
+        }
+
+        .notif-meta {
+            font-size: 0.78rem;
+            color: #6b7280;
+        }
+
+        .notif-badge {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .notif-badge.approved {
+            background: rgba(16,185,129,0.16);
+            color: #15803d;
+        }
+
+        .notif-badge.pending {
+            background: rgba(245,158,11,0.16);
+            color: #b45309;
+        }
+
+        .notif-badge.cancelled {
+            background: rgba(220,38,38,0.16);
+            color: #b91c1c;
+        }
+
+        .notif-badge.info {
+            background: rgba(59,130,246,0.16);
+            color: #1d4ed8;
+        }
+
+        .notif-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            min-width: 150px;
+        }
+
+        .notif-actions .btn-sm {
+            font-size: 0.75rem;
+            border-radius: 999px;
+            padding: 4px 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 32px 10px;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .notification-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .notif-actions {
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+            }
+        }
+    </style>
 </head>
 
 <body>
-	<header class="topbar">
-	<!-- LEFT: App Logo -->
-	<a
-		href="user-home.html"
-		class="d-flex align-items-center text-decoration-none"
-	>
-		<div
-			class="logo-mark"
-			style="
-				width: 36px;
-				height: 36px;
-				border-radius: 8px;
-				background: linear-gradient(180deg, #3b82f6, #2b6ee6);
-				display: grid;
-				place-items: center;
-				color: #fff;
-				font-weight: 600;
-			"
-		>
-			EE
-		</div>
-		<div style="margin-left: 10px; font-weight: 700; color:#111827">
-			Event Ease
-		</div>
-	</a>
+    <header class="topbar">
+        <a
+            href="user-home.html"
+            class="d-flex align-items-center text-decoration-none"
+        >
+            <div class="logo-mark">EE</div>
+            <div
+                style="
+                    margin-left: 10px;
+                    font-weight: 700;
+                    color: var(--text-dark);
+                "
+            >
+                Event Ease
+            </div>
+        </a>
 
-	<!-- RIGHT: Search + Notifications + Student Avatar -->
-	<div class="d-flex align-items-center gap-3">
-		<input
-			id="searchUserTop"
-			class="form-control form-control-sm d-none d-md-block"
-			placeholder="Search events..."
-			style="min-width: 240px"
-		/>
+        <div class="d-flex align-items-center gap-3">
+            <div class="dropdown">
+                <button
+                    class="btn d-flex align-items-center gap-2"
+                    data-bs-toggle="dropdown"
+                    type="button"
+                >
+                    <div
+                        class="rounded-circle bg-primary text-white"
+                        style="
+                            width: 36px;
+                            height: 36px;
+                            display: grid;
+                            place-items: center;
+                        "
+                    >
+                        ST
+                    </div>
+                    <div class="d-none d-md-block text-start">
+                        <div style="font-weight: 600">Student</div>
+                        <div class="muted">you@college.edu</div>
+                    </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="user-profile.html"
+                            >Profile</a
+                        >
+                    </li>
+                    <li>
+                        <a
+                            class="dropdown-item"
+                            href="user-registrations.html"
+                            >My Registrations</a
+                        >
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                        <button
+                            class="dropdown-item text-danger"
+                            id="userLogout"
+                        >
+                            Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
 
-		<!-- Student Avatar Dropdown -->
-		<div class="dropdown">
-			<button
-				class="btn d-flex align-items-center gap-2"
-				data-bs-toggle="dropdown"
-			>
-				<div
-					class="rounded-circle bg-primary text-white"
-					style="
-						width: 36px;
-						height: 36px;
-						display: grid;
-						place-items: center;
-						font-weight: 600;
-					"
-				>
-					ST
-				</div>
-				<div class="d-none d-md-block text-start">
-					<div style="font-weight: 600">Student</div>
-					<div class="muted small">you@college.edu</div>
-				</div>
-			</button>
+    <div class="app-shell">
+        <aside class="app-sidebar d-none d-lg-flex">
+            <nav class="sidebar-nav">
+                <a href="user-home.html">🏠 Home</a>
+                <a href="user-events.html">📅 Browse Events</a>
+                <a href="user-registrations.html">📋 My Registrations</a>
+                <a href="user-notification.html" class="active">🔔 Notifications</a>
+                <a href="user-profile.html">👤 Profile</a>
+            </nav>
+            <div class="sidebar-footer">
+                © <span id="userYear"></span> Event Ease
+            </div>
+        </aside>
 
-			<ul class="dropdown-menu dropdown-menu-end">
-				<li>
-					<a class="dropdown-item" href="user-profile.html">Profile</a>
-				</li>
-				<li>
-					<a class="dropdown-item" href="user-registrations.html">
-						My Registrations
-					</a>
-				</li>
-				<li><hr class="dropdown-divider" /></li>
-				<li>
-					<button class="dropdown-item text-danger" id="userLogout">
-						Logout
-					</button>
-				</li>
-			</ul>
-		</div>
-	</div>
-</header>
-</div>
+        <main class="app-main">
+            <!-- Header -->
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Notifications</div>
+                    <div class="page-subtitle">
+                        Updates about your event registrations and changes.
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end gap-1">
+                    <div class="small text-muted">
+                        Unread: <span id="unreadCount">0</span>
+                    </div>
+                    <button
+                        id="markAllRead"
+                        class="btn btn-sm btn-outline-secondary"
+                        type="button"
+                    >
+                        Mark all as read
+                    </button>
+                </div>
+            </div>
 
+            <!-- Filter chips -->
+            <div class="filter-chips">
+                <button class="chip active" data-filter="all">
+                    <span>All</span>
+                </button>
+                <button class="chip" data-filter="unread">
+                    <span>Unread</span>
+                </button>
+                <button class="chip" data-filter="approved">
+                    <span>Approved</span>
+                </button>
+                <button class="chip" data-filter="pending">
+                    <span>Pending</span>
+                </button>
+                <button class="chip" data-filter="cancelled">
+                    <span>Cancelled</span>
+                </button>
+            </div>
 
+            <div class="notifications-wrapper">
+                <div id="notificationList" class="d-flex flex-column gap-2"></div>
+                <div id="emptyState" class="empty-state d-none">
+                    No notifications for this filter.
+                </div>
+            </div>
+        </main>
+    </div>
 
-	<div class="app-shell">
-		<aside class="app-sidebar d-none d-lg-flex">
-			<nav class="d-flex flex-column gap-2">
-				<a href="user-home.html" class="text-white-95 p-2 rounded">🏠 Home</a>
-				<a href="user-events.html" class="text-white-95 p-2 rounded">📅 Browse Events</a>
-				<a href="user-registrations.html" class="text-white-95 p-2 rounded">📋 My Registrations</a>
-				<a href="user-notification.html" class="text-white-95 p-2 rounded active">🔔 Notifications</a>
-				<a href="user-profile.html" class="text-white-95 p-2 rounded">👤 Profile</a>
-			</nav>
-		</aside>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-		<main class="app-main">
-			<div class="mb-3">
-				<h4 class="mb-0">Notifications</h4>
-				<div class="text-muted">Updates about your event registrations</div>
-			</div>
+    <script>
+    /* Demo notifications */
+    let notifications = [
+        {
+            id: "N1",
+            eventId: "E101",
+            eventName: "Inter-College Hackathon",
+            message: "Your registration request has been approved.",
+            status: "approved",
+            time: "2025-12-01T10:30",
+            read: false,
+        },
+        {
+            id: "N2",
+            eventId: "E103",
+            eventName: "Design Sprint",
+            message: "You have been successfully registered.",
+            status: "approved",
+            time: "2025-12-02T14:15",
+            read: true,
+        },
+        {
+            id: "N3",
+            eventId: "E102",
+            eventName: "Food Fest",
+            message: "The event has been cancelled by the organizer.",
+            status: "cancelled",
+            time: "2025-12-03T09:00",
+            read: false,
+        },
+    ];
 
-			<div id="notificationList" class="d-flex flex-column gap-2"></div>
+    let activeFilter = "all";
 
-			<div id="emptyState" class="text-muted mt-4 d-none">
-				No notifications available.
-			</div>
-		</main>
-	</div>
+    function updateUnreadCount() {
+        const count = notifications.filter(n => !n.read).length;
+        document.getElementById("unreadCount").textContent = count;
+    }
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    function renderNotifications() {
+        const box = document.getElementById("notificationList");
+        const empty = document.getElementById("emptyState");
+        box.innerHTML = "";
 
-	<script>
-	/* Demo notifications (fixed structure) */
-	let notifications = [
-		{
-			id: "N1",
-			eventName: "Inter-College Hackathon",
-			message: "Your registration request has been approved.",
-			status: "approved",
-			time: "2025-12-01T10:30",
-			read: false,
-		},
-		{
-			id: "N2",
-			eventName: "Design Sprint",
-			message: "You have been successfully registered.",
-			status: "approved",
-			time: "2025-12-02T14:15",
-			read: true,
-		},
-		{
-			id: "N3",
-			eventName: "Food Fest",
-			message: "The event has been cancelled by the organizer.",
-			status: "cancelled",
-			time: "2025-12-03T09:00",
-			read: false,
-		},
-	];
+        const filtered = notifications.filter(n => {
+            if (activeFilter === "all") return true;
+            if (activeFilter === "unread") return !n.read;
+            return n.status === activeFilter;
+        });
 
-	/* 🔔 Simulate real-time updates */
-	setInterval(() => {
-		const realtimeEvents = [
-			{
-				eventName: "Inter-College Hackathon",
-				message: "Venue changed to Auditorium B",
-				status: "info",
-			},
-			{
-				eventName: "Inter-College Hackathon",
-				message: "Hackathon results are now available",
-				status: "approved",
-			},
-			{
-				eventName: "Food Fest",
-				message: "Food Fest starts in 2 hours",
-				status: "pending",
-			},
-		];
+        if (!filtered.length) {
+            empty.classList.remove("d-none");
+        } else {
+            empty.classList.add("d-none");
+        }
 
-		const e =
-			realtimeEvents[Math.floor(Math.random() * realtimeEvents.length)];
+        filtered.forEach(n => {
+            const item = document.createElement("div");
+            item.className = `notification-card ${n.read ? "" : "unread"}`;
 
-		pushRealtimeNotification({
-			id: "N" + Date.now(),
-			eventName: e.eventName,
-			message: e.message,
-			status: e.status,
-			read: false,
-			time: new Date().toISOString(),
-		});
-	}, 10000);
+            let badgeClass = "info";
+            if (n.status === "approved") badgeClass = "approved";
+            else if (n.status === "pending") badgeClass = "pending";
+            else if (n.status === "cancelled") badgeClass = "cancelled";
 
-	/* Add new notification */
-	function pushRealtimeNotification(notification) {
-		notifications.unshift(notification);
-		renderNotifications();
-	}
+            item.innerHTML = `
+                <div class="notif-main">
+                    <div class="notif-title">
+                        <span>${n.eventName}</span>
+                        ${
+                            !n.read
+                            ? '<span class="badge bg-primary bg-opacity-75" style="font-size:0.65rem;">NEW</span>'
+                            : ""
+                        }
+                    </div>
+                    <div class="notif-message">${n.message}</div>
+                    <div class="notif-meta">
+                        ${new Date(n.time).toLocaleString()}
+                    </div>
+                </div>
+                <div class="notif-actions">
+                    <span class="notif-badge ${badgeClass}">
+                        ${n.status.toUpperCase()}
+                    </span>
+                    <div class="d-flex gap-1">
+                        <a
+                            href="user-event-details.html?id=${n.eventId}"
+                            class="btn btn-sm btn-outline-primary"
+                            onclick="event.stopPropagation()"
+                        >
+                            View event
+                        </a>
+                        ${
+                            n.read
+                            ? `<button
+                                   class="btn btn-sm btn-outline-secondary"
+                                   onclick="event.stopPropagation(); markAsUnread('${n.id}')"
+                               >
+                                   Mark unread
+                               </button>`
+                            : `<button
+                                   class="btn btn-sm btn-outline-secondary"
+                                   onclick="event.stopPropagation(); markAsRead('${n.id}')"
+                               >
+                                   Mark read
+                               </button>`
+                        }
+                    </div>
+                </div>
+            `;
 
-	/* Render notifications */
-	function renderNotifications() {
-		const box = document.getElementById("notificationList");
-		box.innerHTML = "";
+            item.addEventListener("click", () => markAsRead(n.id));
+            box.appendChild(item);
+        });
 
-		if (notifications.length === 0) {
-			box.innerHTML =
-				"<p class='text-muted'>No notifications</p>";
-			return;
-		}
+        updateUnreadCount();
+    }
 
-		notifications.forEach((n) => {
-			const item = document.createElement("div");
-			item.className = `notification-card ${
-				n.read ? "" : "unread"
-			}`;
+    function markAsRead(id) {
+        const note = notifications.find(n => n.id === id);
+        if (note && !note.read) {
+            note.read = true;
+            renderNotifications();
+        }
+    }
 
-			let badgeClass = "secondary";
-			if (n.status === "approved") badgeClass = "success";
-			else if (n.status === "pending")
-				badgeClass = "warning text-dark";
-			else if (n.status === "cancelled") badgeClass = "danger";
+    function markAsUnread(id) {
+        const note = notifications.find(n => n.id === id);
+        if (note) {
+            note.read = false;
+            renderNotifications();
+        }
+    }
 
-			item.innerHTML = `
-				<div class="d-flex justify-content-between align-items-start">
-					<div>
-						<strong>${n.eventName}</strong>
-						<p class="mb-1">${n.message}</p>
-						<small class="text-muted">
-							${new Date(n.time).toLocaleString()}
-						</small>
-					</div>
-					<span class="badge bg-${badgeClass}">
-						${n.status.toUpperCase()}
-					</span>
-				</div>
-			`;
+    function markAllRead() {
+        notifications = notifications.map(n => ({ ...n, read: true }));
+        renderNotifications();
+    }
 
-			item.onclick = () => markAsRead(n.id);
-			box.appendChild(item);
-		});
-	}
+    // Simulate real-time updates every 10 seconds
+    setInterval(() => {
+        const realtimeEvents = [
+            {
+                eventId: "E101",
+                eventName: "Inter-College Hackathon",
+                message: "Venue changed to Auditorium B",
+                status: "info",
+            },
+            {
+                eventId: "E101",
+                eventName: "Inter-College Hackathon",
+                message: "Hackathon results are now available",
+                status: "approved",
+            },
+            {
+                eventId: "E102",
+                eventName: "Food Fest",
+                message: "Food Fest starts in 2 hours",
+                status: "pending",
+            },
+        ];
 
-	/* Mark as read */
-	function markAsRead(id) {
-		const note = notifications.find((n) => n.id === id);
-		if (note) {
-			note.read = true;
-			renderNotifications();
-		}
-	}
+        const e =
+            realtimeEvents[Math.floor(Math.random() * realtimeEvents.length)];
 
-	renderNotifications();
-</script>
+        notifications.unshift({
+            id: "N" + Date.now(),
+            eventId: e.eventId,
+            eventName: e.eventName,
+            message: e.message,
+            status: e.status,
+            read: false,
+            time: new Date().toISOString(),
+        });
 
+        renderNotifications();
+    }, 10000);
+
+    document.querySelectorAll(".chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+            document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            activeFilter = chip.dataset.filter;
+            renderNotifications();
+        });
+    });
+
+    document.getElementById("markAllRead").addEventListener("click", markAllRead);
+
+    renderNotifications();
+    </script>
 </body>
 </html>

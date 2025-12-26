@@ -3,14 +3,10 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Add Event — Event Ease</title>
-
-		<!-- Bootstrap -->
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 		/>
-
-		<!-- Global Admin Design System -->
 		<link rel="stylesheet" href="../style.css" />
 		<link rel="stylesheet" href="admin-common.css" />
 	</head>
@@ -33,7 +29,6 @@
 					Event Ease
 				</div>
 			</a>
-
 			<div class="d-flex align-items-center gap-3">
 				<div class="d-none d-md-block" style="min-width: 280px">
 					<input
@@ -52,11 +47,9 @@
 						id="adminNotifCount"
 						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
 						style="font-size: 11px"
+						>2</span
 					>
-						2
-					</span>
 				</a>
-
 				<div class="dropdown">
 					<button
 						class="btn d-flex align-items-center gap-2"
@@ -131,8 +124,130 @@
 					</p>
 				</div>
 
+				<!-- QUICK CREATE (SIMPLE FORM) -->
+				<div id="simpleFormWrapper" class="card mb-4">
+					<div class="card-body">
+						<h4 class="mb-2">Quick Create Event</h4>
+						<p class="text-muted">
+							Create a basic event quickly. You can add advanced
+							settings later.
+						</p>
+
+						<form id="simpleEventForm" class="row g-3">
+							<div class="col-md-8">
+								<label class="form-label required"
+									>Event Title</label
+								>
+								<input
+									id="s_title"
+									class="form-control"
+									required
+								/>
+							</div>
+							<div class="col-md-4">
+								<label class="form-label">Event Subtitle</label>
+								<input id="s_subtitle" class="form-control" />
+							</div>
+							<div class="col-12">
+								<label class="form-label required"
+									>Event Description</label
+								>
+								<textarea
+									id="s_description"
+									class="form-control"
+									rows="3"
+									required
+								></textarea>
+							</div>
+							<div class="col-md-4">
+								<label class="form-label required"
+									>Category</label
+								>
+								<select
+									id="s_category"
+									class="form-select"
+									required
+								>
+									<option value="">-- Select --</option>
+									<option>Technical</option>
+									<option>Cultural</option>
+									<option>Sports</option>
+									<option>Workshop</option>
+									<option>Talk</option>
+									<option>Competition</option>
+								</select>
+							</div>
+							<div class="col-md-4">
+								<label class="form-label required"
+									>Event Type</label
+								>
+								<select
+									id="s_eventType"
+									class="form-select"
+									required
+								>
+									<option value="">-- Select --</option>
+									<option value="free">Free</option>
+									<option value="paid">Paid</option>
+								</select>
+							</div>
+							<div class="col-md-4">
+								<label class="form-label required"
+									>Event Mode</label
+								>
+								<select
+									id="s_mode"
+									class="form-select"
+									required
+								>
+									<option value="">-- Select --</option>
+									<option value="Online">Online</option>
+									<option value="Offline">Offline</option>
+									<option value="Hybrid">Hybrid</option>
+								</select>
+							</div>
+							<div class="col-md-6">
+								<label class="form-label required"
+									>Start Date & Time</label
+								>
+								<input
+									id="s_startAt"
+									type="datetime-local"
+									class="form-control"
+									required
+								/>
+							</div>
+							<div class="col-md-6">
+								<label class="form-label required"
+									>End Date & Time</label
+								>
+								<input
+									id="s_endAt"
+									type="datetime-local"
+									class="form-control"
+									required
+								/>
+							</div>
+							<div
+								class="col-12 d-flex justify-content-between mt-3"
+							>
+								<button type="submit" class="btn btn-success">
+									Create Event
+								</button>
+								<button
+									type="button"
+									class="btn btn-outline-primary"
+									id="moreCustomizationBtn"
+								>
+									More Customization →
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+
 				<!-- STEPPER -->
-				<div class="stepper-wrapper">
+				<div class="stepper-wrapper" style="display: none">
 					<div class="stepper">
 						<div class="step-item active">
 							<div class="step-button">1</div>
@@ -164,12 +279,16 @@
 						</div>
 						<div class="step-item">
 							<div class="step-button">8</div>
-							<div class="step-title">Review</div>
+							<div class="step-title">Registration Form</div>
 						</div>
 					</div>
 				</div>
 
-				<form id="eventForm" class="form-container">
+				<form
+					id="eventForm"
+					class="form-container"
+					style="display: none"
+				>
 					<!-- STEP 1: Basic Information -->
 					<div class="form-step active">
 						<div class="step-header">
@@ -177,7 +296,6 @@
 								<span class="icon">📋</span>Basic Information
 							</h2>
 						</div>
-
 						<div class="row g-3">
 							<div class="col-md-8">
 								<label class="form-label required"
@@ -191,7 +309,6 @@
 								/>
 								<div class="help-text">5–150 characters</div>
 							</div>
-
 							<div class="col-md-4">
 								<label class="form-label">Event Subtitle</label>
 								<input
@@ -200,7 +317,6 @@
 									placeholder="Optional tagline"
 								/>
 							</div>
-
 							<div class="col-12">
 								<label class="form-label required"
 									>Event Description</label
@@ -213,7 +329,6 @@
 									required
 								></textarea>
 							</div>
-
 							<div class="col-md-4">
 								<label class="form-label required"
 									>Event Category</label
@@ -235,7 +350,6 @@
 									<option>Festival</option>
 								</select>
 							</div>
-
 							<div class="col-md-4">
 								<label class="form-label required"
 									>Event Type</label
@@ -251,7 +365,6 @@
 									<option value="paid">Paid Entry</option>
 								</select>
 							</div>
-
 							<div
 								class="col-md-4"
 								id="feeBox"
@@ -268,7 +381,6 @@
 									placeholder="e.g. 500"
 								/>
 							</div>
-
 							<div class="col-12">
 								<label class="form-label"
 									>Tags / Keywords</label
@@ -293,7 +405,6 @@
 								<span class="icon">👥</span>Organizer Details
 							</h2>
 						</div>
-
 						<div class="row g-3">
 							<div class="col-md-6">
 								<label class="form-label required"
@@ -314,7 +425,6 @@
 									<option>Other</option>
 								</select>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label required"
 									>Primary Coordinator</label
@@ -326,7 +436,6 @@
 									required
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label"
 									>Coordinator Email</label
@@ -334,11 +443,9 @@
 								<input
 									name="coordEmail"
 									class="form-control"
-									placeholder="Auto-filled"
-									readonly
+									placeholder="coordinator@college.edu"
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label"
 									>Coordinator Phone</label
@@ -346,8 +453,7 @@
 								<input
 									name="coordPhone"
 									class="form-control"
-									placeholder="Auto-filled"
-									readonly
+									placeholder="+91 98765 43210"
 								/>
 							</div>
 						</div>
@@ -360,7 +466,6 @@
 								<span class="icon">📅</span>Schedule & Venue
 							</h2>
 						</div>
-
 						<div class="row g-3">
 							<div class="col-md-6">
 								<label class="form-label required"
@@ -373,7 +478,6 @@
 									required
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label required"
 									>End Date & Time</label
@@ -385,7 +489,6 @@
 									required
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label required"
 									>Event Mode</label
@@ -402,7 +505,6 @@
 									<option value="Hybrid">Hybrid</option>
 								</select>
 							</div>
-
 							<div class="col-md-6" id="venueGroup">
 								<label class="form-label required"
 									>Venue / Location</label
@@ -415,7 +517,6 @@
 									placeholder="Auditorium, Seminar Hall, Ground"
 								/>
 							</div>
-
 							<div class="col-md-6" id="roomsGroup">
 								<label class="form-label">Rooms / Spaces</label>
 								<input
@@ -426,7 +527,6 @@
 									placeholder="Lab, Hall, Open Ground"
 								/>
 							</div>
-
 							<div
 								class="col-md-6"
 								id="onlineLinkGroup"
@@ -443,7 +543,6 @@
 									placeholder="https://meet.google.com/xyz"
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label">Recurrence</label>
 								<select name="recurrence" class="form-select">
@@ -464,7 +563,6 @@
 								Settings
 							</h2>
 						</div>
-
 						<div class="row g-3">
 							<div class="col-md-6">
 								<label class="form-label required"
@@ -479,7 +577,6 @@
 									<option>No</option>
 								</select>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label"
 									>Registration Type</label
@@ -493,7 +590,6 @@
 									<option>Approval-based</option>
 								</select>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label"
 									>Registration Start</label
@@ -504,7 +600,6 @@
 									class="form-control"
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label"
 									>Registration End</label
@@ -515,7 +610,6 @@
 									class="form-control"
 								/>
 							</div>
-
 							<div class="col-md-4">
 								<label class="form-label"
 									>Participant Limit</label
@@ -527,7 +621,6 @@
 									placeholder="e.g. 200"
 								/>
 							</div>
-
 							<div class="col-md-4">
 								<label class="form-label required"
 									>Security Level</label
@@ -542,7 +635,6 @@
 									<option>High</option>
 								</select>
 							</div>
-
 							<div class="col-md-4">
 								<label class="form-label"
 									>Age Restriction</label
@@ -564,7 +656,6 @@
 								<span class="icon">🧰</span>Resources & Catering
 							</h2>
 						</div>
-
 						<div class="row g-3">
 							<div class="col-md-6">
 								<label class="form-label"
@@ -576,7 +667,6 @@
 									placeholder="Projector, Mic, Chairs"
 								/>
 							</div>
-
 							<div class="col-md-3">
 								<label class="form-label"
 									>Catering Required?</label
@@ -590,7 +680,6 @@
 									<option>Yes</option>
 								</select>
 							</div>
-
 							<div
 								class="col-md-3"
 								id="cateringBox"
@@ -605,7 +694,6 @@
 									placeholder="Veg / Non-veg"
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label"
 									>Enable Team Participation?</label
@@ -619,7 +707,6 @@
 									<option>Yes</option>
 								</select>
 							</div>
-
 							<div
 								class="col-md-6"
 								id="teamBox"
@@ -648,7 +735,6 @@
 									<option>Code-protected</option>
 								</select>
 							</div>
-
 							<div
 								class="col-md-6"
 								id="feeModeBox"
@@ -679,7 +765,6 @@
 								<span class="icon">🎨</span>Media & Visibility
 							</h2>
 						</div>
-
 						<div class="row g-3">
 							<div class="col-md-6">
 								<label class="form-label">Event Poster</label>
@@ -689,7 +774,6 @@
 									class="form-control"
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label"
 									>Promo Video Link</label
@@ -700,7 +784,6 @@
 									placeholder="YouTube / Drive link"
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label"
 									>Documents (PDF)</label
@@ -712,7 +795,6 @@
 									multiple
 								/>
 							</div>
-
 							<div class="col-md-6">
 								<label class="form-label required"
 									>Visibility</label
@@ -736,7 +818,6 @@
 						<div class="step-header">
 							<h2><span class="icon">🎯</span>Target Audience</h2>
 						</div>
-
 						<div class="row g-3">
 							<div class="col-12">
 								<label class="form-label"
@@ -747,7 +828,6 @@
 									event
 								</p>
 							</div>
-
 							<div class="col-md-4">
 								<div class="card">
 									<div class="card-body">
@@ -813,7 +893,6 @@
 									</div>
 								</div>
 							</div>
-
 							<div class="col-md-4">
 								<div class="card">
 									<div class="card-body">
@@ -836,7 +915,6 @@
 											<option value="mca">MCA</option>
 											<option value="other">Other</option>
 										</select>
-
 										<label class="form-label mt-3"
 											>Branch / Department</label
 										>
@@ -864,7 +942,6 @@
 									</div>
 								</div>
 							</div>
-
 							<div class="col-md-4">
 								<div class="card">
 									<div class="card-body">
@@ -930,25 +1007,100 @@
 									</div>
 								</div>
 							</div>
-
 							<div class="col-12">
 								<div class="alert alert-info">
 									<strong>💡 Tip:</strong> Leave options
 									unselected to target all users in that
-									category. For example, if no year is
-									selected, the event will be visible to
-									students of all years.
+									category.
 								</div>
 							</div>
 						</div>
 					</div>
 
-					<!-- STEP 8: Review & Submit -->
+					<!-- STEP 8: Registration Form Builder -->
 					<div class="form-step">
 						<div class="step-header">
-							<h2><span class="icon">✨</span>Review & Submit</h2>
+							<h2>
+								<span class="icon">📝</span>Registration Form
+								Builder
+							</h2>
+							<p class="text-muted">
+								Define what additional information participants
+								must provide while registering.
+							</p>
 						</div>
-						<pre id="reviewBox" class="bg-light p-3 rounded"></pre>
+
+						<!-- System Fields -->
+						<div class="card mb-3">
+							<div class="card-body">
+								<h6>Mandatory System Fields</h6>
+								<div class="form-check">
+									<input
+										class="form-check-input"
+										checked
+										disabled
+									/>
+									<label class="form-check-label"
+										>Full Name</label
+									>
+								</div>
+								<div class="form-check">
+									<input
+										class="form-check-input"
+										checked
+										disabled
+									/>
+									<label class="form-check-label"
+										>Email</label
+									>
+								</div>
+								<div class="form-check">
+									<input
+										class="form-check-input"
+										checked
+										disabled
+									/>
+									<label class="form-check-label"
+										>Phone Number</label
+									>
+								</div>
+							</div>
+						</div>
+
+						<!-- Controls -->
+						<div class="d-flex gap-2 mb-3">
+							<button
+								type="button"
+								class="btn btn-primary btn-sm"
+								id="addFieldBtn"
+							>
+								➕ Add Field
+							</button>
+							<select
+								id="fieldTemplate"
+								class="form-select form-select-sm"
+								style="width: 220px"
+							>
+								<option value="">Use Template</option>
+								<option value="hackathon">Hackathon</option>
+								<option value="workshop">Workshop</option>
+								<option value="cultural">Cultural Event</option>
+							</select>
+						</div>
+
+						<!-- Fields Container -->
+						<div id="customFieldsContainer"></div>
+
+						<!-- Preview -->
+						<div class="card mt-4">
+							<div class="card-body">
+								<h6>👁 Registration Form Preview</h6>
+								<div
+									id="registrationPreview"
+									class="border rounded p-3 bg-light"
+								></div>
+							</div>
+						</div>
 					</div>
 
 					<!-- Navigation -->
@@ -984,14 +1136,28 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
-			// Initialize variables
+			let isAdvancedUnlocked = false;
+			let currentStep = 0;
+			let registrationSchema = [];
+			let fieldIdCounter = 1;
+
+			// Simple Form Elements
+			const simpleForm = document.getElementById("simpleEventForm");
+			const simpleWrapper = document.getElementById("simpleFormWrapper");
+			const moreCustomizationBtn = document.getElementById(
+				"moreCustomizationBtn"
+			);
+
+			// Advanced Form Elements
+			const stepperWrapper = document.querySelector(".stepper-wrapper");
+			const eventForm = document.getElementById("eventForm");
 			const steps = [...document.querySelectorAll(".form-step")];
 			const stepItems = [...document.querySelectorAll(".step-item")];
 			const prevBtn = document.getElementById("prevBtn");
 			const nextBtn = document.getElementById("nextBtn");
 			const submitBtn = document.getElementById("submitBtn");
-			const eventForm = document.getElementById("eventForm");
-			const reviewBox = document.getElementById("reviewBox");
+
+			// Field Elements
 			const tagInput = document.getElementById("tagInput");
 			const tagsContainer = document.getElementById("tagsContainer");
 			const eventType = document.getElementById("eventType");
@@ -1010,13 +1176,131 @@
 			const venue = document.getElementById("venue");
 			const onlineLink = document.getElementById("onlineLink");
 
-			let current = 0;
+			// Registration Form Builder Elements
+			const addFieldBtn = document.getElementById("addFieldBtn");
+			const fieldTemplate = document.getElementById("fieldTemplate");
+			const customFieldsContainer = document.getElementById(
+				"customFieldsContainer"
+			);
+			const registrationPreview = document.getElementById(
+				"registrationPreview"
+			);
 
-			// Set current year
+			// ========================================
+			// INITIALIZATION
+			// ========================================
 			document.getElementById("year").textContent =
 				new Date().getFullYear();
 
-			// Show specific step
+			// Check if edit mode
+			const urlParams = new URLSearchParams(window.location.search);
+			const isEditMode = urlParams.get("mode") === "edit";
+			const editEventId = urlParams.get("id");
+
+			if (isEditMode && editEventId) {
+				initEditMode();
+			}
+
+			// ========================================
+			// SIMPLE FORM HANDLERS
+			// ========================================
+			function getSimpleFormData() {
+				return {
+					title: document.getElementById("s_title").value,
+					subtitle: document.getElementById("s_subtitle").value,
+					description: document.getElementById("s_description").value,
+					category: document.getElementById("s_category").value,
+					eventType: document.getElementById("s_eventType").value,
+					mode: document.getElementById("s_mode").value,
+					startAt: document.getElementById("s_startAt").value,
+					endAt: document.getElementById("s_endAt").value,
+				};
+			}
+
+			simpleForm.addEventListener("submit", (e) => {
+				e.preventDefault();
+				const data = getSimpleFormData();
+
+				// Validate dates
+				if (new Date(data.startAt) >= new Date(data.endAt)) {
+					showToast("End date must be after start date", "warning");
+
+					return;
+				}
+
+				console.log("Quick Event Created:", data);
+				showToast("Quick event created successfully!", "success");
+
+				// In production, send to API:
+				// fetch('/api/events', { method: 'POST', body: JSON.stringify(data) })
+			});
+
+			moreCustomizationBtn.addEventListener("click", () => {
+				const data = getSimpleFormData();
+
+				// Save draft to localStorage
+				localStorage.setItem("draftEvent", JSON.stringify(data));
+
+				// Hide simple form, show advanced
+				simpleWrapper.style.display = "none";
+				stepperWrapper.style.display = "block";
+				eventForm.style.display = "block";
+
+				// Unlock and prefill
+				isAdvancedUnlocked = true;
+				unlockAdvancedForm();
+				prefillAdvancedForm(data);
+				showStep(0);
+			});
+
+			// ========================================
+			// ADVANCED FORM - PREFILL & UNLOCK
+			// ========================================
+			function prefillAdvancedForm(data) {
+				if (!data) return;
+
+				const fields = {
+					title: data.title || "",
+					subtitle: data.subtitle || "",
+					description: data.description || "",
+					category: data.category || "",
+					eventType: data.eventType || "",
+					mode: data.mode || "",
+					startAt: data.startAt || "",
+					endAt: data.endAt || "",
+				};
+
+				Object.entries(fields).forEach(([name, value]) => {
+					const el = eventForm.querySelector(`[name="${name}"]`);
+					if (el) el.value = value;
+				});
+
+				// Trigger change events for dependent fields
+				eventType.dispatchEvent(new Event("change"));
+				modeSelect.dispatchEvent(new Event("change"));
+			}
+
+			function unlockAdvancedForm() {
+				eventForm
+					.querySelectorAll("input, select, textarea, button")
+					.forEach((el) => {
+						el.disabled = false;
+					});
+			}
+
+			function lockAdvancedForm() {
+				eventForm
+					.querySelectorAll("input, select, textarea, button")
+					.forEach((el) => {
+						if (el.id !== "prevBtn" && el.id !== "nextBtn") {
+							el.disabled = true;
+						}
+					});
+			}
+
+			// ========================================
+			// STEPPER NAVIGATION
+			// ========================================
 			function showStep(i) {
 				steps.forEach((s) => s.classList.remove("active"));
 				stepItems.forEach((s, idx) => {
@@ -1031,35 +1315,67 @@
 				submitBtn.style.display =
 					i === steps.length - 1 ? "inline-block" : "none";
 
-				// Generate review on last step
-				if (i === steps.length - 1) {
-					const formData = new FormData(eventForm);
-					const data = Object.fromEntries(formData.entries());
-					reviewBox.textContent = JSON.stringify(data, null, 2);
-				}
-
-				// Scroll to top
 				window.scrollTo({ top: 0, behavior: "smooth" });
 			}
 
-			// Initialize first step
-			showStep(0);
-
-			// Next button
 			nextBtn.addEventListener("click", () => {
-				if (current < steps.length - 1) {
-					current++;
-					showStep(current);
+				if (validateCurrentStep()) {
+					if (currentStep < steps.length - 1) {
+						currentStep++;
+						showStep(currentStep);
+					}
 				}
 			});
 
-			// Previous button
 			prevBtn.addEventListener("click", () => {
-				if (current > 0) {
-					current--;
-					showStep(current);
+				if (currentStep > 0) {
+					currentStep--;
+					showStep(currentStep);
 				}
 			});
+
+			function validateCurrentStep() {
+				const currentStepEl = steps[currentStep];
+				const requiredInputs =
+					currentStepEl.querySelectorAll("[required]");
+
+				for (let input of requiredInputs) {
+					if (!input.value.trim()) {
+						input.focus();
+						showToast(
+							`Please fill in: ${
+								input.previousElementSibling?.textContent ||
+								"this field"
+							}`,
+							"warning"
+						);
+
+						return false;
+					}
+				}
+
+				// Date validation for schedule step
+				if (currentStep === 2) {
+					const startAt =
+						eventForm.querySelector('[name="startAt"]').value;
+					const endAt =
+						eventForm.querySelector('[name="endAt"]').value;
+
+					if (new Date(startAt) >= new Date(endAt)) {
+						showToast(
+							"End date must be after start date",
+							"warning"
+						);
+						return false;
+					}
+				}
+
+				return true;
+			}
+
+			// ========================================
+			// DYNAMIC FIELD HANDLERS
+			// ========================================
 
 			// Event Type - Show/Hide Fee Box
 			eventType.addEventListener("change", (e) => {
@@ -1087,7 +1403,7 @@
 				updateFeeModeVisibility();
 			});
 
-			// Fee Mode Visibility Logic
+			// Fee Mode Visibility
 			function updateFeeModeVisibility() {
 				if (
 					eventType.value === "paid" &&
@@ -1102,7 +1418,7 @@
 				}
 			}
 
-			// Event Mode - Show/Hide Venue/Online Link
+			// Event Mode - Show/Hide Venue/Online
 			modeSelect.addEventListener("change", (e) => {
 				const mode = e.target.value;
 
@@ -1148,17 +1464,351 @@
 				}
 			});
 
-			// Form Submission
-			eventForm.addEventListener("submit", (e) => {
-				e.preventDefault();
-				alert("🎉 Event created successfully!");
-				console.log(
-					"Form Data:",
-					Object.fromEntries(new FormData(eventForm))
-				);
+			// ========================================
+			// REGISTRATION FORM BUILDER
+			// ========================================
+
+			// Field Templates
+			const templates = {
+				hackathon: [
+					{
+						label: "College/University",
+						type: "text",
+						required: true,
+					},
+					{ label: "Team Name", type: "text", required: true },
+					{ label: "GitHub Profile", type: "url", required: false },
+					{
+						label: "Project Idea (Brief)",
+						type: "textarea",
+						required: true,
+					},
+				],
+				workshop: [
+					{
+						label: "Current Skill Level",
+						type: "select",
+						options: ["Beginner", "Intermediate", "Advanced"],
+						required: true,
+					},
+					{
+						label: "Why do you want to attend?",
+						type: "textarea",
+						required: true,
+					},
+					{
+						label: "Dietary Preferences",
+						type: "select",
+						options: ["Veg", "Non-veg", "Vegan"],
+						required: false,
+					},
+				],
+				cultural: [
+					{
+						label: "Performance Category",
+						type: "select",
+						options: ["Solo", "Group", "Duo"],
+						required: true,
+					},
+					{
+						label: "Performance Duration (mins)",
+						type: "number",
+						required: true,
+					},
+					{
+						label: "Special Requirements",
+						type: "textarea",
+						required: false,
+					},
+				],
+			};
+
+			// Add Field Button
+			addFieldBtn.addEventListener("click", () => {
+				addCustomField({
+					label: "Custom Field",
+					type: "text",
+					required: false,
+					options: [],
+				});
+				updatePreview();
 			});
 
-			// Logout handlers
+			// Template Selection
+			fieldTemplate.addEventListener("change", (e) => {
+				const templateName = e.target.value;
+				if (templateName && templates[templateName]) {
+					registrationSchema = [];
+					customFieldsContainer.innerHTML = "";
+
+					templates[templateName].forEach((field) => {
+						addCustomField(field);
+					});
+
+					updatePreview();
+					fieldTemplate.value = "";
+				}
+			});
+
+			// Add Custom Field
+			function addCustomField(field) {
+				const fieldId = `field_${fieldIdCounter++}`;
+				registrationSchema.push({ ...field, id: fieldId });
+
+				const fieldCard = document.createElement("div");
+				fieldCard.className = "card mb-2";
+				fieldCard.innerHTML = `
+		<div class="card-body">
+			<div class="row g-2">
+				<div class="col-md-4">
+					<input type="text" class="form-control form-control-sm" 
+						placeholder="Field Label" value="${field.label}" 
+						data-field-id="${fieldId}" data-prop="label" />
+				</div>
+				<div class="col-md-3">
+					<select class="form-select form-select-sm" 
+						data-field-id="${fieldId}" data-prop="type">
+						<option value="text" ${field.type === "text" ? "selected" : ""}>Text</option>
+						<option value="email" ${field.type === "email" ? "selected" : ""}>Email</option>
+						<option value="number" ${
+							field.type === "number" ? "selected" : ""
+						}>Number</option>
+						<option value="tel" ${field.type === "tel" ? "selected" : ""}>Phone</option>
+						<option value="url" ${field.type === "url" ? "selected" : ""}>URL</option>
+						<option value="date" ${field.type === "date" ? "selected" : ""}>Date</option>
+						<option value="textarea" ${
+							field.type === "textarea" ? "selected" : ""
+						}>Long Text</option>
+						<option value="select" ${
+							field.type === "select" ? "selected" : ""
+						}>Dropdown</option>
+						<option value="checkbox" ${
+							field.type === "checkbox" ? "selected" : ""
+						}>Checkbox</option>
+						<option value="file" ${
+							field.type === "file" ? "selected" : ""
+						}>File Upload</option>
+					</select>
+				</div>
+				<div class="col-md-3 options-box" style="display: ${
+					field.type === "select" ? "block" : "none"
+				}">
+					<input type="text" class="form-control form-control-sm" 
+						placeholder="Options (comma-sep)" 
+						value="${field.options?.join(", ") || ""}"
+						data-field-id="${fieldId}" data-prop="options" />
+				</div>
+				<div class="col-md-2">
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" 
+							${field.required ? "checked" : ""}
+							data-field-id="${fieldId}" data-prop="required" />
+						<label class="form-check-label small">Required</label>
+					</div>
+				</div>
+				<div class="col-12">
+					<button type="button" class="btn btn-danger btn-sm" 
+						onclick="removeField('${fieldId}')">🗑 Remove</button>
+				</div>
+			</div>
+		</div>
+	`;
+
+				customFieldsContainer.appendChild(fieldCard);
+
+				// Add event listeners
+				fieldCard
+					.querySelectorAll("[data-field-id]")
+					.forEach((input) => {
+						input.addEventListener("change", (e) =>
+							updateFieldProperty(e.target)
+						);
+						input.addEventListener("input", (e) =>
+							updateFieldProperty(e.target)
+						);
+					});
+			}
+
+			// Update Field Property
+			function updateFieldProperty(input) {
+				const fieldId = input.dataset.fieldId;
+				const prop = input.dataset.prop;
+				const field = registrationSchema.find((f) => f.id === fieldId);
+
+				if (!field) return;
+
+				if (prop === "required") {
+					field[prop] = input.checked;
+				} else if (prop === "options") {
+					field[prop] = input.value
+						.split(",")
+						.map((s) => s.trim())
+						.filter(Boolean);
+				} else if (prop === "type") {
+					field[prop] = input.value;
+
+					// Show/hide options box
+					const card = input.closest(".card-body");
+					const optionsBox = card.querySelector(".options-box");
+					if (optionsBox) {
+						optionsBox.style.display =
+							input.value === "select" ? "block" : "none";
+					}
+				} else {
+					field[prop] = input.value;
+				}
+
+				updatePreview();
+			}
+
+			// Remove Field
+			function removeField(fieldId) {
+				registrationSchema = registrationSchema.filter(
+					(f) => f.id !== fieldId
+				);
+				const card = document
+					.querySelector(`[data-field-id="${fieldId}"]`)
+					?.closest(".card");
+				if (card) card.remove();
+				updatePreview();
+			}
+			window.removeField = removeField; // Make global for inline onclick
+
+			// Update Preview
+			function updatePreview() {
+				registrationPreview.innerHTML = `
+		<div class="mb-2"><strong>Full Name *</strong><br/><input class="form-control form-control-sm" disabled /></div>
+		<div class="mb-2"><strong>Email *</strong><br/><input class="form-control form-control-sm" disabled /></div>
+		<div class="mb-2"><strong>Phone Number *</strong><br/><input class="form-control form-control-sm" disabled /></div>
+		${registrationSchema
+			.map((field) => {
+				const req = field.required ? " *" : "";
+				if (field.type === "textarea") {
+					return `<div class="mb-2"><strong>${field.label}${req}</strong><br/><textarea class="form-control form-control-sm" rows="2" disabled></textarea></div>`;
+				} else if (field.type === "select") {
+					return `<div class="mb-2"><strong>${
+						field.label
+					}${req}</strong><br/><select class="form-select form-select-sm" disabled><option>-- Select --</option>${
+						field.options
+							?.map((o) => `<option>${o}</option>`)
+							.join("") || ""
+					}</select></div>`;
+				} else if (field.type === "checkbox") {
+					return `<div class="mb-2"><input type="checkbox" disabled /> <strong>${field.label}${req}</strong></div>`;
+				} else if (field.type === "file") {
+					return `<div class="mb-2"><strong>${field.label}${req}</strong><br/><input type="file" class="form-control form-control-sm" disabled /></div>`;
+				} else {
+					return `<div class="mb-2"><strong>${field.label}${req}</strong><br/><input type="${field.type}" class="form-control form-control-sm" disabled /></div>`;
+				}
+			})
+			.join("")}
+	`;
+			}
+
+			// ========================================
+			// FORM SUBMISSION
+			// ========================================
+			eventForm.addEventListener("submit", (e) => {
+				e.preventDefault();
+
+				const formData = new FormData(eventForm);
+				const eventData = Object.fromEntries(formData.entries());
+
+				// Collect tags
+				const tags = [...tagsContainer.querySelectorAll(".tag")].map(
+					(tag) => tag.textContent.replace("×", "").trim()
+				);
+
+				// Collect audience checkboxes
+				const audienceRoles = [
+					...eventForm.querySelectorAll(
+						'[name="audienceRole"]:checked'
+					),
+				].map((cb) => cb.value);
+				const audienceYears = [
+					...eventForm.querySelectorAll(
+						'[name="audienceYear"]:checked'
+					),
+				].map((cb) => cb.value);
+
+				const finalPayload = {
+					...eventData,
+					tags,
+					audienceRoles,
+					audienceYears,
+					registrationSchema,
+					createdAt: new Date().toISOString(),
+					status: "draft",
+				};
+
+				console.log("🎉 Event Created:", finalPayload);
+				showToast("Event created successfully", "success");
+				window.location.href = "events.html";
+
+				// In production:
+				// fetch('/api/events', { method: 'POST', body: JSON.stringify(finalPayload) })
+				//   .then(() => window.location.href = 'events.html')
+			});
+
+			// ========================================
+			// EDIT MODE
+			// ========================================
+			async function initEditMode() {
+				const eventData = await fetchEventById(editEventId);
+
+				// Hide simple form
+				simpleWrapper.style.display = "none";
+				stepperWrapper.style.display = "block";
+				eventForm.style.display = "block";
+
+				// Unlock and prefill
+				isAdvancedUnlocked = true;
+				unlockAdvancedForm();
+				prefillAdvancedForm(eventData);
+
+				// Prefill registration schema
+				if (eventData.registrationSchema) {
+					registrationSchema = eventData.registrationSchema;
+					customFieldsContainer.innerHTML = "";
+					eventData.registrationSchema.forEach((field) =>
+						addCustomField(field)
+					);
+					updatePreview();
+				}
+
+				showStep(0);
+			}
+
+			async function fetchEventById(eventId) {
+				// Mock data - replace with real API call
+				return {
+					title: "Ideathon 2025",
+					subtitle: "Innovate. Build. Win.",
+					description: "24-hour ideathon event",
+					category: "Technical",
+					eventType: "paid",
+					mode: "Offline",
+					startAt: "2025-03-10T10:00",
+					endAt: "2025-03-11T10:00",
+					venue: "Main Auditorium",
+					entryFee: 200,
+					teamsEnabled: "Yes",
+					teamMin: 2,
+					teamMax: 4,
+					registrationSchema: [
+						{
+							label: "College Name",
+							type: "text",
+							required: true,
+							id: "field_1",
+						},
+					],
+				};
+			}
+
+			// ========================================
+			// LOGOUT HANDLERS
+			// ========================================
 			document
 				.getElementById("logoutBtn")
 				.addEventListener("click", (e) => {
@@ -1176,6 +1826,61 @@
 						window.location.href = "login.html";
 					}
 				});
+			function showToast(message, type = "success") {
+				const toastEl = document.getElementById("appToast");
+				const toastMsg = document.getElementById("toastMessage");
+
+				toastMsg.textContent = message;
+
+				// Reset classes
+				toastEl.className = "toast align-items-center border-0";
+
+				// Apply type
+				switch (type) {
+					case "success":
+						toastEl.classList.add("text-bg-success");
+						break;
+					case "error":
+						toastEl.classList.add("text-bg-danger");
+						break;
+					case "warning":
+						toastEl.classList.add("text-bg-warning");
+						break;
+					case "info":
+						toastEl.classList.add("text-bg-primary");
+						break;
+				}
+
+				const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+				toast.show();
+			}
+
+			// Initialize
+			showStep(0);
+			updatePreview();
 		</script>
+		<!-- Toast Container -->
+		<div
+			class="toast-container position-fixed top-0 end-0 p-3"
+			style="z-index: 1080"
+		>
+			<div
+				id="appToast"
+				class="toast align-items-center text-bg-success border-0"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body" id="toastMessage">Message here</div>
+					<button
+						type="button"
+						class="btn-close btn-close-white me-2 m-auto"
+						data-bs-dismiss="toast"
+						aria-label="Close"
+					></button>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
