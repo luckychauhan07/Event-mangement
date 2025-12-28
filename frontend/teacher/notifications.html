@@ -1,174 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Event Ease — Notifications</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — Notifications (Teacher Coordinator)</title>
 
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="style1.css" />
-        <style>
-            body {
-                font-family: Inter, system-ui, Arial;
-                background: var(--bg-light);
-                color: var(--text-dark);
-            }
-            .app-shell {
-                display: flex;
-                min-height: calc(100vh - var(--header-height));
-            }
-            .app-sidebar {
-                width: var(--sidebar-width);
-                background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
-                color: #fff;
-                padding: 28px 20px;
-                display: flex;
-                flex-direction: column;
-                box-shadow: var(--shadow-md);
-            }
-            @media (max-width: 991px) {
-                .app-sidebar {
-                    display: none;
-                }
-            }
-            .notification-card {
-                border-left: 4px solid #0d6efd;
-                margin-bottom: 1rem;
-                transition: background 0.2s;
-            }
-            .notification-card:hover {
-                background-color: #f1f5ff;
-                cursor: pointer;
-            }
-            .notification-time {
-                font-size: 0.85rem;
-                color: #6c757d;
-            }
-            .badge-status {
-                font-size: 0.75rem;
-            }
-        </style>
-    </head>
-    <body>
-        <header class="topbar">
-            <a href="teacher-home.html" class="d-flex align-items-center text-decoration-none">
-                <div class="logo-mark">EE</div>
-                <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
-            </a>
-        </header>
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar d-flex justify-content-between align-items-center p-2 border-bottom">
+    <a href="teacher-home.html" class="d-flex align-items-center text-decoration-none">
+      <div class="logo"><img src="../logo.svg" alt="EE" /></div>
+      <div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
+				>
+					Event Ease
+				</div>
+    </a>
 
-        <div class="app-shell">
-            <aside class="app-sidebar d-none d-lg-flex">
-                <nav class="sidebar-nav">
-                    <a href="teacher-home.html">🏠 Home</a>
-                    <a href="teacher-events.html">📅 My Events</a>
-                    <a href="teacher-approvals.html">✅ Approvals</a>
-                    <a href="teacher-profile.html">👤 Profile</a>
-                    <a href="notifications.html" class="active">🔔 Notifications</a>
-                </nav>
-            </aside>
-            
-            <div class="container py-4">
-                <h2 class="mb-4">🔔 Notifications</h2>
+    <div class="d-flex align-items-center gap-3">
+      <input
+        id="tcNotifInboxSearch"
+        class="form-control form-control-sm d-none d-md-block"
+        style="min-width: 260px"
+        placeholder="Search notifications by subject or event"
+      />
 
-                <!-- Toolbar -->
-                <div class="d-flex justify-content-between mb-3">
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary" id="markAll">Mark All as Read</button>
-                        <button class="btn btn-sm btn-outline-danger" id="clearAll">Clear All</button>
-                    </div>
-                    <!-- Send Notification -->
-                    <div class="input-group input-group-sm" style="max-width: 400px;">
-                        <input type="text" id="customMessage" class="form-control" placeholder="Enter notification message">
-                        <button class="btn btn-success" id="sendNotification">Send</button>
-                    </div>
-                </div>
+      <!-- User dropdown -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            TC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Teacher Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="teacher-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="tcLogoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
 
-                <!-- Notification list -->
-                <div id="notificationsList">
-                    <!-- Example notification -->
-                    <div class="card notification-card">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">New Event Created: Design Thinking Workshop</h6>
-                                <p class="mb-1 text-muted">Prof. Rao scheduled this event for Dec 10, 2025 at Lab 101.</p>
-                                <span class="notification-time">2 hours ago</span>
-                            </div>
-                            <span class="badge bg-primary badge-status">Unread</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="teacher-home.html">🏠 Dashboard</a>
+        <a href="teacher-events.html">📅 My Events</a>
+        <a href="teacher-approvals.html">✅ Approvals</a>
+        <a href="teacher-notifications.html" class="active">
+          🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="tcNotifCountBadge">3</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Notifications</h4>
+          <div class="muted">
+            View notifications from Admin, System, and your own updates.
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <a href="teacher-notifications_send.html" class="btn btn-primary btn-sm">
+            <span class="bi bi-send me-1"></span>Compose
+          </a>
+          <button type="button" id="btnBack" class="btn btn-outline btn-sm">
+            ← Back
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="card-compact mb-3">
+        <div class="row g-2">
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Source</label>
+            <select id="notifSource" class="form-select">
+              <option value="all">All</option>
+              <option value="Admin">Admin</option>
+              <option value="Teacher">Teacher</option>
+              <option value="System">System</option>
+              <option value="Me">My sent</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Status</label>
+            <select id="notifStatus" class="form-select">
+              <option value="all">All</option>
+              <option value="unread">Unread</option>
+              <option value="important">Important</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-3 d-flex align-items-end">
+            <button id="btnMarkAllRead" class="btn btn-outline w-100">Mark all as read</button>
+          </div>
+          <div class="col-12 col-md-3 d-flex align-items-end">
+            <button id="btnClearFilters" class="btn btn-outline w-100">Clear filters</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications list -->
+      <div class="card-compact">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong>Inbox</strong>
+            <div class="muted small" id="notifSummary"></div>
+          </div>
         </div>
 
-        <!-- Load Bootstrap once -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="table-wrapper">
+          <table class="table table-fixed align-middle">
+            <thead>
+              <tr>
+                <th style="width: 90px;">From</th>
+                <th class="table-col--name">Subject</th>
+                <th style="width: 140px;">Event</th>
+                <th style="width: 130px;">Sent at</th>
+                <th style="width: 100px;">Status</th>
+                <th style="width: 190px;" class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="notifTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
 
-        <!-- Custom JS -->
-        <script>
-            // Toggle read/unread when clicking a card
-            document.querySelectorAll(".notification-card").forEach(card => {
-                card.addEventListener("click", () => {
-                    const badge = card.querySelector(".badge-status");
-                    if (badge.classList.contains("bg-primary")) {
-                        badge.classList.replace("bg-primary", "bg-success");
-                        badge.textContent = "Read";
-                    }
-                });
-            });
+  <!-- Notification detail modal -->
+  <div class="modal fade" id="notifDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="notifDetailTitle">Notification</h5>
+          <button class="btn-close" data-bs-dismiss="modal" type="button"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <span class="badge bg-secondary me-2" id="notifDetailSourceBadge">Admin</span>
+            <span class="badge bg-light text-dark border" id="notifDetailEventBadge">Event</span>
+          </div>
+          <div class="muted small mb-2" id="notifDetailMeta"></div>
+          <p id="notifDetailMessage"></p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" type="button" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            // Mark all as read
-            document.getElementById("markAll").onclick = () => {
-                document.querySelectorAll(".badge-status").forEach(badge => {
-                    badge.classList.remove("bg-primary");
-                    badge.classList.add("bg-success");
-                    badge.textContent = "Read";
-                });
-            };
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    
 
-            // Clear all notifications
-            document.getElementById("clearAll").onclick = () => {
-                document.getElementById("notificationsList").innerHTML = "<p class='text-muted'>No notifications</p>";
-            };
+    const notifBadge = document.getElementById("tcNotifCountBadge");
+    if (notifBadge) notifBadge.textContent = "3";
 
-            // Send custom notification
-            document.getElementById("sendNotification").onclick = () => {
-                const message = document.getElementById("customMessage").value.trim();
-                if (message) {
-                    const card = document.createElement("div");
-                    card.className = "card notification-card";
-                    card.innerHTML = `
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-1">Custom Notification</h6>
-                                <p class="mb-1 text-muted">${message}</p>
-                                <span class="notification-time">${new Date().toLocaleString()}</span>
-                            </div>
-                            <span class="badge bg-primary badge-status">Unread</span>
-                        </div>
-                    `;
-                    document.getElementById("notificationsList").appendChild(card);
-                    document.getElementById("customMessage").value = "";
+    const notifSearchInput = document.getElementById("tcNotifInboxSearch");
+    const sourceSelect = document.getElementById("notifSource");
+    const statusSelect = document.getElementById("notifStatus");
+    const btnMarkAllRead = document.getElementById("btnMarkAllRead");
+    const btnClearFilters = document.getElementById("btnClearFilters");
+    const notifTbody = document.getElementById("notifTbody");
+    const notifSummary = document.getElementById("notifSummary");
+    const btnBack = document.getElementById("btnBack");
 
-                    // Add click handler for new card
-                    card.addEventListener("click", () => {
-                        const badge = card.querySelector(".badge-status");
-                        if (badge.classList.contains("bg-primary")) {
-                            badge.classList.replace("bg-primary", "bg-success");
-                            badge.textContent = "Read";
-                        }
-                    });
-                } else {
-                    alert("Please enter a message before sending.");
-                }
-            };
-        </script>
-    </body>
+    const notifDetailModalEl = document.getElementById("notifDetailModal");
+    const notifDetailModal = new bootstrap.Modal(notifDetailModalEl);
+    const notifDetailTitle = document.getElementById("notifDetailTitle");
+    const notifDetailSourceBadge = document.getElementById("notifDetailSourceBadge");
+    const notifDetailEventBadge = document.getElementById("notifDetailEventBadge");
+    const notifDetailMeta = document.getElementById("notifDetailMeta");
+    const notifDetailMessage = document.getElementById("notifDetailMessage");
+
+    const currentTeacherId = "T123";
+
+    let NOTIFICATIONS = [
+      { id: "N001", from: "Admin", event: "Hackathon 2025", sentAt: "2025-12-28T18:30:00", important: true, read: false, message: "Please submit the final confirmed participant list.", teacherId: null },
+      { id: "N002", from: "Teacher", event: "Hackathon 2025", sentAt: "2025-12-27T17:00:00", important: false, read: false, message: "Practice session tomorrow 10 AM", teacherId: "T123" },
+      { id: "N003", from: "Teacher", event: "Design Sprint", sentAt: "2025-12-26T09:15:00", important: false, read: true, message: "New team assigned.", teacherId: "T456" },
+      { id: "N004", from: "System", event: "Hackathon 2025", sentAt: "2025-12-25T20:00:00", important: false, read: true, message: "Reminder: reporting time is 8:30 AM", teacherId: null }
+    ];
+
+    let visibleNotifications = NOTIFICATIONS.filter(n =>
+      n.from === "Admin" || n.from === "System" || n.teacherId === currentTeacherId
+    );
+
+    let currentDetailNotif = null;
+
+    function applyFilters() {
+      const q = (notifSearchInput.value || "").toLowerCase();
+      const source = sourceSelect.value;
+      const status = statusSelect.value;
+
+      let list = [...visibleNotifications];
+      if (source !== "all") list = list.filter(n => n.from === source);
+      if (status === "unread") list = list.filter(n => !n.read);
+      else if (status === "important") list = list.filter(n => n.important);
+      if (q) list = list.filter(n => n.subject?.toLowerCase().includes(q) || n.event.toLowerCase().includes(q));
+
+      renderNotifTable(list);
+      updateSummary(list);
+    }
+
+    function renderNotifTable(list) {
+      notifTbody.innerHTML = "";
+      if (!list.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" class="text-center muted">No notifications match your filters.</td>`;
+        notifTbody.appendChild(tr);
+        return;
+      }
+      list.forEach(n => {
+        const tr = document.createElement("tr");
+        if (!n.read) tr.style.fontWeight = "600";
+        tr.innerHTML = `
+          <td>${n.from}</td>
+          <td class="table-col--name"><div>${n.subject || n.message}</div></td>
+          <td>${n.event || ""}</td>
+          <td>${new Date(n.sentAt).toLocaleString()}</td>
+          <td>${n.important ? '<span class="badge bg-danger">Important</span>' : n.read ? '<span class="badge bg-secondary">Read</span>' : '<span class="badge bg-primary">Unread</span>'}</td>
+          <td class="text-end" style="width: 190px;">
+            <div class="d-flex justify-content-end gap-1">
+              <button class="btn btn-outline btn-sm" onclick="openNotifDetail('${n.id}')">View</button>
+              ${!n.read ? `<button class="btn btn-outline btn-sm" onclick="markRead('${n.id}')">Mark read</button>` : ""}
+            </div>
+          </td>
+        `;
+        notifTbody.appendChild(tr);
+      });
+    }
+
+    function updateSummary(list) {
+      const total = visibleNotifications.length;
+      const unread = visibleNotifications.filter(n => !n.read).length;
+      notifSummary.textContent = `${list.length} shown • ${unread} unread of ${total} total.`;
+    }
+
+    function markAllRead() {
+      visibleNotifications = visibleNotifications.map(n => ({ ...n, read: true }));
+      applyFilters();
+    }
+
+    function markRead(id) {
+      const idx = visibleNotifications.findIndex(n => n.id === id);
+      if (idx >= 0) visibleNotifications[idx].read = true;
+      applyFilters();
+    }
+
+    function openNotifDetail(id) {
+      const n = visibleNotifications.find(x => x.id === id);
+      if (!n) return;
+
+      n.read = true;
+      currentDetailNotif = n;
+
+      notifDetailTitle.textContent = n.subject || n.message;
+      notifDetailSourceBadge.textContent = n.from;
+      notifDetailSourceBadge.className = "badge " + (n.from === "Admin" ? "bg-danger" : n.from === "Teacher" ? "bg-primary" : "bg-secondary");
+      notifDetailEventBadge.textContent = n.event || "General";
+      notifDetailMeta.textContent = `Sent: ${new Date(n.sentAt).toLocaleString()} • Status: ${n.important ? "Important" : "Normal"}`;
+
+      notifDetailMessage.textContent = n.message;
+      notifDetailModal.show();
+      applyFilters();
+    }
+
+    notifSearchInput.addEventListener("input", applyFilters);
+    sourceSelect.addEventListener("change", applyFilters);
+    statusSelect.addEventListener("change", applyFilters);
+    btnMarkAllRead.addEventListener("click", markAllRead);
+    btnClearFilters.addEventListener("click", () => {
+      notifSearchInput.value = "";
+      sourceSelect.value = "all";
+      statusSelect.value = "all";
+      applyFilters();
+    });
+
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        if (document.referrer) window.history.back();
+        else window.location.href = "teacher-home.html";
+      });
+    }
+
+    applyFilters();
+    document.getElementById("tcLogoutTop").addEventListener("click", () => {
+    window.location.href = "../login.html";
+  });
+
+    window.openNotifDetail = openNotifDetail;
+    window.markRead = markRead;
+  </script>
+</body>
 </html>

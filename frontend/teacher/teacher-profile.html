@@ -1,157 +1,339 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Event Ease — Teacher Profile</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Ease — Teacher Coordinator Profile</title>
 
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="style1.css" />
-		<style>
-			body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
-			}
-			.app-main {
-				flex: 1;
-				padding: 32px;
-			}
-			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
-				.app-main {
-					padding: 24px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<header class="topbar">
-			<a
-				href="teacher-home.html"
-				class="d-flex align-items-center text-decoration-none"
-			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
-			</a>
-		</header>
+  <!-- Fonts + Bootstrap -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* ===== APP BODY ENHANCEMENT ===== */
 
-		<div class="app-shell">
-			<aside class="app-sidebar d-none d-lg-flex">
-				<nav class="sidebar-nav">
-					<a
-						href="teacher-home.html"
-						>🏠 Home</a
-					>
-					<a
-						href="teacher-events.html"
-						>📅 My Events</a
-					>
-					<a
-						href="teacher-approvals.html"
-						>✅ Approvals</a
-					>
-					<a
-						href="teacher-profile.html"
-						class="active"
-						>👤 Profile</a
-					>
-					<a
-						href="notifications.html"
-						>🔔 Notifications</a
-					>
-				</nav>
-			</aside>
+body {
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,0.08), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(16,185,129,0.08), transparent 40%),
+    var(--bg-light);
+}
+.app-main {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0.9)
+  );
+  border-radius: 24px;
+  margin: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(15,23,42,0.06);
+}
+.card-compact {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(6px);
+  border-radius: 16px;
+  border: 1px solid rgba(15,23,42,0.05);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
 
-			<main class="app-main">
-				<div class="card-compact">
-					<h4>Teacher Profile</h4>
-					<p class="muted">
-						Name: Prof. Rao<br />Email: teacher@college.edu<br />Department:
-						Computer Science
-					</p>
-					<div class="d-flex gap-2">
-						<button class="btn btn-outline" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-  Edit
-</button><a class="btn btn-outline" href="teacher-home.html"
-							>Back</a
-						>
-					</div>
+.card-compact:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(15,23,42,0.08);
+}
+.card-compact .rounded-circle {
+  box-shadow: 0 8px 20px rgba(59,130,246,0.35);
+}
+.form-control {
+  background: #f9fafb;
+  border: 1px solid rgba(15,23,42,0.08);
+}
+
+.form-control:focus {
+  background: #ffffff;
+}
+.btn-primary {
+  box-shadow: 0 8px 20px rgba(59,130,246,0.25);
+}
+
+.btn-outline {
+  background: rgba(255,255,255,0.8);
+}
+
+  </style>
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar d-flex justify-content-between align-items-center p-2 border-bottom">
+    <a href="teacher-home.html" class="d-flex align-items-center text-decoration-none">
+      <div class="logo"><img src="../logo.svg" alt="EE" /></div>
+      <div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
+				>
+					Event Ease
 				</div>
-			</main>
-		</div>
-		<!-- Modal -->
-<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      
-      <div class="modal-header">
-        <h5 class="modal-title" id="editProfileLabel">Edit Profile</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </a>
+
+    
+
+      <!-- User dropdown -->
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div
+            class="rounded-circle bg-primary text-white"
+            style="width: 36px; height: 36px; display: grid; place-items: center;"
+          >
+            TC
+          </div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight: 600;">Teacher Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="teacher-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+        </ul>
       </div>
-      
-      <div class="modal-body">
-        <form id="editProfileForm">
-          <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" id="profileName" value="Prof. Rao">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" id="profileEmail" value="teacher@college.edu">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Department</label>
-            <input type="text" class="form-control" id="profileDept" value="Computer Science">
-          </div>
-        </form>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar d-none d-lg-flex">
+      <nav class="sidebar-nav">
+        <a href="teacher-home.html">🏠 Dashboard</a>
+        <a href="teacher-events.html">📅 My Events</a>
+        <a href="teacher-approvals.html">✅ Approvals</a>
+        <a class="active" href="notifications.html">🔔 Notifications <span class="badge bg-light text-primary ms-1" id="tcNotifCountBadge">3</span></a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="app-main">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">My Profile</h4>
+          <div class="muted">View your coordinator details and basic preferences.</div>
+        </div>
       </div>
-      
-      <div class="modal-footer">
-  <button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
-  <button type="button" class="btn btn-primary" id="saveProfileBtn">Save</button>
-</div>
+
+      <div class="row g-3">
+        <!-- Left: profile summary -->
+        <div class="col-12 col-lg-4">
+          <div class="card-compact">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div
+                class="rounded-circle bg-primary text-white"
+                style="width: 64px; height: 64px; display: grid; place-items: center; font-size: 24px; font-weight: 600;"
+              >
+                TC
+              </div>
+              <div>
+                <div style="font-weight: 600; font-size: 18px;" id="profileName">Teacher Coordinator X</div>
+                <div class="muted small" id="profileEmail">you@college.edu</div>
+                <div class="muted small">Role: Teacher Coordinator</div>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <div class="muted small">Assigned events</div>
+              <div style="font-weight: 600;" id="profileEventsCount">2</div>
+            </div>
+
+            <div class="mt-3">
+              <button class="btn btn-outline w-100 btn-sm" id="btnViewActivity">
+                View recent activity
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: editable details + preferences -->
+        <div class="col-12 col-lg-8">
+          <div class="card-compact mb-3">
+            <h6 class="mb-3">Account details</h6>
+            <form id="profileForm" class="row g-3">
+              <div class="col-12 col-md-6">
+                <label for="pfName" class="form-label">Full name</label>
+                <input id="pfName" class="form-control" value="Teacher Coordinator X" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="pfEmail" class="form-label">Institutional email</label>
+                <input id="pfEmail" class="form-control" value="you@college.edu" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="pfDept" class="form-label">Department / Course</label>
+                <input id="pfDept" class="form-control" value="CSE" />
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="pfPhone" class="form-label">Phone</label>
+                <input id="pfPhone" class="form-control" value="+91-98XXXXXXXX" />
+              </div>
+              <div class="col-12">
+                <label for="pfBio" class="form-label">Short bio / note</label>
+                <textarea
+                  id="pfBio"
+                  class="form-control"
+                  rows="2"
+                  placeholder="Optional note..."
+                ></textarea>
+              </div>
+              <div class="col-12 d-flex justify-content-end">
+                <button type="button" id="btnSaveProfile" class="btn btn-primary">
+                  Save changes
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card-compact">
+            <h6 class="mb-3">Notification preferences</h6>
+            <div class="mb-2 form-check">
+              <input class="form-check-input" type="checkbox" id="pfEmailNotifs" checked />
+              <label class="form-check-label" for="pfEmailNotifs">
+                Email me for important Admin notifications
+              </label>
+            </div>
+            <div class="mb-2 form-check">
+              <input class="form-check-input" type="checkbox" id="pfEventReminders" checked />
+              <label class="form-check-label" for="pfEventReminders">
+                Send reminders before event days for my assigned events
+              </label>
+            </div>
+            <div class="mb-3 form-check">
+              <input class="form-check-input" type="checkbox" id="pfTeamUpdates" checked />
+              <label class="form-check-label" for="pfTeamUpdates">
+                Highlight notifications about team changes (members added/removed)
+              </label>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="button" id="btnSavePrefs" class="btn btn-outline btn-sm">
+                Save preferences
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <!-- TOAST CONTAINER -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000;">
+  <div id="appToast" class="toast align-items-center border-0 shadow" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMsg"></div>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
   </div>
 </div>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
-			document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("saveProfileBtn").addEventListener("click", function () {
-      const name = document.getElementById("profileName").value;
-      const email = document.getElementById("profileEmail").value;
-      const dept = document.getElementById("profileDept").value;
+<!-- LOGOUT MODAL -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Confirm Logout</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body muted">
+        Are you sure you want to logout from your Teacher Coordinator account?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger" id="confirmLogout">Logout</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-      // Update the profile display on the page
-      document.getElementById("teacherName").textContent = name;
-      document.getElementById("teacherEmail").textContent = email;
-      document.getElementById("teacherDept").textContent = dept;
 
-      // Close modal after saving
-      bootstrap.Modal.getInstance(document.getElementById("editProfileModal")).hide();
-    });
-  });
-		</script>
-	</body>
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ================= TOAST ================= */
+const toastEl = document.getElementById("appToast");
+const toastMsg = document.getElementById("toastMsg");
+const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+
+function showToast(message, type = "success") {
+  toastEl.className = `toast align-items-center text-bg-${type} border-0 shadow`;
+  toastMsg.textContent = message;
+  toast.show();
+}
+
+/* ================= LOGOUT ================= */
+const logoutModal = new bootstrap.Modal(
+  document.getElementById("logoutModal")
+);
+
+document.getElementById("scLogoutTop").onclick = () => {
+  logoutModal.show();
+};
+
+document.getElementById("confirmLogout").onclick = () => {
+  window.location.href = "../login.html";
+};
+
+/* ================= PROFILE SAVE ================= */
+const nameDisplay = document.getElementById("profileName");
+const emailDisplay = document.getElementById("profileEmail");
+
+const pfName = document.getElementById("pfName");
+const pfEmail = document.getElementById("pfEmail");
+const pfDept = document.getElementById("pfDept");
+const pfPhone = document.getElementById("pfPhone");
+const pfBio = document.getElementById("pfBio");
+
+document.getElementById("btnSaveProfile").onclick = () => {
+  if (!pfName.value || !pfEmail.value) {
+    showToast("Name and Email are required", "danger");
+    return;
+  }
+
+  nameDisplay.textContent = pfName.value;
+  emailDisplay.textContent = pfEmail.value;
+
+  // demo save
+  localStorage.setItem(
+    "TcProfile",
+    JSON.stringify({
+      name: pfName.value,
+      email: pfEmail.value,
+      dept: pfDept.value,
+      phone: pfPhone.value,
+      bio: pfBio.value
+    })
+  );
+
+  showToast("Profile updated successfully");
+};
+
+/* ================= PREFS SAVE ================= */
+document.getElementById("btnSavePrefs").onclick = () => {
+  showToast("Notification preferences saved");
+};
+
+/* ================= ACTIVITY ================= */
+document.getElementById("btnViewActivity").onclick = () => {
+  showToast("Activity log will be available soon", "secondary");
+};
+
+  </script>
+</body>
 </html>

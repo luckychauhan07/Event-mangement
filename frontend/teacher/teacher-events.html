@@ -1,290 +1,355 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>Event Ease — Teacher Events</title>
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Events</title>
 
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="style1.css" />
-		<style>
-			body {
-				font-family: Inter, system-ui, Arial;
-				background: var(--bg-light);
-				color: var(--text-dark);
-			}
-			.app-shell {
-				display: flex;
-				min-height: calc(100vh - var(--header-height));
-			}
-			.app-sidebar {
-				width: var(--sidebar-width);
-				background: linear-gradient(180deg, var(--sidebar-gradient-start), var(--sidebar-gradient-end));
-				color: #fff;
-				padding: 28px 20px;
-				display: flex;
-				flex-direction: column;
-				box-shadow: var(--shadow-md);
-			}
-			.app-main {
-				flex: 1;
-				padding: 32px;
-			}
-			@media (max-width: 991px) {
-				.app-sidebar {
-					display: none;
-				}
-				.app-main {
-					padding: 24px;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<header class="topbar">
-			<a
-				href="teacher-home.html"
-				class="d-flex align-items-center text-decoration-none"
-			>
-				<div class="logo-mark">EE</div>
-				<div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
-			</a>
-			<div class="d-flex gap-2 align-items-center">
-				<input
-					id="searchEv"
-					class="form-control form-control-sm d-none d-md-block"
-					style="min-width: 220px"
-					placeholder="Search my events"
-				/>
-				<div class="dropdown">
-					<button
-						class="btn d-flex align-items-center"
-						data-bs-toggle="dropdown"
-					>
-						<div
-							class="rounded-circle bg-primary text-white"
-							style="
-								width: 36px;
-								height: 36px;
-								display: grid;
-								place-items: center;
-							"
-						>
-							TC
-						</div>
-					</button>
-				</div>
-			</div>
-		</header>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-		<div class="app-shell">
-			<aside class="app-sidebar d-none d-lg-flex">
-				<nav class="sidebar-nav">
-					<a
-						href="teacher-home.html"
-						>🏠 Home</a
-					>
-					<a
-						href="teacher-events.html"
-						class="active"
-						>📅 My Events</a
-					>
-					<a
-						href="teacher-approvals.html"
-						>✅ Approvals</a
-					>
-					<a
-						href="teacher-profile.html"
-						>👤 Profile</a
-					>
-					<a
-						href="notifications.html"
-						>🔔 Notifications</a
-					>
-				</nav>
-			</aside>
+  <!-- YOUR MAIN CSS -->
+  <link rel="stylesheet" href="../style.css">
+  <style>
+	/* =========================
+   MODAL BEAUTIFICATION
+   ========================= */
 
-			<main class="app-main">
+/* Modal shell */
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: var(--shadow-lg);
+  background: var(--bg-surface);
+}
+
+/* Header */
+.modal-header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+}
+
+.modal-title {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* Body spacing */
+.modal-body {
+  padding: 20px;
+  background: var(--bg-light);
+}
+
+/* Footer */
+.modal-footer {
+  border-top: 1px solid var(--border);
+  padding: 14px 20px;
+  background: var(--bg-surface);
+}
+
+/* Close button */
+.modal-header .btn-close {
+  opacity: 0.6;
+}
+.modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+/* Cards inside modals */
+.modal-body .card-compact {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+/* Section headings inside modals */
+.modal-body h6 {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Tables inside modals */
+.modal-body table {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.modal-body thead th {
+  background: var(--primary-light);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.modal-body td {
+  font-size: 14px;
+}
+
+/* Buttons inside modals (tamed hover) */
+.modal-footer .btn,
+.modal-body .btn {
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modal-footer .btn:hover,
+.modal-body .btn:hover {
+  box-shadow: var(--shadow-sm);
+  transform: none;
+}
+
+/* Dropdown inside modal */
+.modal-body .form-select {
+  border-radius: 8px;
+}
+
+/* Scrollable modal body */
+.modal-dialog-scrollable .modal-body {
+  scrollbar-width: thin;
+}
+
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+
+/* Danger modal (delete) emphasis */
+.modal .btn-danger {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+/* ================= POPUP ALERTS ================= */
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.popup-card {
+  width: 360px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: popupScale 0.2s ease;
+}
+
+@keyframes popupScale {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.popup-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #fff;
+}
+
+.popup-icon.success {
+  background: #22c55e;
+}
+
+.popup-icon.warning {
+  background: #ef4444;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+
+  </style>
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+ <header class="topbar d-flex justify-content-between align-items-center p-2 border-bottom">
+    <a href="teacher-home.html" class="d-flex align-items-center text-decoration-none">
+      <div class="logo"><img src="../logo.svg" alt="EE" /></div>
 				<div
-					class="d-flex justify-content-between align-items-center mb-3"
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
 				>
-					<div>
-						<h4 class="mb-0">My Events</h4>
-						<div class="muted">
-							Create, edit, assign student coordinators, and
-							export rosters
-						</div>
-					</div>
-					<div class="d-flex gap-2">
-						<select
-							id="filterStatusEv"
-							class="form-select form-select-sm"
-						>
-							<option value="all">All status</option>
-							<option value="upcoming">Upcoming</option>
-							<option value="ongoing">Ongoing</option>
-							<option value="completed">Completed</option>
-						</select>
-						<button class="btn btn-primary" id="btnNewEvent">
-							+ Create
-						</button>
-					</div>
+					Event Ease
 				</div>
+    </a>
+    <div class="d-flex align-items-center gap-3">
+      <input id="searchTop" class="form-control form-control-sm d-none d-md-block" style="min-width:260px" placeholder="Search events, teams, participants"/>
+      <div class="dropdown">
+        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div class="rounded-circle bg-primary text-white" style="width:36px;height:36px;display:grid;place-items:center;">TC</div>
+          <div class="d-none d-md-block text-start">
+            <div style="font-weight:600;">Teacher Coord</div>
+            <div class="small muted">you@college.edu</div>
+          </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="teacher-profile.html">Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button class="dropdown-item text-danger" id="logoutTop">Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
 
-				<div class="card-compact mb-3">
-					<div class="table-responsive">
-						<table class="table align-middle">
-							<thead>
-								<tr>
-									<th>Event</th>
-									<th>Date</th>
-									<th>Venue</th>
-									<th>Coordinator(s)</th>
-									<th>Participants</th>
-									<th>Status</th>
-									<th class="text-end">Actions</th>
-								</tr>
-							</thead>
-							<tbody id="eventsList"></tbody>
-						</table>
-					</div>
-				</div>
+<!-- ================= APP ================= -->
+<div class="app-shell d-flex">
 
-				<div class="card-compact">
-					<h6>Quick actions</h6>
-					<div class="d-flex gap-2 mt-2">
-						<button class="btn btn-outline" id="exportAll">
-							Export All Rosters
-						</button>
-						<button class="btn btn-outline" id="notifyAll">
-							Notify All Participants
-						</button>
-					</div>
-				</div>
-			</main>
-		</div>
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="app-sidebar d-none d-lg-flex p-2 border-end">
+      <nav class="sidebar-nav d-flex flex-column gap-2">
+        <a href="teacher-home.html">🏠 Dashboard</a>
+        <a class="active" href="teacher-events.html">📅 My Events</a>
+        <a href="teacher-approvals.html">✅ Approvals</a>
+        <a href="notifications.html">🔔 Notifications <span class="badge bg-light text-primary ms-1" id="tcNotifCountBadge">3</span></a>
+      </nav>
+    </aside>
 
-		<!-- Modals: Create/Edit, Assign Student Coordinator, View Roster -->
-		<div class="modal fade" id="evModal" tabindex="-1">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<form id="evForm" class="needs-validation" novalidate>
-						<div class="modal-header">
-							<h5 class="modal-title" id="evModalTitle">
-								Create Event
-							</h5>
-							<button
-								class="btn-close"
-								data-bs-dismiss="modal"
-							></button>
-						</div>
-						<div class="modal-body">
-							<input id="evId" type="hidden" />
-							<div class="row g-3">
-								<div class="col-md-6">
-									<label class="form-label">Name</label
-									><input
-										id="evName"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Venue</label
-									><input
-										id="evVenue"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Date & Time</label
-									><input
-										id="evDateInput"
-										type="datetime-local"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Capacity</label
-									><input
-										id="evCap"
-										type="number"
-										class="form-control"
-										value="50"
-									/>
-								</div>
-								<div class="col-12">
-									<label class="form-label">Description</label
-									><textarea
-										id="evDesc"
-										class="form-control"
-										rows="3"
-									></textarea>
-								</div>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button
-								class="btn btn-outline"
-								data-bs-dismiss="modal"
-							>
-								Cancel</button
-							><button class="btn btn-primary" id="saveEvBtn">
-								Save
-							</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
+  <!-- ================= MAIN ================= -->
+  <main class="app-main">
+    <div class="mb-3">
+      <h4 class="mb-1">Manage Events</h4>
+      <div class="muted">Assign student coordinators and manage participants</div>
+    </div>
 
-		<div class="modal fade" id="assignStudentModal" tabindex="-1">
-  			<div class="modal-dialog">
-    			<div class="modal-content">
-      				<div class="modal-header">
-        				<h5 class="modal-title">Assign Student Coordinators</h5>
-        				<button class="btn-close" data-bs-dismiss="modal"></button>
-      				</div>
-      				<div class="modal-body">
-        				<label class="form-label">Select student coordinators & roles</label>
-        				<div id="studentAssignList">
-          					<div class="input-group mb-2">
-            					<select class="form-select studentSelect">
-              						<option value="S101">Student A (CS101)</option>
-              						<option value="S102">Student B (CS102)</option>
-              						<option value="S103">Student C (CS103)</option>
-            					</select>
-            					<input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
-          					</div>
-        				</div>
-        				<button class="btn btn-sm btn-outline" id="addCoordinatorRow">+ Add another</button>
-      				</div>
-      				<div class="modal-footer">
-        				<button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
-        				<button class="btn btn-primary" id="assignStudentBtn">Assign</button>
-      				</div>
-    			</div>
-  			</div>
-		</div>
-		<!-- Roster Modal -->
-<div class="modal fade" id="rosterModal" tabindex="-1" aria-labelledby="rosterLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+    <!-- EVENTS TABLE -->
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="table table-fixed">
+          <thead>
+            <tr>
+              <th class="table-col--id">ID</th>
+              <th class="table-col--name">Event Name</th>
+              <th>Date</th>
+              <th>Venue</th>
+              <th class="table-col--status">Coordinators</th>
+              <th class="table-col--actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="eventsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ================= MANAGE MODAL ================= -->
+<div class="modal fade" id="manageModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="rosterLabel">Event Roster</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Manage Event</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body" id="rosterBody">
-        Loading roster (demo)...
+      <div class="modal-body">
+
+        <!-- Event Details -->
+        <div class="card-compact mb-3">
+          <h6>Event Details</h6>
+          <div class="row g-2 mt-2">
+            <div class="col-md-4">
+              <label>Name</label>
+              <input type="text" id="eventNameInput" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label>Date</label>
+              <input type="date" id="eventDateInput" class="form-control">
+            </div>
+            <div class="col-md-4">
+              <label>Venue</label>
+              <input type="text" id="eventVenueInput" class="form-control">
+            </div>
+          </div>
+          <button class="btn btn-success mt-3" onclick="updateEventDetails()">Update Event</button>
+        </div>
+
+        <!-- Coordinators -->
+        <div class="card-compact mb-3">
+          <h6>Student Coordinators</h6>
+          <table class="table table-sm align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody id="coordinatorsTbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Participants -->
+        <div class="card-compact mb-3">
+          <h6>Participants</h6>
+          <table class="table table-sm align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody id="participantsTbody"></tbody>
+          </table>
+          <div class="mt-2 d-flex gap-2">
+            <select id="addParticipantSelect" class="form-select" multiple></select>
+            <button class="btn btn-success" onclick="addParticipant()">Add Participant(s)</button>
+          </div>
+        </div>
+		<div class="card-compact mb-3">
+  <h6>Downloads</h6>
+
+  <div class="d-flex gap-2 mt-2">
+    <button class="btn btn-outline-primary"
+      onclick="downloadApprovedParticipants()">
+      <i class="bi bi-download"></i> Approved Participants
+    </button>
+
+    <button class="btn btn-outline-warning"
+      onclick="downloadPendingParticipants()">
+      <i class="bi bi-download"></i> Pending Approval
+    </button>
+  </div>
+</div>
+
+
+        <!-- Delete Event -->
+        <div class="text-end mt-3">
+          <button class="btn btn-danger" onclick="confirmDeleteFromModal()">
+  Delete Event
+</button>
+
+        </div>
+
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" data-bs-dismiss="modal">Close</button>
@@ -292,253 +357,437 @@
     </div>
   </div>
 </div>
+<!-- ================= POPUP OVERLAY ================= -->
+<div id="popupOverlay" class="popup-overlay d-none">
+  <div class="popup-card">
+    <div id="popupIcon" class="popup-icon"></div>
+    <h5 id="popupTitle"></h5>
+    <p id="popupMessage" class="muted"></p>
 
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-		<script>
-			// demo dataset
-			let teacherEvents = [
-				{
-					id: "T001",
-					name: "Design Thinking Workshop",
-					date: "2025-12-10T14:00",
-					venue: "Lab 101",
-					students: ["S101", "S102"],
-					cap: 50,
-					enrolled: 23,
-					status: "Upcoming",
-				},
-				{
-					id: "T002",
-					name: "Arduino Intro",
-					date: "2025-11-20T09:00",
-					venue: "Lab 102",
-					students: ["S103"],
-					cap: 30,
-					enrolled: 12,
-					status: "Completed",
-				},
-				{
-					id: "T003",
-					name: "Web Dev Sprint",
-					date: "2025-12-05T09:00",
-					venue: "Room 210",
-					students: ["S104", "S105"],
-					cap: 40,
-					enrolled: 34,
-					status: "Ongoing",
-				},
-			];
+    <div class="popup-actions">
+      <button id="popupCancel" class="btn btn-outline d-none">Cancel</button>
+      <button id="popupConfirm" class="btn btn-primary">OK</button>
+    </div>
+  </div>
+</div>
 
-			function renderTeacherEvents() {
-				const tb = document.getElementById("eventsList");
-				tb.innerHTML = "";
-				teacherEvents.forEach((ev) => {
-					const tr = document.createElement("tr");
-					const dt = new Date(ev.date);
-					tr.innerHTML = `<td style="font-weight:600">${
-						ev.name
-					}<div class="small muted">${ev.id}</div></td>
-          <td>${dt.toLocaleString()}</td><td>${ev.venue}</td><td>${
-						(ev.students || []).join(", ") || "-"
-					}</td><td>${ev.enrolled}/${ev.cap}</td>
-          <td><span class="badge ${
-				ev.status === "Ongoing"
-					? "bg-success"
-					: ev.status === "Upcoming"
-					? "bg-primary"
-					: "bg-secondary"
-			}">${ev.status}</span></td>
-          <td class="text-end"><button class="btn btn-sm btn-outline me-1" onclick="openRoster('${
-				ev.id
-			}')">Roster</button><button class="btn btn-sm btn-outline me-1" onclick="openAssign('${
-						ev.id
-					}')">Assign</button><button class="btn btn-sm btn-outline me-1" onclick="editEv('${
-						ev.id
-					}')">Edit</button><button class="btn btn-sm btn-danger" onclick="deleteEv('${
-						ev.id
-					}')">Delete</button></td>`;
-					tb.appendChild(tr);
-				});
-			}
 
-			function openRoster(id) {
-				const ev = teacherEvents.find((e) => e.id === id);
-				document.getElementById(
-					"rosterBody"
-				).innerHTML = `<p class="small muted">Roster for ${
-					ev.name
-				} (demo):</p><ul>${(ev.students || [])
-					.map((s) => "<li>" + s + "</li>")
-					.join("")}</ul>`;
-				new bootstrap.Modal(
-					document.getElementById("rosterModal")
-				).show();
-			}
+<!-- ================= SCRIPTS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-			document
-				.getElementById("btnNewEvent")
-				.addEventListener("click", () => {
-					document.getElementById("evModalTitle").textContent =
-						"Create Event";
-					document.getElementById("evId").value = "";
-					document.getElementById("evName").value = "";
-					document.getElementById("evVenue").value = "";
-					document.getElementById("evDateInput").value = "";
-					document.getElementById("evCap").value = 50;
-					document.getElementById("evDesc").value = "";
-					new bootstrap.Modal(
-						document.getElementById("evModal")
-					).show();
-				});
+<script>
+/* ================= LOGOUT ================= */
+document.getElementById("logoutTop").onclick = () => {
+  window.location.href = "login.html";
+};
 
-			document
-				.getElementById("saveEvBtn")
-				.addEventListener("click", (e) => {
-					e.preventDefault();
-					const form = document.getElementById("evForm");
-					if (!form.checkValidity()) {
-						form.classList.add("was-validated");
-						return;
-					}
-					const id =
-						document.getElementById("evId").value ||
-						"T" + Math.floor(Math.random() * 9000 + 1000);
-					const payload = {
-						id,
-						name: document.getElementById("evName").value.trim(),
-						date: document.getElementById("evDateInput").value,
-						venue: document.getElementById("evVenue").value.trim(),
-						cap: parseInt(
-							document.getElementById("evCap").value || 0,
-							10
-						),
-						desc: document.getElementById("evDesc").value.trim(),
-						students: [],
-						enrolled: 0,
-						status: "Upcoming",
-					};
-					const idx = teacherEvents.findIndex((x) => x.id === id);
-					if (idx >= 0)
-						teacherEvents[idx] = {
-							...teacherEvents[idx],
-							...payload,
-						};
-					else teacherEvents.unshift(payload);
-					bootstrap.Modal.getInstance(
-						document.getElementById("evModal")
-					).hide();
-					renderTeacherEvents();
-				});
-// stu coord
-			function openAssign(id) {
-    const modal = new bootstrap.Modal(document.getElementById("assignStudentModal"));
-    modal.show();
+/* ================= DATA ================= */
+const students = [
+  { id: "S001", name: "Aarav Sharma", email: "aarav@gmail.com" },
+  { id: "S002", name: "Neha Singh", email: "neha@gmail.com" },
+  { id: "S003", name: "Rohan Kapoor", email: "rohan@gmail.com" }
+];
 
-    // reset rows
-    document.getElementById("studentAssignList").innerHTML = `
-      <div class="input-group mb-2">
-        <select class="form-select studentSelect">
-          <option value="S101">Student A (CS101)</option>
-          <option value="S102">Student B (CS102)</option>
-          <option value="S103">Student C (CS103)</option>
-        </select>
-        <input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
-      </div>
-    `;
+const events = [
+  {
+    id: "T001",
+    name: "Tech Workshop — Design Thinking",
+    date: "2025-12-10",
+    venue: "Lab 101",
+    coordinators: [{ id: "S001", role: "Lead" }],
+    participants: ["S002","S003"]
+  },
+  {
+    id: "T003",
+    name: "Web Dev Sprint",
+    date: "2025-12-05",
+    venue: "Room 210",
+    coordinators: [],
+    participants: []
+  }
+];
 
-    document.getElementById("addCoordinatorRow").onclick = () => {
-      const row = document.createElement("div");
-      row.className = "input-group mb-2";
-      row.innerHTML = `
-        <select class="form-select studentSelect">
-          <option value="S101">Student A (CS101)</option>
-          <option value="S102">Student B (CS102)</option>
-          <option value="S103">Student C (CS103)</option>
-        </select>
-        <input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
-      `;
-      document.getElementById("studentAssignList").appendChild(row);
-    };
+let activeEvent = null;
+const manageModal = new bootstrap.Modal(document.getElementById("manageModal"));
+/* ================= TOP SEARCH ================= */
+document.getElementById("searchTop").addEventListener("input", function () {
+  const query = this.value.toLowerCase().trim();
 
-    document.getElementById("assignStudentBtn").onclick = () => {
-      const selects = document.querySelectorAll("#studentAssignList .studentSelect");
-      const roles = document.querySelectorAll("#studentAssignList .roleInput");
-      const assigned = [];
-      selects.forEach((sel, i) => {
-        if (sel.value) {
-          assigned.push(sel.value + " (" + (roles[i].value || "Coordinator") + ")");
-        }
-      });
-
-      const ev = teacherEvents.find((e) => e.id === id);
-      if (ev) {
-        ev.students = assigned;
-      }
-
-      alert("Assigned coordinators: " + assigned.join(", "));
-      modal.hide();
-      renderTeacherEvents();
-    };
+  if (!query) {
+    renderEvents();
+    return;
   }
 
-			function editEv(id) {
-				const ev = teacherEvents.find((e) => e.id === id);
-				if (!ev) return;
-				document.getElementById("evModalTitle").textContent =
-					"Edit Event";
-				document.getElementById("evId").value = ev.id;
-				document.getElementById("evName").value = ev.name;
-				// set local input value
-				document.getElementById("evDateInput").value = new Date(ev.date)
-					.toISOString()
-					.slice(0, 16);
-				document.getElementById("evVenue").value = ev.venue;
-				document.getElementById("evCap").value = ev.cap;
-				document.getElementById("evDesc").value = ev.desc || "";
-				new bootstrap.Modal(document.getElementById("evModal")).show();
-			}
+  const filtered = events.filter(e => {
+    const eventMatch =
+      e.name.toLowerCase().includes(query) ||
+      e.id.toLowerCase().includes(query);
 
-			function deleteEv(id) {
-				if (confirm("Delete " + id + "?")) {
-					teacherEvents = teacherEvents.filter((e) => e.id !== id);
-					renderTeacherEvents();
-				}
-			}
+    const coordMatch = (e.coordinators || []).some(c =>
+      students.find(s => s.id === c)?.name
+        ?.toLowerCase()
+        .includes(query)
+    );
 
-			function exportAllRosters() {
-    // Build CSV content from teacherEvents
-    let csvContent = "Event ID,Event Name,Member ID,Name,Role,Email\n";
+    const participantMatch = (e.participants || []).some(p =>
+      p.name.toLowerCase().includes(query)
+    );
 
-    teacherEvents.forEach(ev => {
-      (ev.roster || []).forEach(member => {
-        csvContent += `${ev.id},${ev.name},${member.id},${member.name},${member.role},${member.email}\n`;
-      });
-    });
-
-    // Create a downloadable blob
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-
-    // Trigger download without touching the DOM
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "all_rosters.csv";
-    link.click();
-
-    // Clean up the temporary link
-    URL.revokeObjectURL(url);
-  }
-
-  // Attach to button
-  document.getElementById("exportAll").addEventListener("click", exportAllRosters);
-			
-  document.getElementById("notifyAll").addEventListener("click", () => {
-    // Navigate to notifications.html
-    window.location.href = "notifications.html";
+    return eventMatch || coordMatch || participantMatch;
   });
 
+  renderFilteredEvents(filtered);
+});
 
-			renderTeacherEvents();
-		</script>
-	</body>
+
+/* ================= RENDER EVENTS ================= */
+function renderEvents() {
+  const tbody = document.getElementById("eventsTbody");
+  tbody.innerHTML = "";
+
+  events.forEach((e, i) => {
+    const coordNames = e.coordinators.length
+      ? e.coordinators.map(c => `${c.id}-${c.role}`).join(", ")
+      : "<span class='muted'>None</span>";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${e.id}</td>
+        <td>${e.name}</td>
+        <td>${e.date}</td>
+        <td>${e.venue}</td>
+        <td>${coordNames}</td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-primary me-1" onclick="openManage(${i})">Manage</button>
+          <button class="btn btn-danger" onclick="confirmDeleteEvent(${i})">
+  Delete
+</button>
+
+        </td>
+      </tr>
+    `;
+  });
+}
+function renderFilteredEvents(list) {
+  const tbody = document.getElementById("eventsTbody");
+  tbody.innerHTML = "";
+
+  if (!list.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center muted py-4">
+          No matching results found
+        </td>
+      </tr>`;
+    return;
+  }
+
+  list.forEach((e, i) => {
+    const coordNames = e.coordinators?.length
+      ? e.coordinators
+          .map(id => students.find(s => s.id === id)?.name)
+          .join(", ")
+      : "<span class='muted'>None</span>";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${e.id}</td>
+        <td>${e.name}</td>
+        <td>${e.date}</td>
+        <td>${e.venue}</td>
+        <td>${coordNames}</td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-primary"
+            onclick="openManage(events.indexOf(e))">
+            Manage
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+
+/* ================= MANAGE MODAL ================= */
+function openManage(index) {
+  activeEvent = events[index];
+  activeEvent.participants ||= [];
+  activeEvent.pendingParticipants ||= [];
+  activeEvent.coordinators ||= [];
+  document.getElementById("eventNameInput").value = activeEvent.name;
+  document.getElementById("eventDateInput").value = activeEvent.date;
+  document.getElementById("eventVenueInput").value = activeEvent.venue;
+
+  renderCoordinators();
+  renderParticipants();
+  renderParticipantSelect();
+
+  manageModal.show();
+}
+
+/* Update Event Details */
+function updateEventDetails() {
+  if (!activeEvent) return;
+  activeEvent.name = document.getElementById("eventNameInput").value;
+  activeEvent.date = document.getElementById("eventDateInput").value;
+  activeEvent.venue = document.getElementById("eventVenueInput").value;
+  renderEvents();
+  // ✅ SHOW POPUP HERE
+  showSuccess("Event updated successfully");
+}
+function confirmDeleteFromModal() {
+  const index = events.indexOf(activeEvent);
+
+  showConfirm(
+    `Do you want to delete "${activeEvent.name}"?`,
+    () => {
+      deleteEvent(index);
+      manageModal.hide();
+      showSuccess("Event deleted successfully");
+    }
+  );
+}
+
+
+/* ================= COORDINATORS ================= */
+function renderCoordinators() {
+  const tbody = document.getElementById("coordinatorsTbody");
+  tbody.innerHTML = "";
+
+  const roles = ["Lead", "Member", "Assistant"]; // predefined roles
+
+  students.forEach(s => {
+    const assigned = activeEvent.coordinators.find(c => c.id === s.id);
+    const role = assigned ? assigned.role : "";
+
+    // Build role dropdown if assigned, else show "-"
+    const roleSelect = assigned
+      ? `<select class="form-select form-select-sm" onchange="updateRole('${s.id}', this.value)">
+          ${roles.map(r => `<option value="${r}" ${r === role ? "selected" : ""}>${r}</option>`).join('')}
+         </select>`
+      : "-";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${s.id}</td>
+        <td>${s.name}</td>
+        <td>${s.email}</td>
+        <td>${roleSelect}</td>
+        <td class="text-end">
+          ${assigned
+            ? `<button class="btn btn-sm btn-danger" onclick="removeCoordinator('${s.id}')">Remove</button>`
+            : `<button class="btn btn-sm btn-success" onclick="assignCoordinator('${s.id}')">Assign</button>`}
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* Assign coordinator with default role */
+function assignCoordinator(id) {
+  activeEvent.coordinators.push({ id, role: "Member" }); // default role
+  renderCoordinators();
+  renderEvents();
+}
+
+/* Update role when dropdown changes */
+function updateRole(id, role) {
+  const coord = activeEvent.coordinators.find(c => c.id === id);
+  if (coord) coord.role = role;
+  renderEvents();
+}
+
+/* Remove coordinator */
+function removeCoordinator(id) {
+  activeEvent.coordinators = activeEvent.coordinators.filter(c => c.id !== id);
+  renderCoordinators();
+  renderEvents();
+}
+
+
+function assignCoordinator(id) {
+  activeEvent.coordinators.push({ id, role: "Member" });
+  renderCoordinators();
+  renderEvents();
+}
+
+function removeCoordinator(id) {
+  activeEvent.coordinators = activeEvent.coordinators.filter(c => c.id !== id);
+  renderCoordinators();
+  renderEvents();
+}
+
+function updateRole(id, role) {
+  const coord = activeEvent.coordinators.find(c => c.id === id);
+  if (coord) coord.role = role;
+  renderEvents();
+}
+
+/* ================= PARTICIPANTS ================= */
+function renderParticipants() {
+  const tbody = document.getElementById("participantsTbody");
+  tbody.innerHTML = "";
+  activeEvent.participants.forEach(pid => {
+    const p = students.find(s => s.id === pid);
+    if (p) {
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.id}</td>
+          <td>${p.name}</td>
+          <td>${p.email}</td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-danger" onclick="removeParticipant('${p.id}')">Remove</button>
+          </td>
+        </tr>
+      `;
+    }
+  });
+}
+
+function renderParticipantSelect() {
+  const select = document.getElementById("addParticipantSelect");
+  select.innerHTML = "";
+  students.forEach(s => {
+    if (!activeEvent.participants.includes(s.id)) {
+      select.innerHTML += `<option value="${s.id}">${s.name} (${s.id})</option>`;
+    }
+  });
+}
+
+function addParticipant() {
+  const select = document.getElementById("addParticipantSelect");
+  const selected = Array.from(select.selectedOptions).map(o => o.value);
+  activeEvent.participants.push(...selected);
+  renderParticipants();
+  renderParticipantSelect();
+}
+
+/* Remove participant */
+function removeParticipant(id) {
+  activeEvent.participants = activeEvent.participants.filter(p => p !== id);
+  renderParticipants();
+  renderParticipantSelect();
+}
+
+/* Delete Event */
+function deleteEvent(index) {
+  events.splice(index, 1);
+  renderEvents();
+}
+function confirmDeleteEvent(index) {
+  showConfirm(
+    `Do you want to delete "${events[index].name}"?`,
+    () => {
+      deleteEvent(index);
+      showSuccess("Event deleted successfully");
+    }
+  );
+}
+
+
+function showSuccess(message) {
+  const overlay = document.getElementById("popupOverlay");
+  document.getElementById("popupIcon").className = "popup-icon success";
+  document.getElementById("popupIcon").innerHTML = "✓";
+  document.getElementById("popupTitle").innerText = "Success";
+  document.getElementById("popupMessage").innerText = message;
+
+  document.getElementById("popupCancel").classList.add("d-none");
+  document.getElementById("popupConfirm").innerText = "OK";
+  document.getElementById("popupConfirm").onclick = () => {
+    overlay.classList.add("d-none");
+  };
+
+  overlay.classList.remove("d-none");
+}
+
+function showConfirm(message, onConfirm) {
+  const overlay = document.getElementById("popupOverlay");
+  document.getElementById("popupIcon").className = "popup-icon warning";
+  document.getElementById("popupIcon").innerHTML = "!";
+  document.getElementById("popupTitle").innerText = "Are you sure?";
+  document.getElementById("popupMessage").innerText = message;
+
+  const cancelBtn = document.getElementById("popupCancel");
+  const confirmBtn = document.getElementById("popupConfirm");
+
+  cancelBtn.classList.remove("d-none");
+  confirmBtn.innerText = "Delete";
+
+  cancelBtn.onclick = () => overlay.classList.add("d-none");
+  confirmBtn.onclick = () => {
+    overlay.classList.add("d-none");
+    onConfirm();
+  };
+
+  overlay.classList.remove("d-none");
+}
+function downloadCSV(filename, rows) {
+  if (!rows.length) {
+    showSuccess("No data available to download");
+    return;
+  }
+
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    rows.map(e => e.join(",")).join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+function downloadApprovedParticipants() {
+  if (!activeEvent) return;
+
+  const rows = [["ID", "Name", "Email"]];
+
+  activeEvent.participants.forEach(pid => {
+    const p = students.find(s => s.id === pid); // ✅ FIX HERE
+    if (p) rows.push([p.id, p.name, p.email]);
+  });
+
+  downloadCSV(
+    `${activeEvent.name}_Approved_Participants.csv`,
+    rows
+  );
+}
+
+function downloadPendingParticipants() {
+  if (!activeEvent) return;
+
+  const rows = [["ID", "Name", "Email"]];
+
+  activeEvent.pendingParticipants.forEach(pid => {
+    const p = students.find(s => s.id === pid); // ✅ FIX HERE
+    if (p) rows.push([p.id, p.name, p.email]);
+  });
+
+  downloadCSV(
+    `${activeEvent.name}_Pending_Participants.csv`,
+    rows
+  );
+}
+
+
+
+/* ================= INIT ================= */
+renderEvents();
+</script>
+
+</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
