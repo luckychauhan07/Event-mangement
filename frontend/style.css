@@ -274,7 +274,7 @@ img {
 	margin-bottom: 40px;
 }
 
-.sidebar-logo .logo-mark {
+.sidebar-logo .logo.svg {
 	width: 44px;
 	height: 44px;
 	background: var(--primary);

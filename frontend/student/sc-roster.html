@@ -25,13 +25,10 @@
 <body>
   <!-- TOPBAR -->
   <header class="topbar">
-    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
-      <div class="logo-mark">EE</div>
-      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
-        Event Ease
-      </div>
+    <a href="sc-dashboard.html" class="d-flex align-items-center text-decoration-none">
+        <img src="logo.svg" alt="Event Ease" style="height: 32px; width: auto; margin-right: 10px;">
+        <div style="font-weight: 700; color: var(--text-dark);">Event Ease</div>
     </a>
-
     <div class="d-flex align-items-center gap-3">
       <input
         id="rosterSearch"
@@ -113,7 +110,7 @@
                 <th class="table-col--name">Name</th>
                 <th style="width: 180px;">Email</th>
                 <th style="width: 120px;">Attendance</th>
-                <th style="width: 230px;" class="text-end">Actions</th>
+                <th style="width: 160px;" class="text-end">Actions</th>
               </tr>
             </thead>
             <tbody id="rosterTbody"></tbody>
@@ -133,23 +130,6 @@
         </div>
       </div>
     </main>
-  </div>
-
-  <!-- Confirm remove -->
-  <div class="modal fade" id="confirmRemoveModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Remove participant</h5>
-          <button class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body" id="confirmRemoveBody"></div>
-        <div class="modal-footer">
-          <button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-danger" id="confirmRemoveYes">Remove</button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- JS -->
@@ -204,30 +184,9 @@
     const btnBack = document.getElementById("btnBack");
 
     let currentEventId = null;
-    let pendingRemove = null;
 
-    const urlParams = new URLSearchParams(window.location.search); // [web:736]
-    const preEventId = urlParams.get("event"); // [web:736]
-
-    function initEvents() {
-      selectEvent.innerHTML = "";
-      events.forEach(e => {
-        const opt = document.createElement("option");
-        opt.value = e.id;
-        opt.textContent = `${e.name} (${e.id})`;
-        selectEvent.appendChild(opt);
-      });
-      if (events.length) {
-        if (preEventId && events.some(e => e.id === preEventId)) {
-          currentEventId = preEventId;
-          selectEvent.value = preEventId;
-        } else {
-          currentEventId = events[0].id;
-          selectEvent.value = events[0].id;
-        }
-      }
-      renderRoster();
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const preEventId = urlParams.get("event");
 
     function getFilteredParticipants(ev) {
       const q = (rosterSearch.value || "").toLowerCase();
@@ -285,14 +244,11 @@
               ${present ? "Present" : "Absent"}
             </span>
           </td>
-          <td style="width: 230px;" class="text-end">
+          <td style="width: 160px;" class="text-end">
             <div class="d-flex justify-content-end gap-1">
               <button class="btn btn-outline btn-sm" onclick="viewParticipant('${p.id}')">View</button>
               <button class="btn btn-outline btn-sm" onclick="toggleAttendance('${ev.id}','${p.id}')">
                 Mark ${present ? "absent" : "present"}
-              </button>
-              <button class="btn btn-danger btn-sm" onclick="promptRemove('${ev.id}','${p.id}')">
-                Remove
               </button>
             </div>
           </td>
@@ -318,34 +274,27 @@
       renderRoster();
     }
 
-    function promptRemove(eventId, pid) {
-      pendingRemove = { eventId, pid };
-      const ev = events.find(e => e.id === eventId);
-      const p = participantsDir[pid] || { id: pid };
-      document.getElementById("confirmRemoveBody").textContent =
-        `Remove ${p.id} from ${ev ? ev.name : eventId}? This will notify the Teacher Coordinator.`;
-      document.getElementById("confirmRemoveYes").onclick = confirmRemove;
-      new bootstrap.Modal(document.getElementById("confirmRemoveModal")).show();
-    }
-
-    function confirmRemove() {
-      if (!pendingRemove) return;
-      const { eventId, pid } = pendingRemove;
-      const ev = events.find(e => e.id === eventId);
-      if (!ev) return;
-
-      ev.participants = ev.participants.filter(x => x !== pid);
-      if (ev.attendance && Object.prototype.hasOwnProperty.call(ev.attendance, pid)) {
-        delete ev.attendance[pid];
+    function initEvents() {
+      selectEvent.innerHTML = "";
+      events.forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e.id;
+        opt.textContent = `${e.name} (${e.id})`;
+        selectEvent.appendChild(opt);
+      });
+      if (events.length) {
+        if (preEventId && events.some(e => e.id === preEventId)) {
+          currentEventId = preEventId;
+          selectEvent.value = preEventId;
+        } else {
+          currentEventId = events[0].id;
+          selectEvent.value = events[0].id;
+        }
       }
-
-      pendingRemove = null;
-      const modal = bootstrap.Modal.getInstance(document.getElementById("confirmRemoveModal"));
-      modal.hide();
       renderRoster();
-      alert("Teacher Coordinator will be notified about this removal.");
     }
 
+    // Event Listeners
     selectEvent.addEventListener("change", e => {
       currentEventId = e.target.value;
       renderRoster();
@@ -371,21 +320,23 @@
       window.location.href = `sc-roster-export.html?event=${ev.id}`;
     });
 
-    // Back from roster: handle both direct and child-page cases
+    // ✅ PERFECT BACK BUTTON - Single click goes to My Events (sc-events.html)
     if (btnBack) {
-      btnBack.addEventListener("click", () => {
-        const ref = document.referrer || "";
-        const cameFromChild =
-          ref.includes("sc-roster-export.html") ||
-          ref.includes("sc-roster-add-request.html");
-
-        if (cameFromChild) {
-          // Skip export/add and go straight back to My Events
-          window.history.go(-2); // [web:756][web:764]
-        } else if (document.referrer) {
-          window.history.back(); // [web:730][web:756]
-        } else {
-          window.location.href = "sc-dashboard.html";
+      btnBack.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Priority 1: Check if came from events page (referrer)
+        if (document.referrer.includes('sc-events.html')) {
+          window.location.href = 'sc-events.html';
+        }
+        // Priority 2: Check sessionStorage (set from events page navigation)
+        else if (sessionStorage.getItem('previousPage') === 'sc-events.html') {
+          window.location.href = 'sc-events.html';
+        }
+        // Priority 3: Default - Always go to My Events (your requirement)
+        else {
+          window.location.href = 'sc-events.html';
         }
       });
     }
@@ -394,7 +345,7 @@
 
     window.viewParticipant = viewParticipant;
     window.toggleAttendance = toggleAttendance;
-    window.promptRemove = promptRemove;
   </script>
 </body>
 </html>
+

@@ -25,43 +25,15 @@
 <body>
   <!-- TOPBAR -->
   <header class="topbar">
-    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
-      <div class="logo-mark">EE</div>
-      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
-        Event Ease
-      </div>
+    <a href="sc-dashboard.html" class="d-flex align-items-center text-decoration-none">
+        <img src="logo.svg" alt="Event Ease" style="height: 32px; width: auto; margin-right: 10px;">
+        <div style="font-weight: 700; color: var(--text-dark);">Event Ease</div>
     </a>
 
     <div class="d-flex align-items-center gap-3">
-      <input
-        id="exportSearch"
-        class="form-control form-control-sm d-none d-md-block"
-        style="min-width: 260px"
-        placeholder="Search by name, ID or email"
-      />
-
-      <!-- Notification bell -->
-      <div class="dropdown">
-        <button
-          class="btn btn-icon btn-ghost position-relative"
-          id="scNotifBell"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-          title="Notifications"
-        >
-          <span class="bi bi-bell"></span>
-          <span
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            style="font-size: 10px;"
-          >3</span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="sc-notifications-send.html">Send notifications</a></li>
-          <li><a class="dropdown-item" href="sc-notifications.html">View notifications</a></li>
-        </ul>
-      </div>
-
-      <!-- User dropdown -->
+      <!-- REMOVED: Search bar -->
+      
+      <!-- User dropdown - ONLY Profile + Logout -->
       <div class="dropdown">
         <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
           <div
@@ -76,7 +48,6 @@
           </div>
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="sc-dashboard.html">Dashboard</a></li>
           <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
           <li><hr class="dropdown-divider" /></li>
           <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
@@ -93,8 +64,9 @@
         <a href="sc-events.html">📅 My Events</a>
         <a href="sc-teams.html">👥 Manage Teams</a>
         <a href="sc-participants.html">📋 Participants</a>
-        <a href="sc-notifications.html">🔔 Notifications</a>
-        <a href="sc-profile.html">👤 Profile</a>
+        <a href="sc-notifications.html">🔔 Notifications
+          <span class="badge bg-light text-primary ms-1" id="scNotifCountBadge">3</span>
+        </a>
       </nav>
     </aside>
 
@@ -196,7 +168,6 @@
     const exportTbody = document.getElementById("exportTbody");
     const exportSummary = document.getElementById("exportSummary");
     const exportFooterInfo = document.getElementById("exportFooterInfo");
-    const exportSearch = document.getElementById("exportSearch");
     const btnDownloadCsv = document.getElementById("btnDownloadCsv");
     const btnBackRoster = document.getElementById("btnBackRoster");
 
@@ -211,8 +182,8 @@
         exportEventSelect.appendChild(opt);
       });
 
-      const params = new URLSearchParams(window.location.search); // [web:736]
-      const eventFromUrl = params.get("event"); // [web:736]
+      const params = new URLSearchParams(window.location.search);
+      const eventFromUrl = params.get("event");
 
       if (eventFromUrl && events.some(e => e.id === eventFromUrl)) {
         exportEventSelect.value = eventFromUrl;
@@ -226,12 +197,8 @@
     }
 
     function getFilteredParticipants(ev) {
-      const q = (exportSearch.value || "").toLowerCase();
-      return ev.participants.filter(pid => {
-        const p = participantsDir[pid] || { id: pid, name: pid, email: "" };
-        const text = (p.id + " " + p.name + " " + p.email).toLowerCase();
-        return !q || text.includes(q);
-      });
+      // Search functionality removed - no search input exists
+      return ev.participants;
     }
 
     function renderExportTable() {
@@ -258,7 +225,7 @@
 
       if (!filtered.length) {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="4" class="text-center muted">No participants match your search.</td>`;
+        tr.innerHTML = `<td colspan="4" class="text-center muted">No participants found.</td>`;
         exportTbody.appendChild(tr);
         return;
       }
@@ -334,17 +301,16 @@
       renderExportTable();
     });
 
-    exportSearch.addEventListener("input", renderExportTable);
     btnDownloadCsv.addEventListener("click", downloadCsv);
 
     // Back to rosters without stacking history
     btnBackRoster.addEventListener("click", () => {
-      const params = new URLSearchParams(window.location.search); // [web:736]
+      const params = new URLSearchParams(window.location.search);
       const eventId = params.get("event");
       const target = eventId
         ? `sc-roster.html?event=${encodeURIComponent(eventId)}`
         : "sc-roster.html";
-      window.location.replace(target); // [web:760][web:762][web:765]
+      window.location.replace(target);
     });
 
     initEventOptions();

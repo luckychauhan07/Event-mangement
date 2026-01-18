@@ -25,41 +25,30 @@
 <body>
   <!-- TOPBAR -->
   <header class="topbar">
-    <a class="d-flex align-items-center text-decoration-none" href="sc-dashboard.html">
-      <div class="logo-mark">EE</div>
-      <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">
-        Event Ease
-      </div>
+    <a href="sc-dashboard.html" class="d-flex align-items-center text-decoration-none">
+        <img src="logo.svg" alt="Event Ease" style="height: 32px; width: auto; margin-right: 10px;">
+        <div style="font-weight: 700; color: var(--text-dark);">Event Ease</div>
     </a>
 
-    <div class="d-flex align-items-center gap-3">
-      <input
-        id="scNotifInboxSearch"
-        class="form-control form-control-sm d-none d-md-block"
-        style="min-width: 260px"
-        placeholder="Search notifications by subject or event"
-      />
-
-      <!-- User dropdown (no bell) -->
-      <div class="dropdown">
-        <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-          <div
-            class="rounded-circle bg-primary text-white"
-            style="width: 36px; height: 36px; display: grid; place-items: center;"
-          >
-            SC
-          </div>
-          <div class="d-none d-md-block text-start">
-            <div style="font-weight: 600;">Student Coord</div>
-            <div class="small muted">you@college.edu</div>
-          </div>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
-          <li><hr class="dropdown-divider" /></li>
-          <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
-        </ul>
-      </div>
+    <!-- User dropdown (no bell, no search) -->
+    <div class="dropdown">
+      <button class="btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+        <div
+          class="rounded-circle bg-primary text-white"
+          style="width: 36px; height: 36px; display: grid; place-items: center;"
+        >
+          SC
+        </div>
+        <div class="d-none d-md-block text-start">
+          <div style="font-weight: 600;">Student Coord</div>
+          <div class="small muted">you@college.edu</div>
+        </div>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="sc-profile.html">Profile</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><button class="dropdown-item text-danger" id="scLogoutTop">Logout</button></li>
+      </ul>
     </div>
   </header>
 
@@ -145,7 +134,7 @@
                 <th style="width: 140px;">Event</th>
                 <th style="width: 130px;">Sent at</th>
                 <th style="width: 100px;">Status</th>
-                <th style="width: 190px;" class="text-end">Actions</th>
+                <th style="width: 120px;" class="text-end">Actions</th>
               </tr>
             </thead>
             <tbody id="notifTbody"></tbody>
@@ -173,7 +162,6 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline" type="button" data-bs-dismiss="modal">Close</button>
-          <button class="btn btn-primary" type="button" id="btnReplyDemo">Reply</button>
         </div>
       </div>
     </div>
@@ -191,7 +179,6 @@
     const notifBadge = document.getElementById("scNotifCountBadge");
     if (notifBadge) notifBadge.textContent = "3";
 
-    const notifSearchInput = document.getElementById("scNotifInboxSearch");
     const sourceSelect = document.getElementById("notifSource");
     const statusSelect = document.getElementById("notifStatus");
     const btnMarkAllRead = document.getElementById("btnMarkAllRead");
@@ -207,7 +194,6 @@
     const notifDetailEventBadge = document.getElementById("notifDetailEventBadge");
     const notifDetailMeta = document.getElementById("notifDetailMeta");
     const notifDetailMessage = document.getElementById("notifDetailMessage");
-    const btnReplyDemo = document.getElementById("btnReplyDemo");
 
     let NOTIFICATIONS = [
       {
@@ -259,7 +245,6 @@
     let currentDetailNotif = null;
 
     function applyFilters() {
-      const q = (notifSearchInput.value || "").toLowerCase();
       const source = sourceSelect.value;
       const status = statusSelect.value;
 
@@ -273,14 +258,6 @@
         list = list.filter(n => !n.read);
       } else if (status === "important") {
         list = list.filter(n => n.important);
-      }
-
-      if (q) {
-        list = list.filter(
-          n =>
-            n.subject.toLowerCase().includes(q) ||
-            n.event.toLowerCase().includes(q)
-        );
       }
 
       renderNotifTable(list);
@@ -318,17 +295,12 @@
                 : '<span class="badge bg-primary">Unread</span>'
             }
           </td>
-          <td class="text-end" style="width: 190px;">
+          <td class="text-end" style="width: 120px;">
             <div class="d-flex justify-content-end gap-1">
               <button class="btn btn-outline btn-sm" onclick="openNotifDetail('${n.id}')">View</button>
               ${
                 !n.read
                   ? `<button class="btn btn-outline btn-sm" onclick="markRead('${n.id}')">Mark read</button>`
-                  : ""
-              }
-              ${
-                n.from === "Admin" || n.from === "Teacher"
-                  ? `<button class="btn btn-outline btn-sm" onclick="replyTo('${n.id}')">Reply</button>`
                   : ""
               }
             </div>
@@ -386,39 +358,10 @@
       applyFilters();
     }
 
-    // Reply button inside modal -> go to reply page
-    btnReplyDemo.addEventListener("click", () => {
-      if (!currentDetailNotif) return;
-      replyTo(currentDetailNotif.id);
-    });
-
-    function replyTo(id) {
-      const n = NOTIFICATIONS.find(x => x.id === id);
-      if (!n) return;
-
-      const toName = n.from === "Admin"
-        ? "Admin"
-        : n.from === "Teacher"
-        ? "Teacher Coordinator"
-        : n.from;
-      const toRole = n.from;
-      const subject = n.subject || "Notification";
-
-      const qs = new URLSearchParams();
-      qs.set("notifId", n.id);
-      qs.set("toName", toName);
-      qs.set("toRole", toRole);
-      qs.set("subject", subject);
-
-      window.location.href = "sc-notifications-reply.html?" + qs.toString();
-    }
-
-    notifSearchInput.addEventListener("input", applyFilters);
     sourceSelect.addEventListener("change", applyFilters);
     statusSelect.addEventListener("change", applyFilters);
     btnMarkAllRead.addEventListener("click", markAllRead);
     btnClearFilters.addEventListener("click", () => {
-      notifSearchInput.value = "";
       sourceSelect.value = "all";
       statusSelect.value = "all";
       applyFilters();
@@ -438,7 +381,6 @@
 
     window.openNotifDetail = openNotifDetail;
     window.markRead = markRead;
-    window.replyTo = replyTo;
   </script>
 </body>
 </html>
