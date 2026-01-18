@@ -16,7 +16,7 @@
 		/>
 
 		<!-- Your shared design tokens -->
-		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="style1.css" />
 
 		<style>
 			body {
@@ -175,6 +175,10 @@
 					<a
 						href="teacher-profile.html"
 						>👤 Profile</a
+					>
+					<a
+						href="notifications.html"
+						>🔔 Notifications</a
 					>
 				</nav>
 
@@ -339,36 +343,39 @@
 		</div>
 
 		<!-- Assign coordinator modal -->
-		<div
+		<div 
 			class="modal fade"
 			id="modalAssign"
 			tabindex="-1"
 			aria-hidden="true"
 		>
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Assign Student Coordinator</h5>
-						<button
-							class="btn-close"
-							data-bs-dismiss="modal"
-						></button>
-					</div>
-					<div class="modal-body">
-						<div class="muted small mb-2" id="assignInfo"></div>
-						<label class="form-label">Choose student</label>
-						<select id="assignSelect" class="form-select"></select>
-					</div>
-					<div class="modal-footer">
-						<button class="btn btn-outline" data-bs-dismiss="modal">
-							Cancel
-						</button>
-						<button id="assignConfirm" class="btn btn-primary">
-							Assign
-						</button>
-					</div>
-				</div>
-			</div>
+  			<div class="modal-dialog">
+    			<div class="modal-content">
+      				<div class="modal-header">
+        				<h5 class="modal-title">Assign Student Coordinators</h5>
+        				<button class="btn-close" data-bs-dismiss="modal"></button>
+      				</div>
+      				<div class="modal-body">
+        				<div class="muted small mb-2" id="assignInfo"></div>
+        				<label class="form-label">Choose students & roles</label>
+        				<div id="assignList">
+          					<div class="input-group mb-2">
+            					<select class="form-select assignSelect">
+              						<option value="S101">Student A (CS101)</option>
+									<option value="S102">Student B (CS102)</option>
+									<option value="S103">Student C (CS103)</option>
+            					</select>
+            					<input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
+          					</div>
+        				</div>
+        				<button class="btn btn-sm btn-outline" id="addAssignRow">+ Add another</button>
+      				</div>
+      				<div class="modal-footer">
+						<button class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+						<button id="assignConfirm" class="btn btn-primary">Assign</button>
+      				</div>
+    			</div>
+  			</div>
 		</div>
 
 		<!-- Remove participant confirm -->
@@ -494,6 +501,15 @@
 					when: "3h ago",
 				},
 			];
+			// Example global student list
+			const students = {
+			S101: { id: "S101", name: "Student A", dept: "CS101" },
+			S102: { id: "S102", name: "Student B", dept: "CS102" },
+			S103: { id: "S103", name: "Student C", dept: "CS103" },
+			S104: { id: "S104", name: "Student D", dept: "CS104" },
+			// ... add more students here
+			};
+
 
 			// participant directory
 			const participants = {
@@ -823,51 +839,69 @@
 			 * (teacher picks from participants)
 			 ********************************/
 			function openAssign(eventId) {
-				const ev = events.find((e) => e.id === eventId);
-				if (!ev) return alert("Event missing");
-				const sel = document.getElementById("assignSelect");
-				sel.innerHTML = "";
-				if (!ev.participants || ev.participants.length === 0) {
-					sel.innerHTML =
-						'<option value="">-- no participants --</option>';
-				} else {
-					ev.participants.forEach((pid) => {
-						const p = participants[pid] || { id: pid, name: pid };
-						const opt = document.createElement("option");
-						opt.value = pid;
-						opt.textContent = `${p.name} (${pid})`;
-						sel.appendChild(opt);
-					});
-				}
-				document.getElementById(
-					"assignInfo"
-				).textContent = `Assign coordinator for: ${ev.name}`;
-				document.getElementById("assignConfirm").onclick = () => {
-					const chosen = sel.value;
-					if (!chosen) return alert("Select a participant first");
-					ev.studentCoordinators = ev.studentCoordinators || [];
-					if (!ev.studentCoordinators.includes(chosen))
-						ev.studentCoordinators.push(chosen);
-					logAction(
-						`Assigned ${chosen} as student coordinator for ${ev.name}`
-					);
-					new bootstrap.Modal(
-						document.getElementById("modalAssign")
-					).hide();
-					if (selectedEvent === ev.id) renderParticipants(ev);
-					renderManagedEvents();
-				};
-				new bootstrap.Modal(
-					document.getElementById("modalAssign")
-				).show();
-			}
+  const ev = events.find((e) => e.id === eventId);
+  if (!ev) return alert("Event missing");
 
-			document
-				.getElementById("assignCoordBtn")
-				.addEventListener("click", () => {
-					if (!selectedEvent) return alert("Select an event first");
-					openAssign(selectedEvent);
-				});
+  document.getElementById("assignInfo").textContent = `Assign coordinators for: ${ev.name}`;
+
+  // Reset list with one row
+  const list = document.getElementById("assignList");
+  list.innerHTML = `
+    <div class="input-group mb-2">
+      <select class="form-select assignSelect">
+        ${Object.values(students).map(s => 
+          `<option value="${s.id}">${s.name} (${s.dept})</option>`
+        ).join("")}
+      </select>
+      <input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
+    </div>
+  `;
+
+  // Add new row button
+  document.getElementById("addAssignRow").onclick = () => {
+    const row = document.createElement("div");
+    row.className = "input-group mb-2";
+    row.innerHTML = `
+      <select class="form-select assignSelect">
+        ${Object.values(students).map(s => 
+          `<option value="${s.id}">${s.name} (${s.dept})</option>`
+        ).join("")}
+      </select>
+      <input type="text" class="form-control roleInput" placeholder="Role (e.g. Lead, Support)" />
+    `;
+    list.appendChild(row);
+  };
+
+  // Confirm assignment
+  const confirmBtn = document.getElementById("assignConfirm");
+  confirmBtn.onclick = () => {
+    const selects = document.querySelectorAll("#assignList .assignSelect");
+    const roles = document.querySelectorAll("#assignList .roleInput");
+    const assigned = [];
+
+    selects.forEach((sel, i) => {
+      if (sel.value) {
+        const role = roles[i].value || "Coordinator";
+        assigned.push(sel.value + " (" + role + ")");
+      }
+    });
+
+    if (assigned.length === 0) return alert("Select at least one student");
+
+    ev.studentCoordinators = assigned;
+
+    logAction(`Assigned coordinators: ${assigned.join(", ")} for ${ev.name}`);
+
+    bootstrap.Modal.getInstance(document.getElementById("modalAssign")).hide();
+
+    if (selectedEvent === ev.id) renderParticipants(ev);
+    renderManagedEvents();
+  };
+
+  new bootstrap.Modal(document.getElementById("modalAssign")).show();
+}
+
+
 
 			/***************************
 			 * Remove participant flow  *

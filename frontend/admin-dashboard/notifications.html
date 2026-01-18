@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Notifications — Event Ease (Admin)</title>
+
+		<!-- Fonts & Bootstrap -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+
+		<!-- Global styles -->
+		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="admin-common.css" />
+
+		<style>
+			body {
+				font-family: Inter, system-ui, Arial;
+				background: var(--bg-light);
+				color: var(--text-dark);
+			}
+			.app-shell {
+				display: flex;
+				min-height: calc(100vh - var(--header-height));
+			}
+			.app-main {
+				flex: 1;
+				padding: 32px;
+			}
+			.card-compact {
+				background: #fff;
+				border-radius: 14px;
+				box-shadow: var(--shadow-md);
+				padding: 20px;
+			}
+			.unread {
+				background: #f8fafc;
+				font-weight: 600;
+			}
+			.priority-dot {
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				display: inline-block;
+			}
+			.p-high {
+				background: #dc2626;
+			}
+			.p-medium {
+				background: #f59e0b;
+			}
+			.p-low {
+				background: #2563eb;
+			}
+			.notification-history-btn {
+				background-color: #ff9800; /* Orange */
+				color: #fff; /* White text */
+				padding: 10px 16px;
+				border: none;
+				border-radius: 6px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+				box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+			}
+
+			.notification-history-btn:hover {
+				transform: translateY(-2px);
+				background-color: #e68900; /* Darker orange */
+				color: #fff;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- HEADER -->
+		<header class="topbar">
+			<a
+				class="d-flex align-items-center text-decoration-none"
+				href="admin.html"
+				aria-label="Event Ease Home"
+			>
+				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
+				<div
+					style="
+						margin-left: 10px;
+						font-weight: 700;
+						color: var(--text-dark);
+					"
+				>
+					Event Ease
+				</div>
+			</a>
+
+			<div class="d-flex align-items-center gap-3">
+				<div class="d-none d-md-block" style="min-width: 280px">
+					<input
+						id="globalSearch"
+						class="form-control form-control-sm"
+						placeholder="Search (events, users, IDs) — /"
+					/>
+				</div>
+				<a
+					href="notifications.html"
+					class="position-relative btn btn-light"
+					title="Notifications"
+				>
+					🔔
+					<span
+						id="adminNotifCount"
+						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+						style="font-size: 11px"
+					>
+						2
+					</span>
+				</a>
+
+				<div class="dropdown">
+					<button
+						class="btn d-flex align-items-center gap-2"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+					>
+						<div
+							class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+							style="width: 36px; height: 36px"
+						>
+							AD
+						</div>
+						<div class="d-none d-md-block text-start">
+							<div style="font-weight: 600">Admin</div>
+							<div class="small muted">admin@college.edu</div>
+						</div>
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li>
+							<a class="dropdown-item" href="profile.html"
+								>Profile</a
+							>
+						</li>
+						<li>
+							<a class="dropdown-item" href="settings.html"
+								>Settings</a
+							>
+						</li>
+						<li><hr class="dropdown-divider" /></li>
+						<li>
+							<a
+								class="dropdown-item text-danger"
+								href="#"
+								id="logoutBtn"
+								>Logout</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</header>
+
+		<div class="app-shell">
+			<!-- SIDEBAR -->
+			<aside class="app-sidebar d-none d-lg-flex">
+				<nav class="sidebar-nav">
+					<a href="admin.html">🏠 Home</a>
+					<a href="users.html">👥 Users</a>
+					<a href="events.html">📅 Events</a>
+					<a href="add-event.html">➕ Add Event</a>
+					<a href="reports.html">📊 Reports</a>
+					<a href="notifications.html" class="active"
+						>🔔 Notifications</a
+					>
+					<a href="profile.html">👤 Profile</a>
+				</nav>
+
+				<div class="sidebar-footer">
+					<a
+						class="text-danger"
+						style="display: block; margin-bottom: 12px"
+						>🔒 Logout</a
+					>
+					v1.0 • © <span id="year"></span>
+				</div>
+			</aside>
+
+			<!-- MAIN -->
+			<main class="app-main">
+				<div class="container-fluid">
+					<!-- PAGE HEADER -->
+					<div class="mb-4">
+						<h3>Admin Notifications</h3>
+						<p class="muted mb-0">
+							Only requests and system alerts that require your
+							action
+						</p>
+						<div class="d-flex justify-content-end mb-3">
+							<a
+								href="send-notification.html"
+								class="btn btn-primary btn-sm me-2"
+							>
+								➕ New Notification
+							</a>
+							<a
+								href="notification-logs.html"
+								class="btn notification-history-btn btn-sm"
+							>
+								📜 Notification History
+							</a>
+						</div>
+						<div class="d-flex justify-content-end mb-3"></div>
+					</div>
+
+					<!-- MINI NAV -->
+					<ul class="nav nav-pills mb-3">
+						<li class="nav-item">
+							<button
+								class="nav-link active"
+								onclick="filterType('all')"
+							>
+								All
+							</button>
+						</li>
+						<li class="nav-item">
+							<button
+								class="nav-link"
+								onclick="filterType('request')"
+							>
+								Requests / Approvals
+							</button>
+						</li>
+						<li class="nav-item">
+							<button
+								class="nav-link"
+								onclick="filterType('system')"
+							>
+								System Alerts
+							</button>
+						</li>
+					</ul>
+
+					<!-- NOTIFICATION TABLE -->
+					<div class="card-compact">
+						<div class="table-responsive">
+							<table class="table table-hover align-middle">
+								<thead>
+									<tr>
+										<th></th>
+										<th>Title</th>
+										<th>Source</th>
+										<th>Status</th>
+										<th class="text-end">Action</th>
+									</tr>
+								</thead>
+								<tbody id="notifBody">
+									<!-- EVENT APPROVAL -->
+									<tr class="unread" data-type="request">
+										<td>
+											<span
+												class="priority-dot p-high"
+											></span>
+										</td>
+										<td>New Event Approval Required</td>
+										<td>Teacher Coordinator</td>
+										<td>
+											<span
+												class="badge bg-warning text-dark"
+												>Pending</span
+											>
+										</td>
+										<td class="text-end">
+											<button
+												class="btn btn-success btn-sm"
+												onclick="approve(this)"
+											>
+												Approve
+											</button>
+											<button
+												class="btn btn-outline-danger btn-sm"
+											>
+												Reject
+											</button>
+										</td>
+									</tr>
+
+									<!-- TEACHER REGISTRATION -->
+									<tr class="unread" data-type="request">
+										<td>
+											<span
+												class="priority-dot p-medium"
+											></span>
+										</td>
+										<td>Teacher Registration Request</td>
+										<td>New User Signup</td>
+										<td>
+											<span
+												class="badge bg-warning text-dark"
+												>Pending</span
+											>
+										</td>
+										<td class="text-end">
+											<button
+												class="btn btn-success btn-sm"
+												onclick="approve(this)"
+											>
+												Approve
+											</button>
+											<button
+												class="btn btn-outline-danger btn-sm"
+											>
+												Reject
+											</button>
+										</td>
+									</tr>
+
+									<!-- SYSTEM ALERT -->
+									<tr data-type="system">
+										<td>
+											<span
+												class="priority-dot p-low"
+											></span>
+										</td>
+										<td>System Maintenance Scheduled</td>
+										<td>System</td>
+										<td>
+											<span class="badge bg-secondary"
+												>Read</span
+											>
+										</td>
+										<td class="text-end">
+											<button
+												class="btn btn-outline-secondary btn-sm"
+												onclick="markUnread(this)"
+											>
+												Mark Unread
+											</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+		<script>
+			document.getElementById("year").textContent =
+				new Date().getFullYear();
+
+			/* Approve request */
+			function approve(btn) {
+				const row = btn.closest("tr");
+				row.classList.remove("unread");
+				row.querySelector("td:nth-child(4)").innerHTML =
+					'<span class="badge bg-success">Approved</span>';
+				btn.parentElement.innerHTML =
+					'<span class="text-success fw-semibold">Approved</span>';
+			}
+
+			/* Mark unread */
+			function markUnread(btn) {
+				const row = btn.closest("tr");
+				row.classList.add("unread");
+				row.querySelector("td:nth-child(4)").innerHTML =
+					'<span class="badge bg-warning text-dark">Unread</span>';
+			}
+
+			/* Filter notifications */
+			function filterType(type) {
+				document.querySelectorAll("#notifBody tr").forEach((row) => {
+					if (type === "all") {
+						row.style.display = "";
+					} else {
+						row.style.display =
+							row.dataset.type === type ? "" : "none";
+					}
+				});
+				document
+					.querySelectorAll(".nav-pills .nav-link")
+					.forEach((btn) => btn.classList.remove("active"));
+				event.target.classList.add("active");
+			}
+		</script>
+	</body>
+</html>

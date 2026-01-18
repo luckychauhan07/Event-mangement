@@ -84,6 +84,7 @@
 			<a
 				class="d-flex align-items-center text-decoration-none"
 				href="admin.html"
+				aria-label="Event Ease Home"
 			>
 				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
 				<div
@@ -98,22 +99,43 @@
 			</a>
 
 			<div class="d-flex align-items-center gap-3">
-				<input
-					id="globalSearch"
-					class="form-control form-control-sm d-none d-md-block"
-					style="min-width: 240px"
-					placeholder="Search events / id / venue"
-				/>
+				<div class="d-none d-md-block" style="min-width: 280px">
+					<input
+						id="globalSearch"
+						class="form-control form-control-sm"
+						placeholder="Search (events, users, IDs) — /"
+					/>
+				</div>
+				<a
+					href="notifications.html"
+					class="position-relative btn btn-light"
+					title="Notifications"
+				>
+					🔔
+					<span
+						id="adminNotifCount"
+						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+						style="font-size: 11px"
+					>
+						2
+					</span>
+				</a>
+
 				<div class="dropdown">
 					<button
 						class="btn d-flex align-items-center gap-2"
 						data-bs-toggle="dropdown"
+						aria-expanded="false"
 					>
 						<div
 							class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
 							style="width: 36px; height: 36px"
 						>
 							AD
+						</div>
+						<div class="d-none d-md-block text-start">
+							<div style="font-weight: 600">Admin</div>
+							<div class="small muted">admin@college.edu</div>
 						</div>
 					</button>
 					<ul class="dropdown-menu dropdown-menu-end">
@@ -123,8 +145,17 @@
 							>
 						</li>
 						<li>
-							<a class="dropdown-item" href="admin-home.html"
-								>Home</a
+							<a class="dropdown-item" href="settings.html"
+								>Settings</a
+							>
+						</li>
+						<li><hr class="dropdown-divider" /></li>
+						<li>
+							<a
+								class="dropdown-item text-danger"
+								href="#"
+								id="logoutBtn"
+								>Logout</a
 							>
 						</li>
 					</ul>
@@ -141,6 +172,7 @@
 					<a class="active" href="events.html">📅 Events</a>
 					<a href="add-event.html">➕ Add Event</a>
 					<a href="reports.html">📊 Reports</a>
+					<a href="notifications.html">🔔 Notifications</a>
 					<a href="profile.html">👤 Profile</a>
 				</nav>
 				<div class="sidebar-footer mt-auto">
@@ -156,7 +188,7 @@
 
 			<!-- MAIN -->
 			<main class="app-main">
-				<div class="card-compact">
+				<div class="card-compact mb-4">
 					<h6>Quick stats</h6>
 					<div class="kpi-grid">
 						<div class="card-compact">
@@ -172,7 +204,7 @@
 						<div class="card-compact">
 							<div class="muted">Ongoing</div>
 							<div
-								id="statUpcoming"
+								id="statOngoing"
 								style="font-weight: 700; font-size: 20px"
 							>
 								0
@@ -181,16 +213,7 @@
 						<div class="card-compact">
 							<div class="muted">Upcoming</div>
 							<div
-								id="statOngoing"
-								style="font-weight: 700; font-size: 20px"
-							>
-								0
-							</div>
-						</div>
-						<div class="card-compact">
-							<div class="muted">Completed</div>
-							<div
-								id="statCompleted"
+								id="statUpcoming"
 								style="font-weight: 700; font-size: 20px"
 							>
 								0
@@ -296,97 +319,6 @@
 		</div>
 
 		<!-- Modals: Create/Edit, View (light), Confirm Delete -->
-		<div class="modal fade" id="eventModal" tabindex="-1">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<form id="eventForm" class="needs-validation" novalidate>
-						<div class="modal-header">
-							<h5 class="modal-title" id="eventModalTitle">
-								Create Event
-							</h5>
-							<button
-								class="btn-close"
-								data-bs-dismiss="modal"
-							></button>
-						</div>
-						<div class="modal-body">
-							<input type="hidden" id="evtId" />
-							<div class="row g-3">
-								<div class="col-md-6">
-									<label class="form-label">Name</label>
-									<input
-										id="evtName"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Venue</label>
-									<input
-										id="evtVenue"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label"
-										>Date & Time</label
-									>
-									<input
-										id="evtDate"
-										type="datetime-local"
-										class="form-control"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Capacity</label>
-									<input
-										id="evtCapacity"
-										type="number"
-										class="form-control"
-										min="1"
-										value="100"
-										required
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label"
-										>Coordinator</label
-									>
-									<input
-										id="evtCoordinator"
-										class="form-control"
-									/>
-								</div>
-								<div class="col-12">
-									<label class="form-label"
-										>Description</label
-									>
-									<textarea
-										id="evtDesc"
-										class="form-control"
-										rows="3"
-									></textarea>
-								</div>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button
-								class="btn btn-outline"
-								data-bs-dismiss="modal"
-							>
-								Cancel
-							</button>
-							<button class="btn btn-primary" id="saveEvent">
-								Save
-							</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-
 		<div class="modal fade" id="confirmModal" tabindex="-1">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -413,57 +345,145 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
 			// In-memory prototype dataset (both pages use the same hard-coded initial data for prototype)
-			let events = [
+			// === ADMIN-CREATED EVENT (PROTOTYPE SOURCE) ===
+			const ADMIN_EVENTS = [
 				{
-					id: "E001",
-					name: "Hackathon 2025",
-					date: "2025-12-05T10:00",
-					venue: "Auditorium A",
-					capacity: 100,
-					coordinator: "Prof Rao",
-					enrolled: 45,
-					status: "Ongoing",
-					desc: "24-hour coding event",
+					id: "E101",
+
+					// BASIC INFO
+					title: "Ideathon-2025",
+					subtitle: "Explore innovative minds",
+					description:
+						"This event is a 24-hour live coding ideathon.",
+					category: "Technical",
+					visibility: "Public",
+
+					// TYPE & FEES
+					eventType: "paid", // free | paid
+					entryFee: 200,
+					feeMode: "per_person", // per_person | per_team
+
+					// MODE & LOCATION
+					mode: "Offline",
+					venue: "B-block",
+					rooms: "F-104 Seminar Hall",
+					onlineLink: "",
+
+					// TIME
+					startAt: "2025-12-21T01:56",
+					endAt: "2025-12-22T01:56",
+
+					// REGISTRATION
+					registrationRequired: "Yes",
+					registrationType: "Open",
+					regStart: "2025-12-15T01:57",
+					regEnd: "2025-12-18T01:57",
+					participantLimit: 200,
+
+					// TEAM
+					teamsEnabled: "Yes",
+					teamJoinMode: "Open",
+					teamMin: 1,
+					teamMax: 4,
+
+					// AUDIENCE
+					audienceRole: "Students",
+					audienceDepartment: "",
+					audienceCourse: "",
+					ageRestriction: "",
+
+					// ORGANIZATION
+					organizer: "Tech Club",
+					primaryCoordinator: "Lucky Chauhan",
+					coordEmail: "",
+					coordPhone: "",
+
+					// FACILITIES
+					catering: "No",
+					cateringDetails: "",
+					equipment: "",
+					securityLevel: "High",
+
+					// MEDIA
+					poster: "problem.jpg",
+					promoVideo: "",
+					documents: "Object-Oriented-System-Design.pdf",
+
+					// OPERATIONAL (not from creation form)
+					participantsEnrolled: 87,
 				},
 				{
-					id: "E002",
-					name: "Tech Workshop",
-					date: "2025-12-10T14:00",
-					venue: "Lab 101",
-					capacity: 50,
-					coordinator: "Dr Sharma",
-					enrolled: 23,
-					status: "Upcoming",
-					desc: "Hands-on workshop",
-				},
-				{
-					id: "E003",
-					name: "Cultural Night",
-					date: "2025-12-15T18:00",
-					venue: "Hall B",
-					capacity: 200,
-					coordinator: "Ms Gupta",
-					enrolled: 0,
-					status: "Upcoming",
-					desc: "Performances & music",
-				},
-				{
-					id: "E004",
-					name: "AI Seminar",
-					date: "2025-12-20T11:00",
-					venue: "Room 204",
-					capacity: 150,
-					coordinator: "Prof Rao",
-					enrolled: 120,
-					status: "Upcoming",
-					desc: "Invited talk on AI ethics",
+					id: "E102",
+
+					// BASIC INFO
+					title: "Ideathon-2025",
+					subtitle: "Explore innovative minds",
+					description:
+						"This event is a 24-hour live coding ideathon.",
+					category: "Technical",
+					visibility: "Public",
+
+					// TYPE & FEES
+					eventType: "paid", // free | paid
+					entryFee: 200,
+					feeMode: "per_person", // per_person | per_team
+
+					// MODE & LOCATION
+					mode: "Offline",
+					venue: "B-block",
+					rooms: "F-104 Seminar Hall",
+					onlineLink: "",
+
+					// TIME
+					startAt: "2025-12-21T01:56",
+					endAt: "2025-12-22T01:56",
+
+					// REGISTRATION
+					registrationRequired: "Yes",
+					registrationType: "Open",
+					regStart: "2025-12-15T01:57",
+					regEnd: "2025-12-18T01:57",
+					participantLimit: 200,
+
+					// TEAM
+					teamsEnabled: "Yes",
+					teamJoinMode: "Open",
+					teamMin: 1,
+					teamMax: 4,
+
+					// AUDIENCE
+					audienceRole: "Students",
+					audienceDepartment: "",
+					audienceCourse: "",
+					ageRestriction: "",
+
+					// ORGANIZATION
+					organizer: "Tech Club",
+					primaryCoordinator: "Lucky Chauhan",
+					coordEmail: "",
+					coordPhone: "",
+
+					// FACILITIES
+					catering: "No",
+					cateringDetails: "",
+					equipment: "",
+					securityLevel: "High",
+
+					// MEDIA
+					poster: "problem.jpg",
+					promoVideo: "",
+					documents: "Object-Oriented-System-Design.pdf",
+
+					// OPERATIONAL (not from creation form)
+					participantsEnrolled: 87,
 				},
 			];
+			let events = ADMIN_EVENTS;
 
 			// UI state
 			let page = 1,
 				perPage = 5,
-				sortKey = "date",
+				sortKey = "startAt",
 				sortDir = "asc";
 
 			const tbody = document.getElementById("eventsTbody");
@@ -482,6 +502,15 @@
 				const dt = new Date(d);
 				return dt.toLocaleString();
 			}
+			function getEventStatus(ev) {
+				const now = new Date();
+				const start = new Date(ev.startAt || ev.date);
+				const end = new Date(ev.endAt || ev.date);
+
+				if (now < start) return "Upcoming";
+				if (now >= start && now <= end) return "Ongoing";
+				return "Completed";
+			}
 
 			function renderTable() {
 				const search = (
@@ -493,19 +522,23 @@
 
 				if (statusFilter !== "all")
 					list = list.filter(
-						(e) => e.status.toLowerCase() === statusFilter
+						(e) => getEventStatus(e).toLowerCase() === statusFilter
 					);
+
 				if (search)
 					list = list.filter((e) =>
 						(
-							e.name +
+							e.title +
+							" " +
+							e.subtitle +
 							" " +
 							e.id +
 							" " +
 							e.venue +
 							" " +
-							(e.coordinator || "")
+							(e.primaryCoordinator || "")
 						)
+
 							.toLowerCase()
 							.includes(search)
 					);
@@ -533,18 +566,35 @@
 					const tr = document.createElement("tr");
 					tr.innerHTML = `
 						<td><input type="checkbox" class="row-check" data-id="${ev.id}"></td>
-						<td><div style="font-weight:600">${ev.name}</div><div class="small muted">${
-						ev.id
+						<td><div style="font-weight:600">${ev.title}</div><div class="small muted">${
+						ev.subtitle
 					}</div></td>
-						<td>${formatDate(ev.date)}</td>
-						<td>${ev.venue}</td>
-						<td>${ev.enrolled}/${ev.capacity}</td>
-						<td>${ev.coordinator || "-"}</td>
-						<td><span class="badge ${
-							ev.status.toLowerCase() === "ongoing"
+						<td>
+						<div>${new Date(ev.startAt).toLocaleString()}</div>
+						<div class="small muted">→ ${new Date(ev.endAt).toLocaleString()}</div>
+						</td>
+
+						<td>
+						<div>${ev.mode}</div>
+						<div class="small muted">
+							${ev.mode === "Online" ? ev.onlineLink : ev.venue}
+						</div>
+						</td>
+
+						<td>${ev.participantsEnrolled}/${ev.participantLimit}</td>
+						<td>${ev.primaryCoordinator || "-"}</td>
+						<td>
+						<span class="badge ${
+							getEventStatus(ev) === "Ongoing"
 								? "bg-success"
+								: getEventStatus(ev) === "Upcoming"
+								? "bg-warning text-dark"
 								: "bg-secondary"
-						}">${ev.status}</span></td>
+						}">
+							${getEventStatus(ev)}
+						</span>
+						</td>
+
 						<td class="text-end">
 							<a class="btn btn-sm btn-outline" href="event-details.html?id=${encodeURIComponent(
 								ev.id
@@ -558,11 +608,12 @@
 					start + pageList.length
 				} of ${total}`;
 				statTotal.textContent = events.length;
+				statTotal.textContent = events.length;
 				statUpcoming.textContent = events.filter(
-					(e) => e.status.toLowerCase() === "upcoming"
+					(e) => getEventStatus(e) === "Upcoming"
 				).length;
 				statOngoing.textContent = events.filter(
-					(e) => e.status.toLowerCase() === "ongoing"
+					(e) => getEventStatus(e) === "Ongoing"
 				).length;
 			}
 
@@ -624,6 +675,7 @@
 			document
 				.getElementById("openCreate")
 				.addEventListener("click", () => {
+					window.location.href = "add-event.html";
 					document.getElementById("eventModalTitle").textContent =
 						"Create Event";
 					document.getElementById("evtId").value = "";
@@ -640,42 +692,6 @@
 						document.getElementById("eventModal")
 					).show();
 				});
-
-			document
-				.getElementById("saveEvent")
-				.addEventListener("click", (e) => {
-					e.preventDefault();
-					const form = document.getElementById("eventForm");
-					if (!form.checkValidity()) {
-						form.classList.add("was-validated");
-						return;
-					}
-					const id = document.getElementById("evtId").value || uid();
-					const payload = {
-						id,
-						name: document.getElementById("evtName").value.trim(),
-						venue: document.getElementById("evtVenue").value.trim(),
-						date: document.getElementById("evtDate").value,
-						capacity: parseInt(
-							document.getElementById("evtCapacity").value || 0,
-							10
-						),
-						coordinator: document
-							.getElementById("evtCoordinator")
-							.value.trim(),
-						enrolled: 0,
-						status: "Upcoming",
-						desc: document.getElementById("evtDesc").value.trim(),
-					};
-					const idx = events.findIndex((x) => x.id === id);
-					if (idx >= 0) events[idx] = { ...events[idx], ...payload };
-					else events.unshift(payload);
-					bootstrap.Modal.getInstance(
-						document.getElementById("eventModal")
-					).hide();
-					renderTable();
-				});
-
 			// Delete prompt (used for bulk delete)
 			function promptDelete(id) {
 				document.getElementById("confirmBody").textContent =

@@ -97,6 +97,21 @@
 						placeholder="Search (events, users, IDs) — /"
 					/>
 				</div>
+				<!-- Notification Bell -->
+				<a
+					href="notifications.html"
+					class="position-relative btn btn-light"
+					title="Notifications"
+				>
+					🔔
+					<span
+						id="adminNotifCount"
+						class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+						style="font-size: 11px"
+					>
+						2
+					</span>
+				</a>
 
 				<div class="dropdown">
 					<button
@@ -152,6 +167,7 @@
 					<a href="events.html">📅 Events</a>
 					<a href="add-event.html">➕ Add Event</a>
 					<a href="reports.html">📊 Reports</a>
+					<a href="notifications.html">🔔 Notifications</a>
 					<a href="profile.html">👤 Profile</a>
 				</nav>
 
@@ -287,12 +303,17 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
+			const notifCount = document.getElementById("adminNotifCount");
+			if (notifCount && notifCount.textContent === "0") {
+				notifCount.style.display = "none";
+			}
+
 			// small demo content
 			document.getElementById("year").textContent =
 				new Date().getFullYear();
 			const events = [
 				{
-					id: "E001",
+					id: "E101",
 					name: "Hackathon 2025",
 					date: "2025-12-05",
 					venue: "Auditorium A",
@@ -301,7 +322,7 @@
 					status: "Ongoing",
 				},
 				{
-					id: "E002",
+					id: "E101",
 					name: "Tech Workshop",
 					date: "2025-12-10",
 					venue: "Lab 101",
@@ -310,7 +331,7 @@
 					status: "Upcoming",
 				},
 				{
-					id: "E003",
+					id: "E101",
 					name: "AI Seminar",
 					date: "2025-12-20",
 					venue: "Room 204",
@@ -336,6 +357,7 @@
 			});
 
 			function viewEvent(id) {
+				let Id = "E1O1";
 				window.location.href = `event-details.html?id=${id}`;
 			}
 			document
@@ -348,7 +370,7 @@
 				.getElementById("btnRoster")
 				.addEventListener(
 					"click",
-					() => (window.location.href = `event-details.html?id=E001`)
+					() => (window.location.href = `event-details.html?id=E101`)
 				);
 			document
 				.getElementById("btnNotify")
