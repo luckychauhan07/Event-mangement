@@ -199,6 +199,10 @@
       min-width: 150px;
       border-radius: 999px;
     }
+    input.form-control {
+  color: #111827 !important; /* dark text */
+}
+
   </style>
 </head>
 
@@ -208,7 +212,7 @@
     href="user-home.html"
     class="d-flex align-items-center text-decoration-none"
   >
-    <div class="logo-mark">EE</div>
+    <div class="logo"><img src="../logo.svg" alt="EE" /></div>
     <div
       style="
         margin-left: 10px;
@@ -329,12 +333,44 @@
 
       <hr />
 
+      <hr />
       <!-- TEAM NAME -->
       <div class="mb-3">
-        <label class="form-label">Team Name</label>
-        <input id="teamName" class="form-control" placeholder="Enter team name" />
+        <label class="form-label small">Team Name</label>
+        <input id="teamName" class="form-control" placeholder="Enter your team name" />
       </div>
 
+
+<h6 class="mb-2">Team Leader Details</h6>
+
+<div class="row g-2 mb-3">
+  <div class="col-md-4">
+    <label class="form-label small">Leader Name</label>
+    <input id="leaderName" class="form-control" placeholder="Enter leader name" />
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label small">Leader Email</label>
+    <input id="leaderEmail" class="form-control" placeholder="Enter leader email" />
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label small">Phone Number</label>
+    <input id="leaderPhone" class="form-control" placeholder="Enter phone number" />
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label small">Year</label>
+    <input id="leaderYear" class="form-control" placeholder="Enter your year" />
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label small">Roll Number</label>
+    <input id="leaderRollNumber" class="form-control" placeholder="Enter your roll number" />
+  </div>
+</div>
+
+<br>
       <!-- ADD MEMBER -->
       <h6 class="mb-2">Team members</h6>
       <div class="row g-2 align-items-end member-form-row">
@@ -347,8 +383,8 @@
           <input id="memberEmail" class="form-control" placeholder="Enter email" />
         </div>
         <div class="col-md-3">
-          <label class="form-label small">Student ID</label>
-          <input id="memberId" class="form-control" placeholder="Enter ID" />
+          <label class="form-label small">Roll Number</label>
+          <input id="memberId" class="form-control" placeholder="Enter roll number" />
         </div>
         <div class="col-md-1 d-grid">
           <button id="addMember" class="btn btn-primary">Add</button>
@@ -396,6 +432,8 @@
 
   let teamMembers = [];
   let isRegistered = false;
+  let teamLeader = null;
+
 
   const addMemberBtn = document.getElementById("addMember");
   const submitBtn = document.getElementById("submitTeam");
@@ -437,6 +475,22 @@
     const list = document.getElementById("teamList");
     const emptyState = document.getElementById("emptyState");
     list.innerHTML = "";
+    if (teamLeader) {
+  const leaderChip = document.createElement("div");
+  leaderChip.className = "member-chip";
+  leaderChip.innerHTML = `
+    <div class="member-main">
+      <div class="member-avatar">TL</div>
+      <div>
+        <div><strong>${teamLeader.name} (Leader)</strong></div>
+        <div class="member-meta">${teamLeader.email}</div>
+      </div>
+    </div>
+    <span class="pill-counter">Leader</span>
+  `;
+  list.appendChild(leaderChip);
+}
+
 
     if (!teamMembers.length) {
       emptyState.style.display = "block";
@@ -479,60 +533,117 @@
 
   // Add member
   addMemberBtn.onclick = () => {
-    if (isRegistered) return;
-    clearError();
+  clearError();
 
-    const name = memberName.value.trim();
-    const email = memberEmail.value.trim();
-    const id = memberId.value.trim();
+  // Leader validation
+  const leaderEmailVal = leaderEmail.value.trim();
 
-    if (!name || !email || !id) {
-      showError("Please fill all member fields before adding.");
-      return;
-    }
+  if (!leaderName.value || !leaderEmail.value || !leaderPhone.value ||
+      !leaderYear.value || !leaderRollNumber.value) {
+    showError("Please fill all team leader details before adding members.");
+    return;
+  }
 
-    if (teamMembers.length >= EVENT.maxTeam) {
-      showError("Team member limit reached for this event.");
-      return;
-    }
+  const name = memberName.value.trim();
+  const email = memberEmail.value.trim();
+  const id = memberId.value.trim();
 
-    teamMembers.push({ name, email, id });
-    renderTeamList();
+  if (!name || !email || !id) {
+    showError("Please fill all member fields before adding.");
+    return;
+  }
 
-    memberName.value = "";
-    memberEmail.value = "";
-    memberId.value = "";
-  };
+  // ❌ Prevent leader being added as member
+  if (email === leaderEmailVal) {
+    showError("Team leader cannot be added as a team member.");
+    return;
+  }
+
+  // ❌ Prevent duplicate members (by roll number)
+  const duplicate = teamMembers.some(m => m.id === id || m.email === email);
+  if (duplicate) {
+    showError("This member is already added.");
+    return;
+  }
+
+  // ❌ Team size limit
+  if (teamMembers.length >= EVENT.maxTeam - 1) {
+    showError("Maximum team size reached.");
+    return;
+  }
+
+  teamMembers.push({ name, email, id });
+  renderTeamList();
+
+  memberName.value = "";
+  memberEmail.value = "";
+  memberId.value = "";
+};
 
   // Submit team
   submitBtn.onclick = () => {
     if (isRegistered) {
-      showError("You have already registered a team for this event.");
-      return;
-    }
-    clearError();
+  showError("You have already registered this team.");
+  return;
+}
 
-    if (!teamName.value.trim()) {
-      showError("Team name is required.");
-      return;
-    }
 
-    if (teamMembers.length === 0) {
-      showError("Add at least one team member before submitting.");
-      return;
-    }
+  clearError();
 
-    alert("Team registered successfully!");
+  if (!leaderName.value || !leaderEmail.value || !leaderPhone.value ||
+      !leaderYear.value || !leaderRollNumber.value) {
+    showError("Team leader details are required.");
+    return;
+  }
 
-    isRegistered = true;
-    teamName.disabled = true;
-    memberName.disabled = true;
-    memberEmail.disabled = true;
-    memberId.disabled = true;
-    addMemberBtn.disabled = true;
-    submitBtn.disabled = true;
-    renderTeamList();
+  if (!teamName.value.trim()) {
+    showError("Team name is required.");
+    return;
+  }
+
+  if (teamMembers.length === 0) {
+    showError("Add at least one team member before submitting.");
+    return;
+  }
+
+  teamLeader = {
+    name: leaderName.value,
+    email: leaderEmail.value,
+    phone: leaderPhone.value,
+    year: leaderYear.value,
+    rollNumber: leaderRollNumber.value
   };
+
+  const teamData = {
+    teamName: teamName.value,
+    leader: teamLeader,
+    members: teamMembers
+  };
+
+  console.log("Submitted Team:", teamData);
+
+  alert("Team registered successfully!");
+
+  isRegistered = true;
+
+  leaderName.disabled = true;
+  leaderEmail.disabled = true;
+  leaderPhone.disabled = true;
+  leaderYear.disabled = true;
+  leaderRollNumber.disabled = true;
+
+  teamName.disabled = true;
+  memberName.disabled = true;
+  memberEmail.disabled = true;
+  memberId.disabled = true;
+  addMemberBtn.disabled = true;
+  submitBtn.disabled = true;
+  alert("✅ Team registered successfully!");
+
+
+  renderTeamList();
+};
+
 </script>
 </body>
 </html>
