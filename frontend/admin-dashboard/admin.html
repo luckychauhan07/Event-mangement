@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -73,18 +73,15 @@
 		<!-- HEADER -->
 		<header class="topbar">
 			<a
-				class="d-flex align-items-center text-decoration-none"
 				href="admin.html"
-				aria-label="Event Ease Home"
-			>
-				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
+				class="d-flex align-items-center text-decoration-none"
+				>3
+				<img
+					src="../logo.svg"
+					alt="Event Ease"
+					style="height: 32px; width: auto; margin-right: 10px"
+				/>
+				<div style="font-weight: 700; color: var(--text-dark)">
 					Event Ease
 				</div>
 			</a>
@@ -364,24 +361,24 @@
 				.getElementById("btnCreate")
 				.addEventListener(
 					"click",
-					() => (location.href = "events.html")
+					() => (location.href = "events.html"),
 				);
 			document
 				.getElementById("btnRoster")
 				.addEventListener(
 					"click",
-					() => (window.location.href = `event-details.html?id=E101`)
+					() => (window.location.href = `event-details.html?id=E101`),
 				);
 			document
 				.getElementById("btnNotify")
 				.addEventListener("click", () =>
-					alert("Send notification (demo)")
+					alert("Send notification (demo)"),
 				);
 			document
 				.getElementById("btnAssign")
 				.addEventListener(
 					"click",
-					() => (location.href = "assign.html")
+					() => (location.href = "assign.html"),
 				);
 
 			document

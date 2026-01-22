@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -63,14 +63,12 @@
 				href="admin.html"
 				aria-label="Event Ease Home"
 			>
-				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
+				<img
+					src="../logo.svg"
+					alt="Event Ease"
+					style="height: 32px; width: auto; margin-right: 10px"
+				/>
+				<div style="font-weight: 700; color: var(--text-dark)">
 					Event Ease
 				</div>
 			</a>
@@ -770,14 +768,14 @@
 			const notificationForm =
 				document.getElementById("notificationForm");
 			const recipientTypeRadios = document.querySelectorAll(
-				'input[name="recipientType"]'
+				'input[name="recipientType"]',
 			);
 			const roleTargeting = document.getElementById("roleTargeting");
 			const eventTargeting = document.getElementById("eventTargeting");
 			const notificationTitle =
 				document.getElementById("notificationTitle");
 			const notificationMessage = document.getElementById(
-				"notificationMessage"
+				"notificationMessage",
 			);
 			const priority = document.getElementById("priority");
 			const actionUrl = document.getElementById("actionUrl");
@@ -823,9 +821,11 @@
 					previewRecipients.textContent = "All users";
 				} else if (type === "role") {
 					const selectedRoles = Array.from(
-						document.querySelectorAll('input[name="roles"]:checked')
+						document.querySelectorAll(
+							'input[name="roles"]:checked',
+						),
 					).map((cb) =>
-						cb.nextElementSibling.textContent.split("(")[0].trim()
+						cb.nextElementSibling.textContent.split("(")[0].trim(),
 					);
 
 					if (selectedRoles.length > 0) {
@@ -865,7 +865,7 @@
 				.querySelectorAll('input[name="roles"]')
 				.forEach((checkbox) => {
 					checkbox.addEventListener("change", () =>
-						updateRecipientSummary("role")
+						updateRecipientSummary("role"),
 					);
 				});
 
@@ -943,16 +943,16 @@
 
 				// Check if recipients are selected for role/event type
 				const selectedType = document.querySelector(
-					'input[name="recipientType"]:checked'
+					'input[name="recipientType"]:checked',
 				).value;
 
 				if (selectedType === "role") {
 					const selectedRoles = document.querySelectorAll(
-						'input[name="roles"]:checked'
+						'input[name="roles"]:checked',
 					);
 					if (selectedRoles.length === 0) {
 						alert(
-							"⚠️ Please select at least one role to send notification"
+							"⚠️ Please select at least one role to send notification",
 						);
 						return;
 					}
@@ -972,7 +972,9 @@
 				// Add role checkboxes
 				if (selectedType === "role") {
 					data.roles = Array.from(
-						document.querySelectorAll('input[name="roles"]:checked')
+						document.querySelectorAll(
+							'input[name="roles"]:checked',
+						),
 					).map((cb) => cb.value);
 				}
 
@@ -982,7 +984,7 @@
 				const confirmMessage = isScheduled
 					? `Are you sure you want to schedule this notification?\n\nIt will be sent at: ${
 							document.getElementById("scheduleTime").value
-					  }`
+						}`
 					: "Are you sure you want to send this notification?\n\nThis action cannot be undone.";
 
 				if (confirm(confirmMessage)) {
@@ -996,10 +998,10 @@
 						alert(
 							isScheduled
 								? "✅ Notification scheduled successfully!"
-								: "✅ Notification sent successfully!"
+								: "✅ Notification sent successfully!",
 						);
 						const title = encodeURIComponent(
-							notificationTitle.value
+							notificationTitle.value,
 						);
 						window.location.href = `notification-logs.html?title=${title}&type=ANNOUNCEMENT`;
 					}, 1500);
@@ -1024,7 +1026,7 @@
 				.addEventListener("click", function () {
 					if (
 						confirm(
-							"Are you sure you want to cancel? All unsaved changes will be lost."
+							"Are you sure you want to cancel? All unsaved changes will be lost.",
 						)
 					) {
 						window.location.href = "admin.html";

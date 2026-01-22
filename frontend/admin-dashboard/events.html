@@ -1,5 +1,5 @@
 <!-- File: events.html (styling matched to your original, prototype — no localStorage) -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -86,14 +86,12 @@
 				href="admin.html"
 				aria-label="Event Ease Home"
 			>
-				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
+				<img
+					src="../logo.svg"
+					alt="Event Ease"
+					style="height: 32px; width: auto; margin-right: 10px"
+				/>
+				<div style="font-weight: 700; color: var(--text-dark)">
 					Event Ease
 				</div>
 			</a>
@@ -522,7 +520,7 @@
 
 				if (statusFilter !== "all")
 					list = list.filter(
-						(e) => getEventStatus(e).toLowerCase() === statusFilter
+						(e) => getEventStatus(e).toLowerCase() === statusFilter,
 					);
 
 				if (search)
@@ -540,7 +538,7 @@
 						)
 
 							.toLowerCase()
-							.includes(search)
+							.includes(search),
 					);
 
 				list.sort((a, b) => {
@@ -567,8 +565,8 @@
 					tr.innerHTML = `
 						<td><input type="checkbox" class="row-check" data-id="${ev.id}"></td>
 						<td><div style="font-weight:600">${ev.title}</div><div class="small muted">${
-						ev.subtitle
-					}</div></td>
+							ev.subtitle
+						}</div></td>
 						<td>
 						<div>${new Date(ev.startAt).toLocaleString()}</div>
 						<div class="small muted">→ ${new Date(ev.endAt).toLocaleString()}</div>
@@ -588,8 +586,8 @@
 							getEventStatus(ev) === "Ongoing"
 								? "bg-success"
 								: getEventStatus(ev) === "Upcoming"
-								? "bg-warning text-dark"
-								: "bg-secondary"
+									? "bg-warning text-dark"
+									: "bg-secondary"
 						}">
 							${getEventStatus(ev)}
 						</span>
@@ -597,7 +595,7 @@
 
 						<td class="text-end">
 							<a class="btn btn-sm btn-outline" href="event-details.html?id=${encodeURIComponent(
-								ev.id
+								ev.id,
 							)}">View details</a>
 						</td>`;
 					tbody.appendChild(tr);
@@ -610,10 +608,10 @@
 				statTotal.textContent = events.length;
 				statTotal.textContent = events.length;
 				statUpcoming.textContent = events.filter(
-					(e) => getEventStatus(e) === "Upcoming"
+					(e) => getEventStatus(e) === "Upcoming",
 				).length;
 				statOngoing.textContent = events.filter(
-					(e) => getEventStatus(e) === "Ongoing"
+					(e) => getEventStatus(e) === "Ongoing",
 				).length;
 			}
 
@@ -689,7 +687,7 @@
 						.getElementById("eventForm")
 						.classList.remove("was-validated");
 					new bootstrap.Modal(
-						document.getElementById("eventModal")
+						document.getElementById("eventModal"),
 					).show();
 				});
 			// Delete prompt (used for bulk delete)
@@ -697,7 +695,7 @@
 				document.getElementById("confirmBody").textContent =
 					"Delete " + id + "? This action cannot be undone.";
 				new bootstrap.Modal(
-					document.getElementById("confirmModal")
+					document.getElementById("confirmModal"),
 				).show();
 				document.getElementById("confirmYes").onclick = () => {
 					events = events.filter((e) => e.id !== id);
@@ -717,7 +715,7 @@
 				.getElementById("bulkDeleteBtn")
 				.addEventListener("click", function () {
 					const ids = Array.from(
-						document.querySelectorAll(".row-check:checked")
+						document.querySelectorAll(".row-check:checked"),
 					).map((n) => n.dataset.id);
 					if (ids.length === 0) return alert("Select rows first");
 					if (!confirm("Delete " + ids.length + " events?")) return;
@@ -728,7 +726,7 @@
 				.getElementById("bulkExportBtn")
 				.addEventListener("click", function () {
 					const ids = Array.from(
-						document.querySelectorAll(".row-check:checked")
+						document.querySelectorAll(".row-check:checked"),
 					).map((n) => n.dataset.id);
 					const rows = events.filter((e) => ids.includes(e.id));
 					if (rows.length === 0) return alert("Select rows first");

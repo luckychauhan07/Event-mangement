@@ -321,7 +321,7 @@
 
       .progress {
         height: 7px;
-        border-radius: 10px;
+        border-radius: 1  0px;
       }
 
       .event-actions {
@@ -366,7 +366,7 @@
         href="user-home.html"
         class="d-flex align-items-center text-decoration-none"
       >
-        <div class="logo-mark">EE</div>
+        <div class="logo"><img src="../logo.svg" alt="EE" /></div>
         <div
           style="
             margin-left: 10px;
@@ -611,7 +611,9 @@
         }
       ];
 
-      let registrations = []; // {eventId, status: 'pending'|'approved'}
+      let registrations = [];
+      let selectedEventId = null;
+
 
       function showToast(msg) {
         const t = document.getElementById("toastSuccess");
@@ -716,28 +718,18 @@
         });
       }
 
-      function openRegister(id) {
-        const e = EVENTS.find(x => x.id === id);
-        if (!e) return;
+     function openRegister(id) {
+  const e = EVENTS.find(x => x.id === id);
+  if (!e) return;
 
-        const msg = e.requiresApproval
-          ? "This event requires approval. Send request?"
-          : "Confirm registration?";
+  selectedEventId = id;
 
-        if (!confirm(msg)) return;
+  const modal = new bootstrap.Modal(
+    document.getElementById("registerModal")
+  );
+  modal.show();
+}
 
-        if (e.requiresApproval) {
-          registrations.push({ eventId: id, status: "pending" });
-          showToast("Request sent — pending approval ⏳");
-        } else {
-          registrations.push({ eventId: id, status: "approved" });
-          e.participants++;
-          showToast("Registered successfully 🎉");
-        }
-
-        recalcStats();
-        renderEvents();
-      }
 
       function initNextEvent() {
         if (!EVENTS.length) return;
@@ -776,6 +768,44 @@
     alert("You have been logged out successfully.");
     window.location.href = "../login.html";
   }
+  function submitRegistration() {
+  const name = rName.value.trim();
+  const email = rEmail.value.trim();
+  const phone = rPhone.value.trim();
+  const year = rYear.value.trim();
+  const branch = rBranch.value.trim();
+
+  if (!name || !email || !phone || !year || !branch) {
+    alert("Please fill all details");
+    return;
+  }
+
+  const event = EVENTS.find(e => e.id === selectedEventId);
+  const status = event.requiresApproval ? "pending" : "approved";
+
+  registrations.push({
+    eventId: selectedEventId,
+    status,
+    participant: { name, email, phone, year, branch }
+  });
+
+  if (!event.requiresApproval) {
+    event.participants++;
+    showToast("Registered successfully 🎉");
+  } else {
+    showToast("Request sent — pending approval ⏳");
+  }
+
+  bootstrap.Modal.getInstance(
+    document.getElementById("registerModal")
+  ).hide();
+
+  document.getElementById("registerForm").reset();
+
+  recalcStats();
+  renderEvents();
+}
+
 
       document.getElementById("filterType").addEventListener("change", renderEvents);
       document.getElementById("searchUserTop").addEventListener("input", renderEvents);
@@ -784,5 +814,55 @@
       initNextEvent();
       renderEvents();
     </script>
+    <!-- Registration Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Event Registration</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="registerForm">
+          <div class="mb-2">
+            <label class="form-label">Name</label>
+            <input class="form-control" id="rName" required />
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Email</label>
+            <input class="form-control" id="rEmail" type="email" required />
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Phone</label>
+            <input class="form-control" id="rPhone" required />
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Year</label>
+            <input class="form-control" id="rYear" required />
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Branch</label>
+            <input class="form-control" id="rBranch" required />
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button class="btn btn-primary" onclick="submitRegistration()">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
   </body>
 </html>

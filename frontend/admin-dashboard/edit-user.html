@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -23,8 +23,14 @@
 			body {
 				background: var(--bg-light);
 				color: var(--text-dark);
-				font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
-					"Helvetica Neue", Arial;
+				font-family:
+					Inter,
+					system-ui,
+					-apple-system,
+					"Segoe UI",
+					Roboto,
+					"Helvetica Neue",
+					Arial;
 			}
 			.app-shell {
 				height: calc(100vh - var(--header-height));
@@ -134,14 +140,12 @@
 					class="d-flex align-items-center text-decoration-none"
 					aria-label="Event Ease Home"
 				>
-					<div class="logo-mark">EE</div>
-					<div
-						style="
-							margin-left: 10px;
-							font-weight: 700;
-							color: var(--text-dark);
-						"
-					>
+					<img
+						src="../logo.svg"
+						alt="Event Ease"
+						style="height: 32px; width: auto; margin-right: 10px"
+					/>
+					<div style="font-weight: 700; color: var(--text-dark)">
 						Event Ease
 					</div>
 				</a>
@@ -318,7 +322,7 @@
 
 			// demo dataset (reads from sessionStorage if users page saved it)
 			const demoUsers = JSON.parse(
-				sessionStorage.getItem("users") || "null"
+				sessionStorage.getItem("users") || "null",
 			) || [
 				{
 					id: "U001",
@@ -394,7 +398,7 @@
               <div>
                 <div class="d-flex gap-3 align-items-center mb-3">
                   <div class="avatar-sm">${escapeHtml(
-						initials(user.name)
+						initials(user.name),
 					)}</div>
                   <div>
                     <div style="font-weight:700">${escapeHtml(user.name)}</div>
@@ -406,7 +410,7 @@
                 <div class="mb-3">
                   <label class="form-label">Full name</label>
                   <input id="inpName" class="form-control" value="${escapeHtml(
-						user.name
+						user.name,
 					)}" required />
                   <div class="invalid-feedback">Please enter a name</div>
                 </div>
@@ -414,7 +418,7 @@
                 <div class="mb-3">
                   <label class="form-label">Email</label>
                   <input id="inpEmail" type="email" class="form-control" value="${escapeHtml(
-						user.email
+						user.email,
 					)}" required />
                   <div class="invalid-feedback">Please enter a valid email</div>
                 </div>
@@ -423,13 +427,13 @@
                   <div class="col-sm-6 mb-3">
                     <label class="form-label">Phone</label>
                     <input id="inpPhone" class="form-control" value="${escapeHtml(
-						user.phone || ""
+						user.phone || "",
 					)}" />
                   </div>
                   <div class="col-sm-6 mb-3">
                     <label class="form-label">Department</label>
                     <input id="inpDept" class="form-control" value="${escapeHtml(
-						user.department || ""
+						user.department || "",
 					)}" />
                   </div>
                 </div>
@@ -460,7 +464,7 @@
                 <div class="d-flex gap-2">
                   <button type="submit" class="btn btn-primary" id="saveBtn">Save changes</button>
                   <a href="user-details.html?id=${encodeURIComponent(
-						user.id
+						user.id,
 					)}" class="btn btn-outline">Cancel</a>
                 </div>
               </div>
@@ -469,10 +473,10 @@
                 <div class="mb-3">
                   <div class="label">Meta</div>
                   <div class="muted-small">Created: ${escapeHtml(
-						user.createdAt || "—"
+						user.createdAt || "—",
 					)}</div>
                   <div class="muted-small mt-1">Last active: ${escapeHtml(
-						user.lastActive || "—"
+						user.lastActive || "—",
 					)}</div>
                 </div>
 
@@ -541,11 +545,11 @@
 						// Admin demotion safeguard
 						if (user.role === "admin" && role !== "admin") {
 							const adminCount = demoUsers.filter(
-								(u) => u.role === "admin" && u.id !== user.id
+								(u) => u.role === "admin" && u.id !== user.id,
 							).length;
 							if (adminCount === 0) {
 								return alert(
-									"Cannot demote the only remaining admin. Assign another admin before changing this user."
+									"Cannot demote the only remaining admin. Assign another admin before changing this user.",
 								);
 							}
 						}
@@ -569,20 +573,20 @@
 
 						sessionStorage.setItem(
 							"users",
-							JSON.stringify(demoUsers)
+							JSON.stringify(demoUsers),
 						);
 						sessionStorage.setItem(
 							"selectedUser",
-							JSON.stringify(updated)
+							JSON.stringify(updated),
 						);
 
 						// In production: call PATCH /api/users/:id then redirect on success
 						alert("Saved (demo). Returning to details.");
 						window.location.href = `user-details.html?id=${encodeURIComponent(
-							id
+							id,
 						)}`;
 					},
-					{ once: false }
+					{ once: false },
 				);
 
 				// delete inline behaviour
@@ -591,37 +595,37 @@
 					.addEventListener("click", () => {
 						if (user.id === CURRENT_ADMIN_ID) {
 							return alert(
-								"You cannot delete your own admin account from this interface."
+								"You cannot delete your own admin account from this interface.",
 							);
 						}
 
 						if (user.role === "admin") {
 							const otherAdmins = demoUsers.filter(
-								(u) => u.role === "admin" && u.id !== user.id
+								(u) => u.role === "admin" && u.id !== user.id,
 							);
 							if (otherAdmins.length === 0) {
 								return alert(
-									"Cannot delete this admin — no other admin accounts exist. Create/assign another admin first."
+									"Cannot delete this admin — no other admin accounts exist. Create/assign another admin first.",
 								);
 							}
 						}
 
 						const confirmed = confirm(
-							`Delete ${user.name} (${user.id}) — this action cannot be undone. Proceed?`
+							`Delete ${user.name} (${user.id}) — this action cannot be undone. Proceed?`,
 						);
 						if (!confirmed) return;
 
 						const newList = demoUsers.filter(
-							(u) => u.id !== user.id
+							(u) => u.id !== user.id,
 						);
 						sessionStorage.setItem(
 							"users",
-							JSON.stringify(newList)
+							JSON.stringify(newList),
 						);
 						sessionStorage.setItem("deletedUserId", user.id);
 
 						alert(
-							`${user.name} deleted (demo). Returning to users list.`
+							`${user.name} deleted (demo). Returning to users list.`,
 						);
 						window.location.href = "users.html";
 					});

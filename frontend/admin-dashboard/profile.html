@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -58,14 +58,12 @@
 				href="admin.html"
 				aria-label="Event Ease Home"
 			>
-				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
+				<img
+					src="../logo.svg"
+					alt="Event Ease"
+					style="height: 32px; width: auto; margin-right: 10px"
+				/>
+				<div style="font-weight: 700; color: var(--text-dark)">
 					Event Ease
 				</div>
 			</a>
@@ -162,20 +160,184 @@
 			</aside>
 
 			<main class="app-main">
-				<div class="card-compact">
-					<h4>Admin Profile</h4>
-					<p class="muted">
-						Name: Admin<br />Email: admin@college.edu
-					</p>
-					<div class="d-flex gap-2">
-						<button
-							class="btn btn-outline"
-							onclick="alert('Edit profile (demo)')"
-						>
-							Edit Profile</button
-						><a class="btn btn-outline" href="admin.html">Back</a>
+				<div class="container-fluid">
+					<h2 class="mb-4">👤 Admin Profile</h2>
+
+					<div class="row g-4">
+						<!-- LEFT PROFILE SUMMARY -->
+						<div class="col-lg-4">
+							<div class="card shadow-sm">
+								<div class="card-body text-center">
+									<div
+										class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3"
+										style="
+											width: 90px;
+											height: 90px;
+											font-size: 32px;
+										"
+									>
+										AD
+									</div>
+
+									<h5 id="adminName" class="mb-1">
+										College Admin
+									</h5>
+									<p id="adminEmail" class="text-muted mb-2">
+										admin@college.edu
+									</p>
+
+									<span class="badge bg-success mb-2">
+										Active Account
+									</span>
+
+									<div class="mt-2">
+										<span class="badge bg-primary">
+											Event Management Admin
+										</span>
+									</div>
+
+									<hr />
+
+									<div class="text-start small">
+										<p>
+											<strong>Admin ID:</strong>
+											CEM-ADM-001
+										</p>
+										<p>
+											<strong>College:</strong> XYZ
+											Engineering College
+										</p>
+										<p>
+											<strong>Last Login:</strong> 20 Jan
+											2026, 10:42 AM
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- RIGHT DETAILS -->
+						<div class="col-lg-8">
+							<div class="card shadow-sm mb-4">
+								<div class="card-header fw-semibold">
+									Profile Information
+								</div>
+
+								<div class="card-body">
+									<div class="row g-3">
+										<div class="col-md-6">
+											<label class="form-label"
+												>Full Name</label
+											>
+											<input
+												type="text"
+												id="nameInput"
+												class="form-control"
+												value="College Admin"
+											/>
+										</div>
+
+										<div class="col-md-6">
+											<label class="form-label"
+												>Phone Number</label
+											>
+											<input
+												type="text"
+												id="phoneInput"
+												class="form-control"
+												value="+91 9876543210"
+											/>
+										</div>
+
+										<div class="col-md-6">
+											<label class="form-label">
+												Official Email
+											</label>
+											<input
+												type="email"
+												class="form-control"
+												value="admin@college.edu"
+												readonly
+											/>
+										</div>
+
+										<div class="col-md-6">
+											<label class="form-label"
+												>Username</label
+											>
+											<input
+												type="text"
+												class="form-control"
+												value="college_admin"
+												readonly
+											/>
+										</div>
+
+										<div class="col-md-6">
+											<label class="form-label"
+												>Designation</label
+											>
+											<input
+												type="text"
+												class="form-control"
+												value="Faculty Event Coordinator"
+												readonly
+											/>
+										</div>
+
+										<div class="col-md-6">
+											<label class="form-label"
+												>Role</label
+											>
+											<input
+												type="text"
+												class="form-control"
+												value="College Event Administrator"
+												readonly
+											/>
+										</div>
+									</div>
+
+									<div class="mt-4 d-flex gap-2">
+										<button
+											class="btn btn-primary"
+											onclick="updateProfile()"
+										>
+											Save Changes
+										</button>
+										<button
+											class="btn btn-outline-secondary"
+											onclick="resetProfile()"
+										>
+											Reset
+										</button>
+										<button
+											class="btn btn-outline-primary btn-sm"
+											onclick="configureInstitution()"
+										>
+											Configure Settings
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
+
+				<script>
+					function updateProfile() {
+						const name = document.getElementById("nameInput").value;
+						document.getElementById("adminName").innerText = name;
+						alert("Profile details updated successfully.");
+					}
+
+					function resetProfile() {
+						location.reload();
+					}
+					function configureInstitution() {
+						window.location.href = "admin-config.html";
+					}
+				</script>
 			</main>
 		</div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

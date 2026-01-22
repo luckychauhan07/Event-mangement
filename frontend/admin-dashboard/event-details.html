@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -23,14 +23,16 @@
 				background: var(--bg-surface);
 				border-radius: 16px;
 				padding: 28px;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04),
+				box-shadow:
+					0 1px 3px rgba(0, 0, 0, 0.04),
 					0 4px 12px rgba(0, 0, 0, 0.04);
 				border: 1px solid rgba(0, 0, 0, 0.03);
 				transition: all 0.2s;
 			}
 
 			.card-enhanced:hover {
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06),
+				box-shadow:
+					0 4px 12px rgba(0, 0, 0, 0.06),
 					0 8px 24px rgba(0, 0, 0, 0.06);
 			}
 
@@ -293,14 +295,12 @@
 				class="d-flex align-items-center text-decoration-none"
 				href="admin.html"
 			>
-				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
-				<div
-					style="
-						margin-left: 12px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
+				<img
+					src="../logo.svg"
+					alt="Event Ease"
+					style="height: 32px; width: auto; margin-right: 10px"
+				/>
+				<div style="font-weight: 700; color: var(--text-dark)">
 					Event Ease
 				</div>
 			</a>
@@ -654,10 +654,10 @@
 			function renderDetailsGrid() {
 				const duration = calculateDuration(
 					eventData.startAt,
-					eventData.endAt
+					eventData.endAt,
 				);
 				const regPeriod = `${formatDate(
-					eventData.regStart
+					eventData.regStart,
 				)} - ${formatDate(eventData.regEnd)}`;
 				const teamInfo =
 					eventData.teamsEnabled === "Yes"
@@ -811,12 +811,12 @@
 						<td>${p.name}</td>
 						<td>${p.email}</td>
 					</tr>
-				`
+				`,
 					)
 					.join("");
 
 				const totalPages = Math.ceil(
-					ALL_PARTICIPANTS.length / itemsPerPage
+					ALL_PARTICIPANTS.length / itemsPerPage,
 				);
 				document.getElementById("participantsPagination").innerHTML = `
 					<div>${ALL_PARTICIPANTS.length} participants</div>
@@ -849,7 +849,7 @@
 
 				document.getElementById("deleteBtn").onclick = () => {
 					new bootstrap.Modal(
-						document.getElementById("confirmModal")
+						document.getElementById("confirmModal"),
 					).show();
 				};
 

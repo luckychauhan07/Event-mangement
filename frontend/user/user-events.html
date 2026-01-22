@@ -419,7 +419,7 @@
     <!-- YOUR ORIGINAL NAVBAR/HEADER - UNCHANGED -->
     <header class="topbar">
         <a href="user-home.html" class="d-flex align-items-center text-decoration-none">
-            <div class="logo-mark">EE</div>
+           <div class="logo"><img src="../logo.svg" alt="EE" /></div>
             <div style="margin-left: 10px; font-weight: 700; color: var(--text-dark);">Event Ease</div>
         </a>
 
@@ -507,7 +507,8 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // PURE FRONTEND
+        let selectedEventId = null;
+
         const EVENTS = [
             { id: "E101", name: "Inter-College Hackathon 2025", date: "2025-12-20T10:00", venue: "Main Auditorium A", type: "tech", subtype: "tech", teamParticipation: true, requiresApproval: true, capacity: 200, participants: 120, image: "🔥" },
             { id: "E102", name: "Grand Food Festival", date: "2025-12-22T16:00", venue: "Central Lawn", type: "food", subtype: "food", teamParticipation: false, requiresApproval: false, capacity: 300, participants: 250, image: "🍕" },
@@ -560,7 +561,9 @@
             grid.innerHTML = filtered.map(event => {
                 const usedPercent = Math.round((event.participants / event.capacity) * 100);
                 const isRegistered = currentRegistrations.has(event.id);
-                const registrationStatus = currentRegistrations.get(event.id);
+                const regData = currentRegistrations.get(event.id);
+                const registrationStatus = regData?.status;
+
                 const seatsLeft = event.capacity - event.participants;
 
                 return `
@@ -624,23 +627,40 @@
         }
 
         function registerEvent(eventId) {
-            if (currentRegistrations.has(eventId)) {
-                showToast('Already registered!', 'warning');
-                return;
-            }
-            
-            const event = EVENTS.find(e => e.id === eventId);
-            const status = event.requiresApproval ? 'pending' : 'success';
-            currentRegistrations.set(eventId, status);
-            
-            showToast(
-                status === 'pending' ? 
-                `Pending approval request sent for ${event.name}` : 
-                `Registration successful for ${event.name}! 🎉`, 
-                status
-            );
-            render();
-        }
+    selectedEventId = eventId;
+
+    const event = EVENTS.find(e => e.id === eventId);
+    document.getElementById("regEventName").value = event.name;
+
+    const modal = new bootstrap.Modal(
+        document.getElementById("registrationModal")
+    );
+    modal.show();
+}
+ function submitRegistration() {
+    const name = pName.value.trim();
+    const email = pEmail.value.trim();
+    const phone = pPhone.value.trim();
+    const year = pYear.value.trim();
+    const branch = pBranch.value.trim();
+
+    if (!name || !email || !phone || !year || !branch) {
+        alert("Please fill all details");
+        return;
+    }
+
+    currentRegistrations.set(selectedEventId, {
+        status: 'pending',
+        participant: { name, email, phone, year, branch }
+    });
+
+    bootstrap.Modal.getInstance(
+        document.getElementById("registrationModal")
+    ).hide();
+
+    showToast("Registration submitted successfully!", "success");
+    render();
+}
 
         function clearFilters() {
             document.querySelector('.filter-tab[data-filter="all"]').click();
@@ -672,5 +692,32 @@
 
         render();
     </script>
+    
+<div class="modal fade" id="registrationModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Event Registration</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <input id="regEventName" class="form-control mb-2" disabled>
+
+        <input id="pName" class="form-control mb-2" placeholder="Full Name">
+        <input id="pEmail" class="form-control mb-2" placeholder="Email">
+        <input id="pPhone" class="form-control mb-2" placeholder="Mobile Number">
+        <input id="pYear" class="form-control mb-2" placeholder="Year">
+        <input id="pBranch" class="form-control mb-2" placeholder="Branch">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="submitRegistration()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

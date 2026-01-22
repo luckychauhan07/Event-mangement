@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -342,16 +342,12 @@
 				href="admin.html"
 				aria-label="Event Ease Home"
 			>
-				<div class="logo">
-					<img src="../logo.svg" alt="EE" style="height: 36px" />
-				</div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
+				<img
+					src="../logo.svg"
+					alt="Event Ease"
+					style="height: 32px; width: auto; margin-right: 10px"
+				/>
+				<div style="font-weight: 700; color: var(--text-dark)">
 					Event Ease
 				</div>
 			</a>
@@ -779,7 +775,7 @@
 							filtered = ALL_USERS.filter((u) =>
 								(u.name + u.email + u.dept)
 									.toLowerCase()
-									.includes(ql)
+									.includes(ql),
 							);
 						const items = filtered.slice(start, start + pageSize);
 						resolve({ total: filtered.length, items });
@@ -789,7 +785,7 @@
 
 			// UI elements
 			const assignModal = new bootstrap.Modal(
-				document.getElementById("assignModal")
+				document.getElementById("assignModal"),
 			);
 			const teacherList = document.getElementById("teacherList");
 			const teacherSearch = document.getElementById("teacherSearch");
@@ -807,13 +803,13 @@
 			const participantsCard =
 				document.getElementById("participantsCard");
 			const participantsContainer = document.getElementById(
-				"participantsTableContainer"
+				"participantsTableContainer",
 			);
 			const participantsPageSize = document.getElementById(
-				"participantsPageSize"
+				"participantsPageSize",
 			);
 			const participantsPagination = document.getElementById(
-				"participantsPagination"
+				"participantsPagination",
 			);
 
 			let selectedMap = new Map();
@@ -850,12 +846,12 @@
 					span.className = "assigned-badge";
 					// use a non-breaking space for separation and keep markup minimal
 					span.innerHTML = `${escapeHtml(
-						c.name
+						c.name,
 					)} <button class="btn-close btn-close-white ms-2 btn-sm remove-coord" aria-label="Remove"></button>`;
 					const removeBtn = span.querySelector(".remove-coord");
 					if (removeBtn) {
 						removeBtn.addEventListener("click", () =>
-							removeCoordinator(c.id)
+							removeCoordinator(c.id),
 						);
 					}
 					coordinatorDisplay.appendChild(span);
@@ -864,7 +860,7 @@
 
 			function removeCoordinator(id) {
 				MOCK_EVENT.coordinators = MOCK_EVENT.coordinators.filter(
-					(c) => c.id !== id
+					(c) => c.id !== id,
 				);
 				renderEvent(MOCK_EVENT);
 				showTemporaryMessage("Coordinator removed");
@@ -879,7 +875,7 @@
 				renderTeacherRows(res.items);
 				pageInfo.innerText = `Page ${page} / ${Math.max(
 					1,
-					Math.ceil(res.total / pageSize)
+					Math.ceil(res.total / pageSize),
 				)}`;
 				prevPageBtn.disabled = page <= 1;
 				nextPageBtn.disabled = page >= Math.ceil(res.total / pageSize);
@@ -901,7 +897,7 @@
             <div>
               <div class="fw-medium">${escapeHtml(t.name)}</div>
               <div class="text-muted small">${escapeHtml(
-					t.email
+					t.email,
 				)} • ${escapeHtml(t.dept)}</div>
             </div>
             <div>
@@ -919,7 +915,7 @@
 					// If user is already a coordinator for this event, pre-check and add to selection
 					if (
 						(MOCK_EVENT.coordinators || []).some(
-							(c) => c.id === t.id
+							(c) => c.id === t.id,
 						)
 					) {
 						cb.checked = true;
@@ -945,7 +941,7 @@
 				await loadTeacherPage(
 					currentPage,
 					currentPageSize,
-					currentQuery
+					currentQuery,
 				);
 			}
 
@@ -955,7 +951,7 @@
 					currentQuery = e.target.value;
 					currentPage = 1;
 					loadTeacherPage(currentPage, currentPageSize, currentQuery);
-				}, 400)
+				}, 400),
 			);
 			pageSizeSelect.addEventListener("change", () => {
 				currentPageSize = Number(pageSizeSelect.value);
@@ -963,10 +959,10 @@
 				loadTeacherPage(currentPage, currentPageSize, currentQuery);
 			});
 			prevPageBtn.addEventListener("click", () =>
-				gotoPage(Math.max(1, currentPage - 1))
+				gotoPage(Math.max(1, currentPage - 1)),
 			);
 			nextPageBtn.addEventListener("click", () =>
-				gotoPage(currentPage + 1)
+				gotoPage(currentPage + 1),
 			);
 
 			function addSelected(user) {
@@ -1005,11 +1001,11 @@
 						() => {
 							// uncheck checkbox if present in the list
 							const cb = teacherList.querySelector(
-								`.select-checkbox[data-id="${u.id}"]`
+								`.select-checkbox[data-id="${u.id}"]`,
 							);
 							if (cb) cb.checked = false;
 							removeSelected(u.id);
-						}
+						},
 					);
 					selectedContainer.appendChild(div);
 				});
@@ -1058,9 +1054,9 @@
 					html += `<tr><td colspan=4 class="text-center text-muted small">No participants</td></tr>`;
 				slice.forEach((p, idx) => {
 					html += `<tr><td>${start + idx + 1}</td><td>${escapeHtml(
-						p.name
+						p.name,
 					)}</td><td>${escapeHtml(
-						p.email
+						p.email,
 					)}</td><td><button class="btn btn-sm btn-outline-secondary" onclick="viewParticipant('${
 						p.id
 					}')">View</button></td></tr>`;
@@ -1081,7 +1077,7 @@
 						partPage = Math.max(1, partPage - 1);
 						renderParticipantsTable(
 							partPage,
-							Number(participantsPageSize.value)
+							Number(participantsPageSize.value),
 						);
 					});
 				document
@@ -1090,7 +1086,7 @@
 						partPage = Math.min(totalPages, partPage + 1);
 						renderParticipantsTable(
 							partPage,
-							Number(participantsPageSize.value)
+							Number(participantsPageSize.value),
 						);
 					});
 			}
@@ -1099,7 +1095,7 @@
 				partPage = 1;
 				renderParticipantsTable(
 					partPage,
-					Number(participantsPageSize.value)
+					Number(participantsPageSize.value),
 				);
 			});
 
@@ -1114,7 +1110,7 @@
 						partPage = 1;
 						renderParticipantsTable(
 							partPage,
-							Number(participantsPageSize.value)
+							Number(participantsPageSize.value),
 						);
 					} else {
 						participantsCard.style.display = "none";
@@ -1136,7 +1132,7 @@
 				el.style.right = "18px";
 				el.style.bottom = "18px";
 				el.innerHTML = `<div class='d-flex'><div class='toast-body'>${escapeHtml(
-					msg
+					msg,
 				)}</div><button type='button' class='btn-close btn-close-white ms-2 me-2' data-bs-dismiss='toast' aria-label="Close"></button></div>`;
 				document.body.appendChild(el);
 				const bs = new bootstrap.Toast(el, { delay: 2500 });

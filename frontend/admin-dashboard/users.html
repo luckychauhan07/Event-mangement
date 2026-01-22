@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -191,14 +191,12 @@
 				href="admin.html"
 				aria-label="Event Ease Home"
 			>
-				<div class="logo"><img src="../logo.svg" alt="EE" /></div>
-				<div
-					style="
-						margin-left: 10px;
-						font-weight: 700;
-						color: var(--text-dark);
-					"
-				>
+				<img
+					src="../logo.svg"
+					alt="Event Ease"
+					style="height: 32px; width: auto; margin-right: 10px"
+				/>
+				<div style="font-weight: 700; color: var(--text-dark)">
 					Event Ease
 				</div>
 			</a>
@@ -814,7 +812,7 @@
 				const total = list.length;
 				const active = list.filter((u) => u.active).length;
 				const staff = list.filter(
-					(u) => u.role === "teacher"
+					(u) => u.role === "teacher",
 					// || u.role === "coordinator"
 				).length;
 				document.getElementById("kpiTotal").textContent = total;
@@ -888,15 +886,15 @@
 					badgeWrap.appendChild(
 						createBadge(
 							u.active ? "Active" : "Deactivated",
-							u.active
-						)
+							u.active,
+						),
 					);
 
 					statusTd.appendChild(badgeWrap);
 
 					const lastActiveTd = tdText(
 						formatLastActive(u.lastActive),
-						"text-muted"
+						"text-muted",
 					);
 
 					// Actions
@@ -927,7 +925,7 @@
 						? "Deactivate"
 						: "Activate";
 					btnToggle.addEventListener("click", () =>
-						toggleActive(u.id)
+						toggleActive(u.id),
 					);
 
 					// Delete (with safeguards)
@@ -935,7 +933,7 @@
 					btnDelete.className = "btn btn-sm btn-danger";
 					btnDelete.textContent = "Delete";
 					btnDelete.addEventListener("click", () =>
-						confirmDelete(u.id, u.name)
+						confirmDelete(u.id, u.name),
 					);
 
 					// actionsTd.appendChild(btnEdit);
@@ -958,8 +956,8 @@
 						? "No users"
 						: `Showing ${Math.min(start + 1, total)} - ${Math.min(
 								start + paged.length,
-								total
-						  )} of ${total} users`;
+								total,
+							)} of ${total} users`;
 				document.getElementById("prevPage").disabled = page <= 1;
 				document.getElementById("nextPage").disabled =
 					start + pageSize >= total;
@@ -970,7 +968,7 @@
 				sessionStorage.setItem("selectedUser", JSON.stringify(user));
 				// also add id param as fallback
 				window.location.href = `user-details.html?id=${encodeURIComponent(
-					userId
+					userId,
 				)}`;
 			}
 
@@ -987,7 +985,7 @@
 					!!user.active;
 
 				const modal = new bootstrap.Modal(
-					document.getElementById("editUserModal")
+					document.getElementById("editUserModal"),
 				);
 				modal.show();
 
@@ -997,7 +995,7 @@
 					() => {
 						document.getElementById("editUserName").focus();
 					},
-					{ once: true }
+					{ once: true },
 				);
 			}
 
@@ -1010,7 +1008,7 @@
 					document.getElementById("editUserRole").value = "student";
 					document.getElementById("editUserActive").checked = true;
 					new bootstrap.Modal(
-						document.getElementById("editUserModal")
+						document.getElementById("editUserModal"),
 					).show();
 				});
 
@@ -1040,11 +1038,12 @@
 						if (users[idx].role === "admin" && role !== "admin") {
 							const adminCount = users.filter(
 								(u) =>
-									u.role === "admin" && u.id !== users[idx].id
+									u.role === "admin" &&
+									u.id !== users[idx].id,
 							).length;
 							if (adminCount === 0) {
 								return alert(
-									"Cannot demote the only remaining admin. Assign another admin before changing this user."
+									"Cannot demote the only remaining admin. Assign another admin before changing this user.",
 								);
 							}
 						}
@@ -1071,7 +1070,7 @@
 					}
 
 					bootstrap.Modal.getInstance(
-						document.getElementById("editUserModal")
+						document.getElementById("editUserModal"),
 					).hide();
 					page = 1;
 					renderUsers();
@@ -1083,7 +1082,7 @@
 				if (idx === -1) return;
 				if (users[idx].id === CURRENT_ADMIN_ID) {
 					return alert(
-						"You cannot deactivate your own account from this interface."
+						"You cannot deactivate your own account from this interface.",
 					);
 				}
 				users[idx].active = !users[idx].active;
@@ -1095,27 +1094,26 @@
 			function confirmDelete(id, name) {
 				if (id === CURRENT_ADMIN_ID) {
 					return alert(
-						"You cannot delete your own admin account from this interface."
+						"You cannot delete your own admin account from this interface.",
 					);
 				}
 				const user = users.find((u) => u.id === id);
 				if (user && user.role === "admin") {
 					const otherAdmins = users.filter(
-						(u) => u.role === "admin" && u.id !== id
+						(u) => u.role === "admin" && u.id !== id,
 					);
 					if (otherAdmins.length === 0) {
 						return alert(
-							"Cannot delete this admin — no other admin accounts exist. Create/assign another admin first."
+							"Cannot delete this admin — no other admin accounts exist. Create/assign another admin first.",
 						);
 					}
 				}
 
 				_pendingDeleteId = id;
-				document.getElementById(
-					"deletePrompt"
-				).textContent = `Delete ${name} (${id}) — this action cannot be undone.`;
+				document.getElementById("deletePrompt").textContent =
+					`Delete ${name} (${id}) — this action cannot be undone.`;
 				new bootstrap.Modal(
-					document.getElementById("confirmDeleteModal")
+					document.getElementById("confirmDeleteModal"),
 				).show();
 			}
 
@@ -1126,7 +1124,7 @@
 					users = users.filter((u) => u.id !== _pendingDeleteId);
 					_pendingDeleteId = null;
 					bootstrap.Modal.getInstance(
-						document.getElementById("confirmDeleteModal")
+						document.getElementById("confirmDeleteModal"),
 					).hide();
 					page = 1;
 					renderUsers();
@@ -1229,7 +1227,7 @@
 					const filtered = applyFilterSort();
 					if (filtered.length === 0) {
 						return alert(
-							"No users to export with current filters."
+							"No users to export with current filters.",
 						);
 					}
 					const header = [
@@ -1250,7 +1248,7 @@
 							u.lastActive,
 						]
 							.map((v) => `"${String(v).replace(/"/g, '""')}"`)
-							.join(",")
+							.join(","),
 					);
 					const csv = [header.join(","), ...rows].join("\n");
 					const blob = new Blob([csv], { type: "text/csv" });
