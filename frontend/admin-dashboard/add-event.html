@@ -279,6 +279,10 @@
 							<div class="step-button">8</div>
 							<div class="step-title">Registration Form</div>
 						</div>
+						<div class="step-item">
+							<div class="step-button">9</div>
+							<div class="step-title">Results</div>
+						</div>
 					</div>
 				</div>
 
@@ -588,25 +592,28 @@
 									<option>Approval-based</option>
 								</select>
 							</div>
-							<div class="col-md-6">
-								<label class="form-label"
-									>Registration Start</label
-								>
-								<input
-									type="datetime-local"
-									name="regStart"
-									class="form-control"
-								/>
-							</div>
-							<div class="col-md-6">
-								<label class="form-label"
-									>Registration End</label
-								>
-								<input
-									type="datetime-local"
-									name="regEnd"
-									class="form-control"
-								/>
+							<div id="registrationDateFields" class="row g-3">
+								<div class="col-md-6">
+									<label class="form-label"
+										>Registration Start</label
+									>
+									<input
+										type="datetime-local"
+										name="regStart"
+										class="form-control"
+									/>
+								</div>
+
+								<div class="col-md-6">
+									<label class="form-label"
+										>Registration End</label
+									>
+									<input
+										type="datetime-local"
+										name="regEnd"
+										class="form-control"
+									/>
+								</div>
 							</div>
 							<div class="col-md-4">
 								<label class="form-label"
@@ -1176,6 +1183,128 @@
 									id="registrationPreview"
 									class="border rounded p-3 bg-light"
 								></div>
+							</div>
+						</div>
+					</div>
+					<!-- STEP 9: Result Configuration -->
+					<div class="form-step">
+						<div class="step-header">
+							<h2>
+								<span class="icon">🏆</span>Result Configuration
+							</h2>
+							<p class="text-muted">
+								Configure how results will be declared for this
+								event.
+							</p>
+						</div>
+
+						<div class="card">
+							<div class="card-body">
+								<div class="mb-3">
+									<label class="form-label"
+										>Will this event declare results?</label
+									>
+									<select
+										id="resultEnabled"
+										name="resultEnabled"
+										class="form-select"
+									>
+										<option value="No" selected>No</option>
+										<option value="Yes">Yes</option>
+									</select>
+								</div>
+
+								<div
+									id="resultConfigSection"
+									style="display: none"
+								>
+									<div class="mb-3">
+										<label class="form-label"
+											>Result Type</label
+										>
+										<select
+											id="resultType"
+											name="resultType"
+											class="form-select"
+										>
+											<option value="position">
+												Position Based (1st, 2nd, 3rd)
+											</option>
+											<option value="score">
+												Score Based (Marks / Points)
+											</option>
+											<option value="both">Both</option>
+										</select>
+									</div>
+
+									<!-- Position Based Settings -->
+									<div id="positionSettings" class="mb-3">
+										<label class="form-label"
+											>Number of Positions</label
+										>
+										<input
+											type="number"
+											id="positionsCount"
+											name="positionsCount"
+											class="form-control"
+											value="3"
+											min="1"
+										/>
+
+										<div class="form-check mt-2">
+											<input
+												class="form-check-input"
+												type="checkbox"
+												id="specialAwards"
+												name="specialAwards"
+											/>
+											<label class="form-check-label">
+												Enable Special Awards (Best
+												Innovation, etc.)
+											</label>
+										</div>
+									</div>
+
+									<!-- Score Based Settings -->
+									<div
+										id="scoreSettings"
+										style="display: none"
+									>
+										<label class="form-label"
+											>Total Marks</label
+										>
+										<input
+											type="number"
+											id="totalMarks"
+											name="totalMarks"
+											class="form-control"
+											placeholder="e.g. 100"
+										/>
+
+										<label class="form-label mt-3">
+											Evaluation Criteria (comma
+											separated)
+										</label>
+										<input
+											type="text"
+											id="evaluationCriteria"
+											name="evaluationCriteria"
+											class="form-control"
+											placeholder="Innovation, Presentation, Technical"
+										/>
+
+										<label class="form-label mt-3"
+											>Number of Judges</label
+										>
+										<input
+											type="number"
+											id="judgesCount"
+											name="judgesCount"
+											class="form-control"
+											placeholder="e.g. 3"
+										/>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -1822,6 +1951,87 @@
 			.join("")}
 	`;
 			}
+			// ========================================
+			// RESULT CONFIGURATION HANDLERS
+			// ========================================
+
+			const resultEnabled = document.getElementById("resultEnabled");
+			const resultConfigSection = document.getElementById(
+				"resultConfigSection",
+			);
+			const resultType = document.getElementById("resultType");
+			const positionSettings =
+				document.getElementById("positionSettings");
+			const scoreSettings = document.getElementById("scoreSettings");
+
+			function handleResultType(type) {
+				if (!positionSettings || !scoreSettings) return;
+
+				if (type === "position") {
+					positionSettings.style.display = "block";
+					scoreSettings.style.display = "none";
+				} else if (type === "score") {
+					positionSettings.style.display = "none";
+					scoreSettings.style.display = "block";
+				} else {
+					positionSettings.style.display = "block";
+					scoreSettings.style.display = "block";
+				}
+			}
+
+			// Initial State
+			if (resultEnabled) {
+				resultConfigSection.style.display =
+					resultEnabled.value === "Yes" ? "block" : "none";
+
+				resultEnabled.addEventListener("change", function () {
+					resultConfigSection.style.display =
+						this.value === "Yes" ? "block" : "none";
+				});
+			}
+
+			if (resultType) {
+				handleResultType(resultType.value);
+
+				resultType.addEventListener("change", function () {
+					handleResultType(this.value);
+				});
+			}
+			// ========================================
+			// REGISTRATION REQUIRED TOGGLE
+			// ========================================
+
+			const registrationRequiredSelect = document.querySelector(
+				'[name="registrationRequired"]',
+			);
+			const registrationDateFields = document.getElementById(
+				"registrationDateFields",
+			);
+
+			if (registrationRequiredSelect) {
+				// Initial state
+				registrationDateFields.style.display =
+					registrationRequiredSelect.value === "Yes"
+						? "flex"
+						: "none";
+
+				registrationRequiredSelect.addEventListener(
+					"change",
+					function () {
+						if (this.value === "Yes") {
+							registrationDateFields.style.display = "flex";
+						} else {
+							registrationDateFields.style.display = "none";
+
+							// Clear values
+							document.querySelector('[name="regStart"]').value =
+								"";
+							document.querySelector('[name="regEnd"]').value =
+								"";
+						}
+					},
+				);
+			}
 
 			// ========================================
 			// FORM SUBMISSION
@@ -1849,12 +2059,32 @@
 					),
 				].map((cb) => cb.value);
 
+				// Build Result Configuration Object
+				let resultConfig = null;
+
+				if (eventData.resultEnabled === "Yes") {
+					resultConfig = {
+						type: eventData.resultType,
+						positionsCount: eventData.positionsCount || null,
+						specialAwards: eventData.specialAwards ? true : false,
+						totalMarks: eventData.totalMarks || null,
+						evaluationCriteria: eventData.evaluationCriteria
+							? eventData.evaluationCriteria
+									.split(",")
+									.map((s) => s.trim())
+							: [],
+						judgesCount: eventData.judgesCount || null,
+					};
+				}
+
 				const finalPayload = {
 					...eventData,
 					tags,
 					audienceRoles,
 					audienceYears,
 					registrationSchema,
+					resultConfig,
+					results: null, // actual results will be filled later
 					createdAt: new Date().toISOString(),
 					status: "draft",
 				};
