@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -21,8 +21,13 @@
 			}
 
 			body {
-				font-family: "Inter", -apple-system, BlinkMacSystemFont,
-					"Segoe UI", Roboto, sans-serif;
+				font-family:
+					"Inter",
+					-apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					Roboto,
+					sans-serif;
 				background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 				min-height: 100vh;
 				position: relative;
@@ -82,7 +87,8 @@
 				background: #ffffff;
 				border-radius: 32px;
 				padding: 48px;
-				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08),
+				box-shadow:
+					0 20px 60px rgba(0, 0, 0, 0.08),
 					0 0 0 1px rgba(0, 0, 0, 0.04);
 				border: 1px solid var(--border-light);
 				animation: fadeInUp 0.6s ease-out;
@@ -790,7 +796,7 @@
 			// demo persistence: store users in localStorage
 			function saveUser(payload) {
 				const users = JSON.parse(
-					localStorage.getItem("ee_users") || "[]"
+					localStorage.getItem("ee_users") || "[]",
 				);
 				users.push(payload);
 				localStorage.setItem("ee_users", JSON.stringify(users));
@@ -811,7 +817,7 @@
 				const pw = password.value.trim();
 				if (!passwordValid(pw)) {
 					password.setCustomValidity(
-						"Password must be 8+ chars, include a number and special character"
+						"Password must be 8+ chars, include a number and special character",
 					);
 					signupForm.classList.add("was-validated");
 					password.reportValidity();
@@ -852,7 +858,7 @@
 
 				// show success modal
 				const sm = new bootstrap.Modal(
-					document.getElementById("successModal")
+					document.getElementById("successModal"),
 				);
 				sm.show();
 
@@ -868,7 +874,7 @@
 
 			// small accessibility
 			window.addEventListener("load", () =>
-				document.getElementById("fullName").focus()
+				document.getElementById("fullName").focus(),
 			);
 		</script>
 	</body>
