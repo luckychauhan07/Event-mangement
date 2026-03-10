@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { loginUser } from "../services/authServices";
+import { Link } from "react-router-dom";
 
 const Login = () => {
 	const [formData, setFormData] = useState({
@@ -6,19 +8,52 @@ const Login = () => {
 		password: "",
 		terms: false,
 	});
+	const [error, setError] = useState("");
 
 	const handleChange = (e) => {
 		const { name, value, type, checked } = e.target;
+		console.log(name, value, type, checked);
 		setFormData((prev) => ({
 			...prev,
 			[name]: type === "checkbox" ? checked : value,
 		}));
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log("Form Submitted:", formData);
 		// This is where you will call your backend API later!
+		try {
+			const response = await loginUser({
+				email: formData.email,
+				password: formData.password,
+			});
+
+			// store token
+			localStorage.setItem("token", response.token);
+
+			// store user info
+			localStorage.setItem("user", JSON.stringify(response.user));
+			console.log(response, "lucky");
+
+			// redirect based on role
+			if (response.user.role === "admin") {
+				window.location.href = "/admin/dashboard";
+			}
+
+			if (response.user.role === "teacher") {
+				window.location.href = "/teacher/dashboard";
+			}
+
+			if (response.user.role === "student") {
+				window.location.href = "/student/dashboard";
+			}
+		} catch (err) {
+			const message =
+				err.response?.data?.message ||
+				"Login failed. Please try again.";
+
+			setError(message);
+		}
 	};
 
 	return (
@@ -52,7 +87,9 @@ const Login = () => {
 					<p className="text-slate-500 mb-9 text-[15px] leading-relaxed">
 						Sign in to continue to your account
 					</p>
-
+					{error && (
+						<div className="text-red-500 text-sm mt-2">{error}</div>
+					)}
 					<form onSubmit={handleSubmit} className="space-y-6">
 						{/* Email Field */}
 						<div>
@@ -126,19 +163,20 @@ const Login = () => {
 						<div className="text-center pt-4">
 							<div className="text-sm text-slate-500">
 								Don't have an account?
-								<button
-									type="button"
+								<Link
+									to="/signup"
 									className="inline-block ml-1 font-semibold text-blue-600 hover:text-blue-700 hover:translate-x-0.5 transition-all"
 								>
 									Create one
-								</button>
+								</Link>
 							</div>
-							<button
-								type="button"
+
+							<Link
+								to="/forgot-password"
 								className="inline-block mt-3 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:translate-x-0.5 transition-all"
 							>
 								Forgot your password?
-							</button>
+							</Link>
 						</div>
 					</form>
 				</main>
