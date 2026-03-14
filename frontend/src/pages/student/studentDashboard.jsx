@@ -1,6 +1,6 @@
-import { logout } from "../utils/auth";
+import { logout } from "../../utils/auth";
 
-const Dashboard = () => {
+const StudentDashboard = () => {
 	return (
 		<>
 			<div>
@@ -18,4 +18,4 @@ const Dashboard = () => {
 		</>
 	);
 };
-export default Dashboard;
+export default StudentDashboard;

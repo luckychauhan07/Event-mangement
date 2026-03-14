@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { logout } from "../utils/auth";
+import { logout } from "../../utils/auth";
 
 const TeacherDashboard = () => {
 	return (

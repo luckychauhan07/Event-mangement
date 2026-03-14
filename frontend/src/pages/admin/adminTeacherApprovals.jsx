@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import { approveTeacher, getPendingTeachers } from "../services/adminServices";
-import { logout } from "../utils/auth";
+import {
+	approveTeacher,
+	getPendingTeachers,
+} from "../../services/adminServices";
+import { logout } from "../../utils/auth";
 
 const AdminTeacherApprovals = () => {
 	const [teachers, setTeachers] = useState([]);
