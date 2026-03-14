@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom";
-import AdminSidebar from "../components/sidebar/adminSidebar";
-import AdminHeader from "../components/header/adminheader";
+import AdminHeader from "../components/header/header";
 import { useState } from "react";
+import { adminMenu } from "../utils/sidebarMenu";
+import Sidebar from "../components/sidebar/sidebar";
 
 const AdminLayout = () => {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -13,9 +14,11 @@ const AdminLayout = () => {
 				/>
 
 				<div className="flex">
-					<AdminSidebar
+					<Sidebar
 						sidebarOpen={sidebarOpen}
 						closeSidebar={() => setSidebarOpen(false)}
+						menu={adminMenu}
+						role="Admin"
 					/>
 					<main className="p-6 flex-1 overflow-y-auto">
 						<Outlet />

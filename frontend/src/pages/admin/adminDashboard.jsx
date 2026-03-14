@@ -12,15 +12,6 @@ const AdminDashboard = () => {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 
 	return (
-		// <div className="min-h-screen bg-slate-100">
-		// 	<AdminHeader toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-
-		// 	<div className="flex">
-		// 		<AdminSidebar
-		// 			sidebarOpen={sidebarOpen}
-		// 			closeSidebar={() => setSidebarOpen(false)}
-		// 		/>
-
 		<main className="flex-1 p-6 lg:p-8">
 			<div className="flex flex-col gap-6">
 				<div className="rounded-2xl border border-slate-200 bg-white/80 backdrop-blur px-6 py-5 shadow-sm">
@@ -43,7 +34,7 @@ const AdminDashboard = () => {
 								Pending Approvals
 							</Link>
 							<Link
-								to="/admin/dashboard/add-event"
+								to="/admin/add-event"
 								className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md"
 							>
 								<CalendarPlus size={16} />
@@ -214,8 +205,6 @@ const AdminDashboard = () => {
 				</div>
 			</div>
 		</main>
-		// 	</div>
-		// </div>
 	);
 };
 export default AdminDashboard;

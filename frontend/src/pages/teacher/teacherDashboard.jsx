@@ -14,7 +14,7 @@ const TeacherDashboard = () => {
 			</div>
 			<h1>Teacher Dashboard</h1>
 			<p>Welcome, Teacher!</p>
-			<Link to="/admin/dashboard/add-event">create a new event</Link>
+			<Link to="/admin/add-event">create a new event</Link>
 		</>
 	);
 };

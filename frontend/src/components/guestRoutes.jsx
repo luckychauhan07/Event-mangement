@@ -7,7 +7,7 @@ const GuestRoute = ({ children }) => {
 	// if user already logged in → redirect
 	if (token) {
 		if (user.role === "admin") {
-			return <Navigate to="/admin/dashboard" />;
+			return <Navigate to="/admin" />;
 		}
 
 		if (user.role === "teacher") {
