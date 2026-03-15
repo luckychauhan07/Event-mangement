@@ -84,6 +84,48 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
 
+        .tools-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+
+        .tools-row .form-control,
+        .tools-row .form-select {
+            height: 36px;
+            font-size: 0.85rem;
+        }
+
+        .tools-row .search-wrap {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .category-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .category-chip {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .category-chip.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #fff;
+        }
+
         /* Notification list */
         .notifications-wrapper {
             background: var(--bg-surface);
@@ -185,11 +227,46 @@
             padding: 4px 10px;
         }
 
+        .notif-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .tag-pill {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .tag-pill.pinned {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
         .empty-state {
             text-align: center;
             padding: 32px 10px;
             color: #6b7280;
             font-size: 0.9rem;
+        }
+
+        .pagination-wrap {
+            margin-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-meta {
+            font-size: 0.78rem;
+            color: #6b7280;
         }
 
         @media (max-width: 768px) {
@@ -330,10 +407,49 @@
                 </button>
             </div>
 
+            <!-- Search + controls -->
+            <div class="tools-row">
+                <div class="search-wrap">
+                    <input
+                        id="notifSearch"
+                        class="form-control form-control-sm"
+                        type="text"
+                        placeholder="Search by event name or message"
+                    />
+                </div>
+                <select id="notifSort" class="form-select form-select-sm" style="width: 150px;">
+                    <option value="latest">Latest first</option>
+                    <option value="oldest">Oldest first</option>
+                </select>
+                <button id="toggleArchived" class="btn btn-sm btn-outline-secondary" type="button">
+                    Show archived
+                </button>
+                <button id="clearFilters" class="btn btn-sm btn-outline-secondary" type="button">
+                    Clear filters
+                </button>
+            </div>
+
+            <!-- Category chips -->
+            <div class="category-chips">
+                <button class="category-chip active" data-type="all">All types</button>
+                <button class="category-chip" data-type="approval">Approval</button>
+                <button class="category-chip" data-type="reminder">Reminder</button>
+                <button class="category-chip" data-type="payment">Payment</button>
+                <button class="category-chip" data-type="team">Team</button>
+                <button class="category-chip" data-type="announcement">Announcement</button>
+            </div>
+
             <div class="notifications-wrapper">
                 <div id="notificationList" class="d-flex flex-column gap-2"></div>
                 <div id="emptyState" class="empty-state d-none">
                     No notifications for this filter.
+                </div>
+                <div id="paginationWrap" class="pagination-wrap d-none">
+                    <div id="paginationMeta" class="pagination-meta"></div>
+                    <div class="d-flex gap-2">
+                        <button id="prevPageBtn" class="btn btn-sm btn-outline-secondary" type="button">Previous</button>
+                        <button id="nextPageBtn" class="btn btn-sm btn-outline-secondary" type="button">Next</button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -350,8 +466,12 @@
             eventName: "Inter-College Hackathon",
             message: "Your registration request has been approved.",
             status: "approved",
+            type: "approval",
             time: "2025-12-01T10:30",
             read: false,
+            pinned: false,
+            archived: false,
+            targetPage: "user-event-details.html",
         },
         {
             id: "N2",
@@ -359,8 +479,12 @@
             eventName: "Design Sprint",
             message: "You have been successfully registered.",
             status: "approved",
+            type: "team",
             time: "2025-12-02T14:15",
             read: true,
+            pinned: true,
+            archived: false,
+            targetPage: "user-registrations.html",
         },
         {
             id: "N3",
@@ -368,16 +492,92 @@
             eventName: "Food Fest",
             message: "The event has been cancelled by the organizer.",
             status: "cancelled",
+            type: "announcement",
             time: "2025-12-03T09:00",
             read: false,
+            pinned: false,
+            archived: false,
+            targetPage: "user-events.html",
         },
     ];
 
     let activeFilter = "all";
+    let activeType = "all";
+    let searchQuery = "";
+    let currentPage = 1;
+    let showArchived = false;
+    let activeSort = "latest";
+    const PAGE_SIZE = 5;
+
+    function saveNotificationState() {
+        localStorage.setItem("ee_user_notifications", JSON.stringify(notifications));
+    }
+
+    function loadNotificationState() {
+        const raw = localStorage.getItem("ee_user_notifications");
+        if (!raw) return;
+        try {
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return;
+            notifications = parsed.map(n => ({
+                ...n,
+                type: n.type || "announcement",
+                pinned: Boolean(n.pinned),
+                archived: Boolean(n.archived),
+                targetPage: n.targetPage || "user-event-details.html",
+            }));
+        } catch (err) {
+            /* ignore malformed local data */
+        }
+    }
 
     function updateUnreadCount() {
-        const count = notifications.filter(n => !n.read).length;
+        const count = notifications.filter(n => !n.read && !n.archived).length;
         document.getElementById("unreadCount").textContent = count;
+    }
+
+    function applyFilters() {
+        return notifications
+            .filter(n => {
+                if (!showArchived && n.archived) return false;
+                if (activeFilter === "all") return true;
+                if (activeFilter === "unread") return !n.read;
+                return n.status === activeFilter;
+            })
+            .filter(n => activeType === "all" ? true : n.type === activeType)
+            .filter(n => {
+                if (!searchQuery) return true;
+                const q = searchQuery.toLowerCase();
+                return (
+                    (n.eventName || "").toLowerCase().includes(q) ||
+                    (n.message || "").toLowerCase().includes(q)
+                );
+            })
+            .sort((a, b) => {
+                if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+                const at = new Date(a.time).getTime();
+                const bt = new Date(b.time).getTime();
+                return activeSort === "oldest" ? at - bt : bt - at;
+            });
+    }
+
+    function updatePagination(totalItems) {
+        const wrap = document.getElementById("paginationWrap");
+        const meta = document.getElementById("paginationMeta");
+        const prev = document.getElementById("prevPageBtn");
+        const next = document.getElementById("nextPageBtn");
+        const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+        currentPage = Math.min(Math.max(currentPage, 1), totalPages);
+
+        if (totalItems <= PAGE_SIZE) {
+            wrap.classList.add("d-none");
+            return;
+        }
+
+        wrap.classList.remove("d-none");
+        meta.textContent = `Page ${currentPage} of ${totalPages}`;
+        prev.disabled = currentPage <= 1;
+        next.disabled = currentPage >= totalPages;
     }
 
     function renderNotifications() {
@@ -385,19 +585,19 @@
         const empty = document.getElementById("emptyState");
         box.innerHTML = "";
 
-        const filtered = notifications.filter(n => {
-            if (activeFilter === "all") return true;
-            if (activeFilter === "unread") return !n.read;
-            return n.status === activeFilter;
-        });
+        const filtered = applyFilters();
+        const total = filtered.length;
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const pageItems = filtered.slice(start, start + PAGE_SIZE);
+        updatePagination(total);
 
-        if (!filtered.length) {
+        if (!pageItems.length) {
             empty.classList.remove("d-none");
         } else {
             empty.classList.add("d-none");
         }
 
-        filtered.forEach(n => {
+        pageItems.forEach(n => {
             const item = document.createElement("div");
             item.className = `notification-card ${n.read ? "" : "unread"}`;
 
@@ -420,19 +620,22 @@
                     <div class="notif-meta">
                         ${new Date(n.time).toLocaleString()}
                     </div>
+                    <div class="notif-tags">
+                        <span class="tag-pill">${(n.type || "announcement").toUpperCase()}</span>
+                        ${n.pinned ? '<span class="tag-pill pinned">PINNED</span>' : ""}
+                    </div>
                 </div>
                 <div class="notif-actions">
                     <span class="notif-badge ${badgeClass}">
                         ${n.status.toUpperCase()}
                     </span>
                     <div class="d-flex gap-1">
-                        <a
-                            href="user-event-details.html?id=${n.eventId}"
+                        <button
                             class="btn btn-sm btn-outline-primary"
-                            onclick="event.stopPropagation()"
+                            onclick="event.stopPropagation(); openNotificationTarget('${n.id}')"
                         >
-                            View event
-                        </a>
+                            Open
+                        </button>
                         ${
                             n.read
                             ? `<button
@@ -448,6 +651,18 @@
                                    Mark read
                                </button>`
                         }
+                        <button
+                            class="btn btn-sm btn-outline-secondary"
+                            onclick="event.stopPropagation(); togglePin('${n.id}')"
+                        >
+                            ${n.pinned ? "Unpin" : "Pin"}
+                        </button>
+                        <button
+                            class="btn btn-sm btn-outline-secondary"
+                            onclick="event.stopPropagation(); toggleArchive('${n.id}')"
+                        >
+                            ${n.archived ? "Unarchive" : "Archive"}
+                        </button>
                     </div>
                 </div>
             `;
@@ -457,6 +672,7 @@
         });
 
         updateUnreadCount();
+        saveNotificationState();
     }
 
     function markAsRead(id) {
@@ -480,6 +696,30 @@
         renderNotifications();
     }
 
+    function togglePin(id) {
+        const note = notifications.find(n => n.id === id);
+        if (!note) return;
+        note.pinned = !note.pinned;
+        renderNotifications();
+    }
+
+    function toggleArchive(id) {
+        const note = notifications.find(n => n.id === id);
+        if (!note) return;
+        note.archived = !note.archived;
+        currentPage = 1;
+        renderNotifications();
+    }
+
+    function openNotificationTarget(id) {
+        const note = notifications.find(n => n.id === id);
+        if (!note) return;
+        markAsRead(id);
+        const page = note.targetPage || "user-event-details.html";
+        const qs = note.eventId ? `?id=${encodeURIComponent(note.eventId)}` : "";
+        window.location.href = `${page}${qs}`;
+    }
+
     // Simulate real-time updates every 10 seconds
     setInterval(() => {
         const realtimeEvents = [
@@ -488,18 +728,24 @@
                 eventName: "Inter-College Hackathon",
                 message: "Venue changed to Auditorium B",
                 status: "info",
+                type: "announcement",
+                targetPage: "user-event-details.html",
             },
             {
                 eventId: "E101",
                 eventName: "Inter-College Hackathon",
                 message: "Hackathon results are now available",
                 status: "approved",
+                type: "approval",
+                targetPage: "user-registrations.html",
             },
             {
                 eventId: "E102",
                 eventName: "Food Fest",
                 message: "Food Fest starts in 2 hours",
                 status: "pending",
+                type: "reminder",
+                targetPage: "user-events.html",
             },
         ];
 
@@ -512,10 +758,15 @@
             eventName: e.eventName,
             message: e.message,
             status: e.status,
+            type: e.type,
             read: false,
+            pinned: false,
+            archived: false,
+            targetPage: e.targetPage,
             time: new Date().toISOString(),
         });
 
+        currentPage = 1;
         renderNotifications();
     }, 10000);
 
@@ -524,12 +775,72 @@
             document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
             chip.classList.add("active");
             activeFilter = chip.dataset.filter;
+            currentPage = 1;
             renderNotifications();
         });
     });
 
-    document.getElementById("markAllRead").addEventListener("click", markAllRead);
+    document.querySelectorAll(".category-chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+            document.querySelectorAll(".category-chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            activeType = chip.dataset.type;
+            currentPage = 1;
+            renderNotifications();
+        });
+    });
 
+    document.getElementById("notifSearch").addEventListener("input", e => {
+        searchQuery = (e.target.value || "").trim();
+        currentPage = 1;
+        renderNotifications();
+    });
+
+    document.getElementById("notifSort").addEventListener("change", e => {
+        activeSort = e.target.value;
+        renderNotifications();
+    });
+
+    document.getElementById("toggleArchived").addEventListener("click", () => {
+        showArchived = !showArchived;
+        document.getElementById("toggleArchived").textContent = showArchived
+            ? "Hide archived"
+            : "Show archived";
+        currentPage = 1;
+        renderNotifications();
+    });
+
+    document.getElementById("clearFilters").addEventListener("click", () => {
+        activeFilter = "all";
+        activeType = "all";
+        searchQuery = "";
+        activeSort = "latest";
+        currentPage = 1;
+        showArchived = false;
+        document.getElementById("notifSearch").value = "";
+        document.getElementById("notifSort").value = "latest";
+        document.getElementById("toggleArchived").textContent = "Show archived";
+        document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+        document.querySelector('.chip[data-filter="all"]').classList.add("active");
+        document.querySelectorAll(".category-chip").forEach(c => c.classList.remove("active"));
+        document.querySelector('.category-chip[data-type="all"]').classList.add("active");
+        renderNotifications();
+    });
+
+    document.getElementById("prevPageBtn").addEventListener("click", () => {
+        currentPage -= 1;
+        renderNotifications();
+    });
+
+    document.getElementById("nextPageBtn").addEventListener("click", () => {
+        currentPage += 1;
+        renderNotifications();
+    });
+
+    document.getElementById("markAllRead").addEventListener("click", markAllRead);
+    document.getElementById("userYear").textContent = new Date().getFullYear();
+
+    loadNotificationState();
     renderNotifications();
     </script>
 </body>
