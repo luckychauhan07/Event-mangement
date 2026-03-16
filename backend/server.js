@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 
 app.use("/admin", adminRoutes);
 
-app.use(eventRouter);
+app.use("/event", eventRouter);
 
 app.use("/auth", authRouter);
 
