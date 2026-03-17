@@ -11,6 +11,7 @@ import {
 
 const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 	const handleChange = (field, value) => {
+		console.log(field, value);
 		setEventData({
 			...eventData,
 			[field]: value,
@@ -136,7 +137,9 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 							handleChange("category", e.target.value)
 						}
 					>
-						<option value="">Category</option>
+						<option value="" disabled>
+							Category
+						</option>
 						<option value="Technical">Technical</option>
 						<option value="Cultural">Cultural</option>
 						<option value="Sports">Sports</option>
@@ -149,9 +152,11 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 							handleChange("eventType", e.target.value)
 						}
 					>
-						<option value="">Event Type</option>
-						{/* <option value="paid">Paid</option>
-						<option value="free">Free</option> */}
+						<option value="" disabled>
+							Event Type
+						</option>
+						<option value="paid">Paid</option>
+						<option value="free">Free</option>
 					</select>
 
 					<select
@@ -161,7 +166,9 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 							handleChange("eventMode", e.target.value)
 						}
 					>
-						<option value="">Event Mode</option>
+						<option value="" disabled>
+							Event Mode
+						</option>
 						<option value="offline">Offline</option>
 						<option value="online">Online</option>
 						<option value="hybrid">Hybrid</option>

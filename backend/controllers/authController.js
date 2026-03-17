@@ -5,13 +5,6 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
 	try {
 		const { full_name, email, phone, password, role } = req.body;
-		console.log("Received data:", {
-			full_name,
-			email,
-			phone,
-			password: password,
-			role,
-		});
 
 		if (
 			typeof full_name !== "string" ||
@@ -84,7 +77,6 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-	console.log("Login attempt with body:", req.body);
 	try {
 		const { email, password } = req.body;
 		if (
@@ -124,7 +116,6 @@ exports.login = async (req, res) => {
 				message: "Invalid credentials",
 			});
 		}
-		console.log(user);
 		if (user.email === "admin@example.com") {
 			const token = jwt.sign(
 				{

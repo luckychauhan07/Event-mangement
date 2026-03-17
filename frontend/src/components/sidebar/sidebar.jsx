@@ -19,7 +19,7 @@ const Sidebar = ({ sidebarOpen, closeSidebar, menu, role }) => {
 			<aside
 				className={`
 				fixed lg:static z-40
-				w-64 h-screen
+				w-64 h-screen lg:h-full
 				bg-gradient-to-b from-blue-700 to-blue-900
 				text-white p-6
 				transform transition-transform

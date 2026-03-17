@@ -1,4 +1,6 @@
-export const addEvent = async (req, res) => {
+const pool = require("../db/config");
+
+exports.addEvent = async (req, res) => {
 	const {
 		title,
 		subtitle,
@@ -7,7 +9,7 @@ export const addEvent = async (req, res) => {
 		eventType,
 		startAt,
 		endAt,
-		mode,
+		eventMode,
 	} = req.body;
 
 	// const userId = req.user.user_id;
@@ -31,7 +33,7 @@ export const addEvent = async (req, res) => {
 	// 		eventType,
 	// 		startAt,
 	// 		endAt,
-	// 		mode,
+	// 		eventMode,
 	// 		userId,
 	// 	],
 	// );
@@ -40,4 +42,24 @@ export const addEvent = async (req, res) => {
 		message: "Event created",
 		// event: event.rows[0],
 	});
+};
+
+exports.getAllTeachers = async (req, res) => {
+	try {
+		const teachers = await pool.query(
+			`SELECT full_name AS name, email, phone
+			 FROM users
+			 WHERE role = 'teacher'
+				AND status = 'active'
+			 ORDER BY full_name ASC`,
+		);
+		console.log("Fetched teachers:", teachers.rows);
+		res.json({
+			message: "Teachers fetched successfully",
+			teachers: teachers.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching teachers:", error);
+		res.status(500).json({ message: "Error fetching teachers" });
+	}
 };

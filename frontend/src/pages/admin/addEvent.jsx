@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-import EventStepper from "../../components/event/EventStepper";
+// import EventStepper from "../../components/event/EventStepper";
 import QuickEventForm from "../../components/event/quickEventForm";
+import AdvancedEventWizard from "../../components/event/advancedEventWizard";
 
 const AddEvent = () => {
 	const [advancedMode, setAdvancedMode] = useState(false);
@@ -11,10 +12,9 @@ const AddEvent = () => {
 		subtitle: "",
 		description: "",
 		category: "",
-		eventType: "free",
+		eventType: "",
 		startAt: "",
 		endAt: "",
-		mode: "",
 	});
 
 	return (
@@ -30,7 +30,7 @@ const AddEvent = () => {
 			)}
 
 			{advancedMode && (
-				<EventStepper
+				<AdvancedEventWizard
 					eventData={eventData}
 					setEventData={setEventData}
 				/>
