@@ -1,100 +1,136 @@
+import { Calendar, Tag, FileText, DollarSign } from "lucide-react";
+
 const BasicStep = ({ eventData, setEventData }) => {
 	const update = (field, value) => {
 		console.log(field, value);
 		setEventData({ ...eventData, [field]: value });
 	};
 
+	const inputStyle =
+		"w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none bg-white";
+
 	return (
-		<div className="grid grid-cols-2 gap-6">
-			<div className="col-span-2">
-				<label>Event Title</label>
-
-				<input
-					className="border p-2 rounded w-full"
-					value={eventData.title || ""}
-					onChange={(e) => update("title", e.target.value)}
-				/>
-			</div>
-
-			<div className="col-span-2">
-				<label>Subtitle</label>
-
-				<input
-					className="border p-2 rounded w-full"
-					value={eventData.subtitle || ""}
-					onChange={(e) => update("subtitle", e.target.value)}
-				/>
-			</div>
-
-			<div className="col-span-2">
-				<label>Description</label>
-
-				<textarea
-					className="border p-2 rounded w-full"
-					value={eventData.description || ""}
-					onChange={(e) => update("description", e.target.value)}
-				/>
-			</div>
-
-			<div>
-				<label>Category</label>
-
-				<select
-					className="border p-2 rounded w-full"
-					value={eventData.category || ""}
-					onChange={(e) => update("category", e.target.value)}
-				>
-					<option value="" disabled>
-						Select
-					</option>
-					<option>Technical</option>
-					<option>Cultural</option>
-					<option>Sports</option>
-					<option>Workshop</option>
-					<option>Talk</option>
-					<option>Competition</option>
-					<option>Festival</option>
-				</select>
-			</div>
-
-			<div>
-				<label>Event Type</label>
-
-				<select
-					className="border p-2 rounded w-full"
-					value={eventData.eventType || ""}
-					onChange={(e) => update("eventType", e.target.value)}
-				>
-					<option value="" disabled>
-						Select
-					</option>
-					<option value="free">Free Entry</option>
-					<option value="paid">Paid Entry</option>
-				</select>
-			</div>
-
-			{eventData.eventType === "paid" && (
+		<div className="space-y-6">
+			{/* Header */}
+			<div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+				<div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+					<Calendar size={20} />
+					</div>
 				<div>
-					<label>Entry Fee</label>
+					<h3 className="text-lg font-semibold text-slate-900">Basic Information</h3>
+					<p className="text-sm text-slate-500">Enter the fundamental details of your event</p>
+				</div>
+			</div>
 
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+				<div className="md:col-span-2">
+					<label className="block text-sm font-medium text-slate-700 mb-1.5">
+						Event Title <span className="text-red-500">*</span>
+					</label>
+					<div className="relative">
+						<Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+						<input
+							className={`${inputStyle} pl-10`}
+							placeholder="e.g. Hackathon 2026"
+							value={eventData.title || ""}
+							onChange={(e) => update("title", e.target.value)}
+						/>
+					</div>
+				</div>
+
+				<div className="md:col-span-2">
+					<label className="block text-sm font-medium text-slate-700 mb-1.5">
+						Subtitle
+					</label>
 					<input
-						type="number"
-						className="border p-2 rounded w-full"
-						value={eventData.entryFee || ""}
-						onChange={(e) => update("entryFee", e.target.value)}
+						className={inputStyle}
+						placeholder="Optional tagline for your event"
+						value={eventData.subtitle || ""}
+						onChange={(e) => update("subtitle", e.target.value)}
 					/>
 				</div>
-			)}
 
-			<div className="col-span-2">
-				<label>Tags</label>
+				<div className="md:col-span-2">
+					<label className="block text-sm font-medium text-slate-700 mb-1.5">
+						Description <span className="text-red-500">*</span>
+					</label>
+					<div className="relative">
+						<FileText className="absolute left-3 top-3 text-slate-400" size={18} />
+						<textarea
+							className={`${inputStyle} pl-10 resize-none`}
+							rows={4}
+							placeholder="Describe your event in detail..."
+							value={eventData.description || ""}
+							onChange={(e) => update("description", e.target.value)}
+						/>
+					</div>
+				</div>
 
-				<input
-					className="border p-2 rounded w-full"
-					placeholder="AI, Hackathon, Coding"
-					value={eventData.tags || ""}
-					onChange={(e) => update("tags", e.target.value)}
-				/>
+				<div>
+					<label className="block text-sm font-medium text-slate-700 mb-1.5">
+						Category <span className="text-red-500">*</span>
+					</label>
+					<select
+						className={inputStyle}
+						value={eventData.category || ""}
+						onChange={(e) => update("category", e.target.value)}
+					>
+						<option value="" disabled>Select Category</option>
+						<option>Technical</option>
+						<option>Cultural</option>
+						<option>Sports</option>
+						<option>Workshop</option>
+						<option>Talk</option>
+						<option>Competition</option>
+						<option>Festival</option>
+					</select>
+				</div>
+
+				<div>
+					<label className="block text-sm font-medium text-slate-700 mb-1.5">
+						Event Type <span className="text-red-500">*</span>
+					</label>
+					<select
+						className={inputStyle}
+						value={eventData.eventType || ""}
+						onChange={(e) => update("eventType", e.target.value)}
+					>
+						<option value="" disabled>Select Type</option>
+						<option value="free">Free Entry</option>
+						<option value="paid">Paid Entry</option>
+					</select>
+				</div>
+
+				{eventData.eventType === "paid" && (
+					<div className="animate-in fade-in slide-in-from-top-2 duration-300">
+						<label className="block text-sm font-medium text-slate-700 mb-1.5">
+							Entry Fee (₹) <span className="text-red-500">*</span>
+						</label>
+						<div className="relative">
+							<DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+							<input
+								type="number"
+								className={`${inputStyle} pl-10`}
+								placeholder="e.g. 500"
+								value={eventData.entryFee || ""}
+								onChange={(e) => update("entryFee", e.target.value)}
+							/>
+						</div>
+					</div>
+				)}
+
+				<div className="md:col-span-2">
+					<label className="block text-sm font-medium text-slate-700 mb-1.5">
+						Tags / Keywords
+					</label>
+					<input
+						className={inputStyle}
+						placeholder="e.g. AI, Hackathon, Coding (comma separated)"
+						value={eventData.tags || ""}
+						onChange={(e) => update("tags", e.target.value)}
+					/>
+					<p className="text-xs text-slate-400 mt-1">Separate tags with commas</p>
+				</div>
 			</div>
 		</div>
 	);

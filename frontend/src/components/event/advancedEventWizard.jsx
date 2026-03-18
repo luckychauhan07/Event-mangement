@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { ChevronLeft, ChevronRight, Check, ArrowLeft } from "lucide-react";
 
 import Stepper from "./Stepper";
 
-import BasicStep from "./steps/BasicStep";
-import OrganizersStep from "./steps/OrganizersStep";
+import BasicStep from "./steps/basicStep";
+import OrganizersStep from "./steps/organizersStep";
 import ScheduleStep from "./steps/schduleStep";
 import RegistrationStep from "./steps/RegistrationStep";
 import ResourcesStep from "./steps/ResourcesStep";
@@ -12,7 +13,7 @@ import AudienceStep from "./steps/AudienceStep";
 import FormBuilderStep from "./steps/FormBuilderStep";
 import ResultStep from "./steps/ResultStep";
 
-const AdvancedEventWizard = ({ eventData, setEventData }) => {
+const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
 	const [step, setStep] = useState(0);
 
 	const steps = [
@@ -30,41 +31,63 @@ const AdvancedEventWizard = ({ eventData, setEventData }) => {
 	const CurrentStep = steps[step];
 
 	return (
-		<div className="max-w-6xl mx-auto bg-white shadow rounded-xl p-8">
-			<Stepper step={step} />
+		<div className="space-y-6">
+			{/* Back Button */}
+			<button
+				onClick={() => setAdvancedMode(false)}
+				className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 text-sm font-medium transition-colors"
+			>
+				<ArrowLeft size={18} />
+				Back to Quick Create
+			</button>
 
-			<div className="mt-8">
-				<CurrentStep
-					eventData={eventData}
-					setEventData={setEventData}
-				/>
-			</div>
+			{/* Main Card */}
+			<div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+				{/* Stepper */}
+				<div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+					<Stepper step={step} />
+				</div>
 
-			<div className="flex justify-between mt-8">
-				{step > 0 && (
-					<button
-						onClick={() => setStep(step - 1)}
-						className="px-4 py-2 border rounded"
-					>
-						Previous
-					</button>
-				)}
+				{/* Step Content */}
+				<div className="p-6">
+					<CurrentStep
+						eventData={eventData}
+						setEventData={setEventData}
+					/>
+				</div>
 
-				{step < steps.length - 1 ? (
-					<button
-						onClick={() => {
-							setStep(step + 1);
-							console.log(eventData);
-						}}
-						className="px-4 py-2 bg-sky-600 text-white rounded"
-					>
-						Next
-					</button>
-				) : (
-					<button className="px-4 py-2 bg-green-600 text-white rounded">
-						Create Event
-					</button>
-				)}
+				{/* Navigation */}
+				<div className="flex justify-between items-center px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+					{step > 0 ? (
+						<button
+							onClick={() => setStep(step - 1)}
+							className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all"
+						>
+							<ChevronLeft size={18} />
+							Previous
+						</button>
+					) : (
+						<div></div>
+					)}
+
+					{step < steps.length - 1 ? (
+						<button
+							onClick={() => {
+								setStep(step + 1);
+								console.log(eventData);
+							}}
+							className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 hover:-translate-y-0.5"
+						>
+							Next
+							<ChevronRight size={18} />
+						</button>
+					) : (
+						<button className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all hover:-translate-y-0.5">
+							<Check size={18} />
+							Create Event
+						</button>
+					)}
+				</div>
 			</div>
 		</div>
 	);
