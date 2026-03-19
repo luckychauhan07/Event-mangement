@@ -62,8 +62,13 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 						<Calendar size={20} />
 					</div>
 					<div>
-						<h2 className="text-lg font-semibold text-slate-900">Quick Create Event</h2>
-						<p className="text-sm text-slate-500">Create a basic event quickly. You can add advanced settings later.</p>
+						<h2 className="text-lg font-semibold text-slate-900">
+							Quick Create Event
+						</h2>
+						<p className="text-sm text-slate-500">
+							Create a basic event quickly. You can add advanced
+							settings later.
+						</p>
 					</div>
 				</div>
 			</div>
@@ -109,7 +114,8 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 				{/* DESCRIPTION */}
 				<div className="relative">
 					<label className="block text-sm font-medium text-slate-700 mb-1.5">
-						Event Description <span className="text-red-500">*</span>
+						Event Description{" "}
+						<span className="text-red-500">*</span>
 					</label>
 					<div className="relative">
 						<FileText
@@ -194,7 +200,8 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 				{eventData.eventType === "paid" && (
 					<div className="relative transition-all duration-300 animate-in fade-in slide-in-from-top-2">
 						<label className="block text-sm font-medium text-slate-700 mb-1.5">
-							Entry Fee (₹) <span className="text-red-500">*</span>
+							Entry Fee (₹){" "}
+							<span className="text-red-500">*</span>
 						</label>
 						<div className="relative">
 							<DollarSign
@@ -314,14 +321,25 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 						className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-blue-200 bg-blue-50 text-blue-700 rounded-xl text-sm font-medium hover:bg-blue-100 transition-all hover:-translate-y-0.5"
 					>
 						More Customization
-						<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+						<svg
+							className="w-4 h-4"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M9 5l7 7-7 7"
+							/>
 						</svg>
 					</button>
 
 					<button
 						type="submit"
 						className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all hover:-translate-y-0.5"
+						// onClick={() => handleSubmit(eventData)}
 					>
 						<Calendar size={18} />
 						Create Event

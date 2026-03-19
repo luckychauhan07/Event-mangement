@@ -1,6 +1,13 @@
-import { Users, GraduationCap, Building2, Calendar, School } from "lucide-react";
+import {
+	Users,
+	GraduationCap,
+	Building2,
+	Calendar,
+	School,
+} from "lucide-react";
+import { forwardRef, useImperativeHandle } from "react";
 
-const AudienceStep = ({ eventData, setEventData }) => {
+const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 	const update = (field, value) => {
 		setEventData((prev) => ({
 			...prev,
@@ -18,6 +25,29 @@ const AudienceStep = ({ eventData, setEventData }) => {
 			return { ...prev, [field]: updated };
 		});
 	};
+	useImperativeHandle(ref, () => ({
+		validate() {
+			const selectedRoles = eventData.audienceRoles || [];
+			const selectedStudentYears = eventData.studentYears || [];
+
+			if (selectedRoles.length === 0) {
+				return "Select at least one target audience role";
+			}
+
+			if (
+				selectedRoles.includes("Students") &&
+				selectedStudentYears.length === 0
+			) {
+				return "Select at least one student year for student audience";
+			}
+
+			if (!eventData.interCollege) {
+				return "Please choose whether inter-college participation is allowed";
+			}
+
+			return true;
+		},
+	}));
 
 	const inputStyle =
 		"w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none bg-white";
@@ -45,8 +75,12 @@ const AudienceStep = ({ eventData, setEventData }) => {
 					<Users size={20} />
 				</div>
 				<div>
-					<h3 className="text-lg font-semibold text-slate-900">Target Audience</h3>
-					<p className="text-sm text-slate-500">Define your target audience with precision</p>
+					<h3 className="text-lg font-semibold text-slate-900">
+						Target Audience
+					</h3>
+					<p className="text-sm text-slate-500">
+						Define your target audience with precision
+					</p>
 				</div>
 			</div>
 
@@ -66,7 +100,9 @@ const AudienceStep = ({ eventData, setEventData }) => {
 								onClick={() => toggle("audienceRoles", role)}
 							>
 								<div className="flex items-center justify-between">
-									<span className="font-medium text-slate-700">{role}</span>
+									<span className="font-medium text-slate-700">
+										{role}
+									</span>
 
 									{eventData.audienceRoles?.includes(
 										role,
@@ -85,7 +121,10 @@ const AudienceStep = ({ eventData, setEventData }) => {
 				<div className="space-y-5">
 					<div>
 						<h3 className="font-medium text-slate-700 mb-2 flex items-center gap-2">
-							<GraduationCap size={16} className="text-amber-500" />
+							<GraduationCap
+								size={16}
+								className="text-amber-500"
+							/>
 							Course
 						</h3>
 
@@ -177,19 +216,23 @@ const AudienceStep = ({ eventData, setEventData }) => {
 						active={eventData.interCollege === "no"}
 						onClick={() => update("interCollege", "no")}
 					>
-						<span className="text-slate-700">No (Only this institution)</span>
+						<span className="text-slate-700">
+							No (Only this institution)
+						</span>
 					</Card>
 
 					<Card
 						active={eventData.interCollege === "yes"}
 						onClick={() => update("interCollege", "yes")}
 					>
-						<span className="text-slate-700">Yes (Open to all)</span>
+						<span className="text-slate-700">
+							Yes (Open to all)
+						</span>
 					</Card>
 				</div>
 			</div>
 		</div>
 	);
-};
+});
 
 export default AudienceStep;

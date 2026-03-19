@@ -1,7 +1,33 @@
-import { Calendar, MapPin, Link, Clock, RefreshCw, AlertCircle } from "lucide-react";
+import {
+	Calendar,
+	MapPin,
+	Link,
+	Clock,
+	RefreshCw,
+	AlertCircle,
+} from "lucide-react";
+import { forwardRef, useImperativeHandle } from "react";
 
-const ScheduleStep = ({ eventData, setEventData }) => {
+const ScheduleStep = forwardRef(({ eventData, setEventData }, ref) => {
 	const update = (f, v) => setEventData({ ...eventData, [f]: v });
+	const eventMode = (eventData.eventMode || "").toLowerCase();
+	const requiresOfflineVenue =
+		eventMode === "offline" || eventMode === "hybrid";
+	const requiresOnlineLink = eventMode === "online" || eventMode === "hybrid";
+
+	const isValidHttpUrl = (value) => {
+		if (!value) return false;
+
+		try {
+			const parsedUrl = new URL(String(value).trim());
+			return (
+				parsedUrl.protocol === "http:" ||
+				parsedUrl.protocol === "https:"
+			);
+		} catch {
+			return false;
+		}
+	};
 
 	// Date validation checks
 	const validateDates = () => {
@@ -15,6 +41,28 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 		if (endDate <= startDate) return false;
 		return true;
 	};
+
+	useImperativeHandle(ref, () => ({
+		validate() {
+			if (!eventData.startAt) return "Start date & time is required";
+			if (!eventData.endAt) return "End date & time is required";
+			if (!eventData.eventMode) return "Event mode is required";
+			if (!validateDates()) return "Please fix the date & time errors";
+			if (requiresOfflineVenue && !String(eventData.venue || "").trim()) {
+				return "Venue is required for offline or hybrid events";
+			}
+			if (
+				requiresOnlineLink &&
+				!String(eventData.onlineLink || "").trim()
+			) {
+				return "Online meeting link is required for online or hybrid events";
+			}
+			if (requiresOnlineLink && !isValidHttpUrl(eventData.onlineLink)) {
+				return "Please provide a valid online meeting URL (http/https)";
+			}
+			return true;
+		},
+	}));
 
 	const getDateError = () => {
 		if (!eventData.startAt || !eventData.endAt) return "";
@@ -42,8 +90,12 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 					<MapPin size={20} />
 				</div>
 				<div>
-					<h3 className="text-lg font-semibold text-slate-900">Schedule & Venue</h3>
-					<p className="text-sm text-slate-500">Set the date, time, and location of your event</p>
+					<h3 className="text-lg font-semibold text-slate-900">
+						Schedule & Venue
+					</h3>
+					<p className="text-sm text-slate-500">
+						Set the date, time, and location of your event
+					</p>
 				</div>
 			</div>
 
@@ -53,10 +105,14 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 						htmlFor="startAt"
 						className="block text-sm font-medium text-slate-700 mb-1.5"
 					>
-						Start Date & Time <span className="text-red-500">*</span>
+						Start Date & Time{" "}
+						<span className="text-red-500">*</span>
 					</label>
 					<div className="relative">
-						<Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+						<Calendar
+							className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+							size={18}
+						/>
 						<input
 							type="datetime-local"
 							id="startAt"
@@ -75,7 +131,10 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 						End Date & Time <span className="text-red-500">*</span>
 					</label>
 					<div className="relative">
-						<Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+						<Clock
+							className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+							size={18}
+						/>
 						<input
 							type="datetime-local"
 							id="endAt"
@@ -106,15 +165,16 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 						onChange={(e) => update("eventMode", e.target.value)}
 						className={inputStyle}
 					>
-						<option value="" disabled>Select Mode</option>
-						<option>Online</option>
-						<option>Offline</option>
-						<option>Hybrid</option>
+						<option value="" disabled>
+							Select Mode
+						</option>
+						<option value="online">Online</option>
+						<option value="offline">Offline</option>
+						<option value="hybrid">Hybrid</option>
 					</select>
 				</div>
 
-				{(eventData.eventMode === "Offline" ||
-					eventData.eventMode === "Hybrid") && (
+				{requiresOfflineVenue && (
 					<div className="animate-in fade-in slide-in-from-top-2 duration-300">
 						<label
 							htmlFor="venue"
@@ -123,21 +183,25 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 							Venue <span className="text-red-500">*</span>
 						</label>
 						<div className="relative">
-							<MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+							<MapPin
+								className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+								size={18}
+							/>
 							<input
 								type="text"
 								id="venue"
 								placeholder="e.g. Auditorium Hall A"
 								value={eventData.venue || ""}
-								onChange={(e) => update("venue", e.target.value)}
+								onChange={(e) =>
+									update("venue", e.target.value)
+								}
 								className={`${inputStyle} pl-10`}
 							/>
 						</div>
 					</div>
 				)}
 
-				{(eventData.eventMode === "Offline" ||
-					eventData.eventMode === "Hybrid") && (
+				{requiresOfflineVenue && (
 					<div className="animate-in fade-in slide-in-from-top-2 duration-300">
 						<label
 							htmlFor="rooms"
@@ -156,23 +220,28 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 					</div>
 				)}
 
-				{(eventData.eventMode === "Online" ||
-					eventData.eventMode === "Hybrid") && (
+				{requiresOnlineLink && (
 					<div className="animate-in fade-in slide-in-from-top-2 duration-300">
 						<label
 							htmlFor="onlineLink"
 							className="block text-sm font-medium text-slate-700 mb-1.5"
 						>
-							Online Meeting Link <span className="text-red-500">*</span>
+							Online Meeting Link{" "}
+							<span className="text-red-500">*</span>
 						</label>
 						<div className="relative">
-							<Link className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+							<Link
+								className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+								size={18}
+							/>
 							<input
 								type="text"
 								id="onlineLink"
 								placeholder="https://meet.google.com/..."
 								value={eventData.onlineLink || ""}
-								onChange={(e) => update("onlineLink", e.target.value)}
+								onChange={(e) =>
+									update("onlineLink", e.target.value)
+								}
 								className={`${inputStyle} pl-10`}
 							/>
 						</div>
@@ -187,14 +256,21 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 						Recurrence
 					</label>
 					<div className="relative">
-						<RefreshCw className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+						<RefreshCw
+							className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+							size={18}
+						/>
 						<select
 							id="recurrence"
-							value={eventData.recurrence || ""}
-							onChange={(e) => update("recurrence", e.target.value)}
+							value={eventData.eventRecurrence || ""}
+							onChange={(e) =>
+								update("eventRecurrence", e.target.value)
+							}
 							className={`${inputStyle} pl-10`}
 						>
-							<option value="" disabled>Select Recurrence</option>
+							<option value="" disabled>
+								Select Recurrence
+							</option>
 							<option>No Recurrence</option>
 							<option>Daily</option>
 							<option>Weekly</option>
@@ -205,6 +281,6 @@ const ScheduleStep = ({ eventData, setEventData }) => {
 			</div>
 		</div>
 	);
-};
+});
 
 export default ScheduleStep;

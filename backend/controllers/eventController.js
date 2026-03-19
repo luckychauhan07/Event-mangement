@@ -9,7 +9,12 @@ exports.addEvent = async (req, res) => {
 		eventType,
 		startAt,
 		endAt,
+		organizerUnit,
+		primaryCoordinator,
+		coordinatorEmail,
+		coordinatorPhone,
 		eventMode,
+		venue,
 	} = req.body;
 
 	// const userId = req.user.user_id;
@@ -19,9 +24,10 @@ exports.addEvent = async (req, res) => {
 	// 	`
 	// INSERT INTO events
 	// (title, subtitle, description, category, event_type,
-	//  start_at, end_at, event_mode, created_by)
+	//  start_at, end_at, event_mode, created_by, organizer_unit,
+	//  primary_coordinator, coordinator_email, coordinator_phone, venue)
 
-	// VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+	// VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
 
 	// RETURNING *
 	// `,
@@ -35,6 +41,11 @@ exports.addEvent = async (req, res) => {
 	// 		endAt,
 	// 		eventMode,
 	// 		userId,
+	// 		organizerUnit,
+	// 		primaryCoordinator,
+	// 		coordinatorEmail,
+	// 		coordinatorPhone,
+	// 		venue,
 	// 	],
 	// );
 	console.log("Event data received:", req.body);
@@ -47,7 +58,7 @@ exports.addEvent = async (req, res) => {
 exports.getAllTeachers = async (req, res) => {
 	try {
 		const teachers = await pool.query(
-			`SELECT full_name AS name, email, phone
+			`SELECT full_name AS name, email, phone, user_id
 			 FROM users
 			 WHERE role = 'teacher'
 				AND status = 'active'

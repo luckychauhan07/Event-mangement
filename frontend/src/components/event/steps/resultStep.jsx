@@ -7,9 +7,18 @@ import {
 	Target,
 } from "lucide-react";
 import ToggleCard from "../ToggleCard";
+import { forwardRef, useImperativeHandle } from "react";
 
-const ResultStep = ({ eventData, setEventData }) => {
+const ResultStep = forwardRef(({ eventData, setEventData }, ref) => {
 	const config = eventData.resultConfig || {};
+	const isPositiveInteger = (value) => {
+		if (value === "" || value === null || value === undefined) {
+			return false;
+		}
+
+		const parsedValue = Number(value);
+		return Number.isInteger(parsedValue) && parsedValue > 0;
+	};
 
 	const update = (field, value) => {
 		setEventData((prev) => ({
@@ -24,20 +33,49 @@ const ResultStep = ({ eventData, setEventData }) => {
 	const toggle = (field) => {
 		update(field, !config[field]);
 	};
+	useImperativeHandle(ref, () => ({
+		validate() {
+			if (!config.enabled) {
+				return true;
+			}
 
+			if (!config.type) {
+				return "Select a result type";
+			}
+
+			if (config.type !== "participation") {
+				if (!isPositiveInteger(config.positions)) {
+					return "Number of winners must be a whole number greater than 0";
+				}
+			}
+
+			if (config.type === "score") {
+				if (!isPositiveInteger(config.judgesCount)) {
+					return "Number of judges must be a whole number greater than 0";
+				}
+
+				const criteria = (config.criteria || []).filter((criterion) =>
+					String(criterion).trim(),
+				);
+				if (criteria.length === 0) {
+					return "Add at least one evaluation criterion";
+				}
+
+				const uniqueCriteria = new Set(
+					criteria.map((criterion) =>
+						String(criterion).trim().toLowerCase(),
+					),
+				);
+				if (uniqueCriteria.size !== criteria.length) {
+					return "Evaluation criteria should not contain duplicates";
+				}
+			}
+
+			return true;
+		},
+	}));
 	const inputStyle =
 		"w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none bg-white";
-
-	// const Card = ({ active, onClick, children, icon: Icon }) => (
-	// 	<div
-	// 		onClick={onClick}
-	// 		className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200
-	// 		${active ? "border-yellow-500 bg-yellow-50 shadow-sm" : "border-slate-200 hover:border-yellow-300 hover:bg-slate-50"}
-	// 		`}
-	// 	>
-	// 		{children}
-	// 	</div>
-	// );
 
 	return (
 		<div className="space-y-6">
@@ -174,6 +212,8 @@ const ResultStep = ({ eventData, setEventData }) => {
 
 						<input
 							type="number"
+							min="1"
+							step="1"
 							className={inputStyle}
 							placeholder="e.g. 3"
 							value={config.positions || ""}
@@ -196,6 +236,8 @@ const ResultStep = ({ eventData, setEventData }) => {
 
 								<input
 									type="number"
+									min="1"
+									step="1"
 									className={inputStyle}
 									placeholder="e.g. 3"
 									value={config.judgesCount || ""}
@@ -280,6 +322,6 @@ const ResultStep = ({ eventData, setEventData }) => {
 			)}
 		</div>
 	);
-};
+});
 
 export default ResultStep;

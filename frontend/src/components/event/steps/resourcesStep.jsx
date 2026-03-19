@@ -1,7 +1,33 @@
 import { Home, Package, Wrench, Utensils } from "lucide-react";
+import { forwardRef, useImperativeHandle } from "react";
 
-const ResourcesStep = ({ eventData, setEventData }) => {
+const ResourcesStep = forwardRef(({ eventData, setEventData }, ref) => {
 	const update = (f, v) => setEventData({ ...eventData, [f]: v });
+	const isBlank = (value) => !value || !String(value).trim();
+
+	useImperativeHandle(ref, () => ({
+		validate() {
+			if (
+				eventData.accommodation === true &&
+				isBlank(eventData.accommodationDetails)
+			) {
+				return "Please provide details about the accommodation provided";
+			}
+			if (
+				eventData.equipmentRequired === true &&
+				isBlank(eventData.equipmentName)
+			) {
+				return "Please specify the equipment required for the event";
+			}
+			if (
+				eventData.catering === true &&
+				isBlank(eventData.cateringDetails)
+			) {
+				return "Please provide catering details";
+			}
+			return true;
+		},
+	}));
 
 	const inputStyle =
 		"w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none bg-white";
@@ -14,8 +40,12 @@ const ResourcesStep = ({ eventData, setEventData }) => {
 					<Package size={20} />
 				</div>
 				<div>
-					<h3 className="text-lg font-semibold text-slate-900">Resources & Facilities</h3>
-					<p className="text-sm text-slate-500">Configure accommodation, equipment, and catering</p>
+					<h3 className="text-lg font-semibold text-slate-900">
+						Resources & Facilities
+					</h3>
+					<p className="text-sm text-slate-500">
+						Configure accommodation, equipment, and catering
+					</p>
 				</div>
 			</div>
 
@@ -28,21 +58,28 @@ const ResourcesStep = ({ eventData, setEventData }) => {
 						Accommodation Provided
 					</label>
 					<div className="relative">
-						<Home className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+						<Home
+							className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+							size={18}
+						/>
 						<select
 							id="accommodation"
 							value={eventData.accommodation ?? ""}
-							onChange={(e) => update("accommodation", e.target.value)}
+							onChange={(e) =>
+								update("accommodation", e.target.value)
+							}
 							className={`${inputStyle} pl-10`}
 						>
-							<option value="" disabled>Select option</option>
-							<option value="no">No</option>
-							<option value="yes">Yes</option>
+							<option value="" disabled>
+								Select option
+							</option>
+							<option value={false}>No</option>
+							<option value={true}>Yes</option>
 						</select>
 					</div>
 				</div>
 
-				{eventData.accommodation === "yes" && (
+				{eventData.accommodation === true && (
 					<div className="animate-in fade-in slide-in-from-top-2 duration-300">
 						<label
 							htmlFor="accommodationDetails"
@@ -71,7 +108,10 @@ const ResourcesStep = ({ eventData, setEventData }) => {
 						Equipment Required
 					</label>
 					<div className="relative">
-						<Wrench className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+						<Wrench
+							className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+							size={18}
+						/>
 						<select
 							id="equipmentRequired"
 							value={eventData.equipmentRequired ?? ""}
@@ -80,14 +120,16 @@ const ResourcesStep = ({ eventData, setEventData }) => {
 							}
 							className={`${inputStyle} pl-10`}
 						>
-							<option value="" disabled>Select option</option>
-							<option value="yes">Yes</option>
-							<option value="no">No</option>
+							<option value="" disabled>
+								Select option
+							</option>
+							<option value={true}>Yes</option>
+							<option value={false}>No</option>
 						</select>
 					</div>
 				</div>
 
-				{eventData.equipmentRequired === "yes" && (
+				{eventData.equipmentRequired === true && (
 					<div className="animate-in fade-in slide-in-from-top-2 duration-300">
 						<label
 							htmlFor="equipmentName"
@@ -116,27 +158,33 @@ const ResourcesStep = ({ eventData, setEventData }) => {
 						Catering Provided
 					</label>
 					<div className="relative">
-						<Utensils className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+						<Utensils
+							className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+							size={18}
+						/>
 						<select
 							id="catering"
 							value={eventData.catering ?? ""}
 							onChange={(e) => update("catering", e.target.value)}
 							className={`${inputStyle} pl-10`}
 						>
-							<option value="" disabled>Select option</option>
-							<option value="no">No</option>
-							<option value="yes">Yes</option>
+							<option value="" disabled>
+								Select option
+							</option>
+							<option value={false}>No</option>
+							<option value={true}>Yes</option>
 						</select>
 					</div>
 				</div>
 
-				{eventData.catering === "yes" && (
+				{eventData.catering === true && (
 					<div className="animate-in fade-in slide-in-from-top-2 duration-300">
 						<label
 							htmlFor="cateringDetails"
 							className="block text-sm font-medium text-slate-700 mb-1.5"
 						>
-							Catering Details
+							Catering Details{" "}
+							<span className="text-red-500">*</span>
 						</label>
 						<input
 							type="text"
@@ -153,6 +201,6 @@ const ResourcesStep = ({ eventData, setEventData }) => {
 			</div>
 		</div>
 	);
-};
+});
 
 export default ResourcesStep;

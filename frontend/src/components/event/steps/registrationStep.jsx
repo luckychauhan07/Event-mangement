@@ -11,9 +11,12 @@ import {
 	CheckCircle,
 } from "lucide-react";
 import ToggleCard from "../ToggleCard";
+import { forwardRef, useImperativeHandle } from "react";
 
-const RegistrationStep = ({ eventData, setEventData }) => {
-	const update = (f, v) => setEventData({ ...eventData, [f]: v });
+const RegistrationStep = forwardRef(({ eventData, setEventData }, ref) => {
+	const update = (f, v) => {
+		setEventData({ ...eventData, [f]: v });
+	};
 
 	const updateNonNegativeNumber = (field, value, minValue = 0) => {
 		if (value === "") {
@@ -56,8 +59,89 @@ const RegistrationStep = ({ eventData, setEventData }) => {
 		return "";
 	};
 
+	const isPositiveInteger = (value) => {
+		if (value === "" || value === null || value === undefined) {
+			return false;
+		}
+
+		const parsedValue = Number(value);
+		return Number.isInteger(parsedValue) && parsedValue > 0;
+	};
+
+	const isNonNegativeInteger = (value) => {
+		if (value === "" || value === null || value === undefined) {
+			return false;
+		}
+
+		const parsedValue = Number(value);
+		return Number.isInteger(parsedValue) && parsedValue >= 0;
+	};
+
 	const registrationDateError = getRegistrationDateError();
 	const teamSizeError = getTeamSizeError();
+	useImperativeHandle(ref, () => ({
+		validate() {
+			if (!eventData.allowRegistration) {
+				return true;
+			}
+
+			if (!eventData.registrationType) {
+				return "Registration type is required";
+			}
+			if (!eventData.registrationStart) {
+				return "Registration start date & time is required";
+			}
+			if (!eventData.registrationEnd) {
+				return "Registration end date & time is required";
+			}
+			if (!eventData.participationType) {
+				return "Participation type is required";
+			}
+			if (registrationDateError) {
+				return registrationDateError;
+			}
+
+			if (
+				eventData.participantLimit !== "" &&
+				eventData.participantLimit !== null &&
+				eventData.participantLimit !== undefined &&
+				!isPositiveInteger(eventData.participantLimit)
+			) {
+				return "Participant limit must be a whole number greater than 0";
+			}
+
+			if (
+				eventData.ageRestriction !== "" &&
+				eventData.ageRestriction !== null &&
+				eventData.ageRestriction !== undefined &&
+				!isNonNegativeInteger(eventData.ageRestriction)
+			) {
+				return "Age restriction cannot be negative";
+			}
+
+			if (eventData.participationType === "team") {
+				if (!isPositiveInteger(eventData.minTeamSize)) {
+					return "Minimum team size must be at least 1";
+				}
+				if (!isPositiveInteger(eventData.maxTeamSize)) {
+					return "Maximum team size must be at least 1";
+				}
+				if (teamSizeError) {
+					return teamSizeError;
+				}
+
+				if (
+					eventData.participantLimit &&
+					Number(eventData.participantLimit) <
+						Number(eventData.maxTeamSize)
+				) {
+					return "Participant limit cannot be smaller than maximum team size";
+				}
+			}
+
+			return true;
+		},
+	}));
 
 	const inputStyle =
 		"w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none bg-white";
@@ -102,10 +186,7 @@ const RegistrationStep = ({ eventData, setEventData }) => {
 	);
 
 	const toggleRegistration = () => {
-		update(
-			"allowRegistration",
-			eventData.allowRegistration === "yes" ? "no" : "yes",
-		);
+		update("allowRegistration", eventData.allowRegistration ? false : true);
 	};
 
 	return (
@@ -125,37 +206,38 @@ const RegistrationStep = ({ eventData, setEventData }) => {
 			</div>
 
 			<ToggleCard
-				active={eventData.allowRegistration === "yes"}
+				active={eventData.allowRegistration}
 				onClick={toggleRegistration}
 			>
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
 						<div
 							className={`w-10 h-10 rounded-xl flex items-center justify-center
-							${eventData.allowRegistration === "yes" ? "bg-indigo-100 text-indigo-600" : "bg-slate-200 text-slate-400"}`}
+							${eventData.allowRegistration ? "bg-indigo-100 text-indigo-600" : "bg-slate-200 text-slate-400"}`}
 						>
 							<UserCheck size={20} />
 						</div>
 						<div>
 							<h4 className="font-medium text-slate-800">
-								Enable Registration
+								Registration required
 							</h4>
 							<p className="text-xs text-slate-500">
-								Allow participants to register for this event
+								Participants are required to register for this
+								event
 							</p>
 						</div>
 					</div>
 					<div
-						className={`w-10 h-6 rounded-full transition-all duration-200 ${eventData.allowRegistration === "yes" ? "bg-yellow-500" : "bg-slate-300"}`}
+						className={`w-10 h-6 rounded-full transition-all duration-200 ${eventData.allowRegistration ? "bg-yellow-500" : "bg-slate-300"}`}
 					>
 						<div
-							className={`w-4 h-4 rounded-full bg-white shadow-sm mt-1 transition-all duration-200 ${eventData.allowRegistration === "yes" ? "ml-5" : "ml-1"}`}
+							className={`w-4 h-4 rounded-full bg-white shadow-sm mt-1 transition-all duration-200 ${eventData.allowRegistration ? "ml-5" : "ml-1"}`}
 						></div>
 					</div>
 				</div>
 			</ToggleCard>
 
-			{eventData.allowRegistration === "yes" && (
+			{eventData.allowRegistration && (
 				<div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
 					<div>
 						<label className="flex text-sm font-medium text-slate-700 mb-3 items-center gap-2">
@@ -501,6 +583,6 @@ const RegistrationStep = ({ eventData, setEventData }) => {
 			)}
 		</div>
 	);
-};
+});
 
 export default RegistrationStep;
