@@ -4,7 +4,11 @@ import { forwardRef, useImperativeHandle } from "react";
 const ResourcesStep = forwardRef(({ eventData, setEventData }, ref) => {
 	const update = (f, v) => setEventData({ ...eventData, [f]: v });
 	const isBlank = (value) => !value || !String(value).trim();
-
+	const trueOrFalse = (value) => {
+		if (value === "true") return true;
+		if (value === "false") return false;
+		return false;
+	};
 	useImperativeHandle(ref, () => ({
 		validate() {
 			if (
@@ -66,7 +70,10 @@ const ResourcesStep = forwardRef(({ eventData, setEventData }, ref) => {
 							id="accommodation"
 							value={eventData.accommodation ?? ""}
 							onChange={(e) =>
-								update("accommodation", e.target.value)
+								update(
+									"accommodation",
+									trueOrFalse(e.target.value),
+								)
 							}
 							className={`${inputStyle} pl-10`}
 						>
@@ -116,7 +123,10 @@ const ResourcesStep = forwardRef(({ eventData, setEventData }, ref) => {
 							id="equipmentRequired"
 							value={eventData.equipmentRequired ?? ""}
 							onChange={(e) =>
-								update("equipmentRequired", e.target.value)
+								update(
+									"equipmentRequired",
+									trueOrFalse(e.target.value),
+								)
 							}
 							className={`${inputStyle} pl-10`}
 						>
@@ -165,7 +175,9 @@ const ResourcesStep = forwardRef(({ eventData, setEventData }, ref) => {
 						<select
 							id="catering"
 							value={eventData.catering ?? ""}
-							onChange={(e) => update("catering", e.target.value)}
+							onChange={(e) =>
+								update("catering", trueOrFalse(e.target.value))
+							}
 							className={`${inputStyle} pl-10`}
 						>
 							<option value="" disabled>

@@ -27,10 +27,10 @@ const OrganizersStep = forwardRef(({ eventData, setEventData }, ref) => {
 			if (isBlank(eventData.primaryCoordinator)) {
 				return "Primary coordinator is required";
 			}
-			if (isBlank(eventData.coordinatorEmail)) {
+			if (isBlank(eventData.primaryCoordinatorEmail)) {
 				return "Please select the coordinator from the dropdown list";
 			}
-			if (!isValidEmail(eventData.coordinatorEmail)) {
+			if (!isValidEmail(eventData.primaryCoordinatorEmail)) {
 				return "Coordinator email looks invalid";
 			}
 			return true;
@@ -101,9 +101,9 @@ const OrganizersStep = forwardRef(({ eventData, setEventData }, ref) => {
 		setEventData((prev) => ({
 			...prev,
 			primaryCoordinator: teacher.name,
-			coordinatorEmail: teacher.email,
-			coordinatorPhone: teacher.phone,
-			coordinatorId: teacher.user_id,
+			primaryCoordinatorEmail: teacher.email,
+			primaryCoordinatorPhone: teacher.phone,
+			primaryCoordinatorId: teacher.user_id,
 		}));
 
 		setShowDropdown(false);
@@ -192,9 +192,9 @@ const OrganizersStep = forwardRef(({ eventData, setEventData }, ref) => {
 								setEventData((prev) => ({
 									...prev,
 									primaryCoordinator: "",
-									coordinatorEmail: "",
-									coordinatorPhone: "",
-									coordinatorId: "",
+									primaryCoordinatorEmail: "",
+									primaryCoordinatorPhone: "",
+									primaryCoordinatorId: "",
 								}));
 								setShowDropdown(true);
 							}}
@@ -248,7 +248,7 @@ const OrganizersStep = forwardRef(({ eventData, setEventData }, ref) => {
 						<input
 							placeholder="coordinator@college.edu"
 							className={`${inputStyle} pl-10 bg-slate-50`}
-							value={eventData.coordinatorEmail || ""}
+							value={eventData.primaryCoordinatorEmail || ""}
 							readOnly
 						/>
 					</div>
@@ -266,14 +266,14 @@ const OrganizersStep = forwardRef(({ eventData, setEventData }, ref) => {
 						<input
 							placeholder="+91 98765 43210"
 							className={`${inputStyle} pl-10 bg-slate-50`}
-							value={eventData.coordinatorPhone || ""}
+							value={eventData.primaryCoordinatorPhone || ""}
 							readOnly
 						/>
 					</div>
 					<input
 						hidden
 						readOnly
-						value={eventData.coordinatorId || ""}
+						value={eventData.primaryCoordinatorId || ""}
 					/>
 				</div>
 			</div>

@@ -2,11 +2,24 @@
 const express = require("express");
 
 // INTERNAL MODULES
-const { addEvent, getAllTeachers } = require("../controllers/eventController");
+const {
+	addEvent,
+	getAllTeachers,
+	getEventDetails,
+	getAllEvents,
+} = require("../controllers/eventController");
+const authMiddleware = require("../middlewares/authMiddleware");
+const adminMiddleware = require("../middlewares/adminMiddleware");
+const pool = require("../db/config");
 
 const eventRouter = express.Router();
 
-eventRouter.post("/add-event", addEvent);
-eventRouter.get("/teachers", getAllTeachers);
+// All routes here are protected and require admin access
+eventRouter.post("/", authMiddleware, adminMiddleware, addEvent);
+eventRouter.get("/teachers", authMiddleware, adminMiddleware, getAllTeachers);
+
+// no admin middleware here since teachers and coordinators should be able to view event details
+eventRouter.get("/", authMiddleware, getAllEvents);
+eventRouter.get("/:id", authMiddleware, getEventDetails);
 
 module.exports = eventRouter;

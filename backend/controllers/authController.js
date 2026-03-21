@@ -109,7 +109,7 @@ exports.login = async (req, res) => {
 			});
 		}
 		const user = userResult.rows[0];
-
+		console.log("User from DB:", user);
 		if (typeof user.password_hash !== "string" || !user.password_hash) {
 			return res.status(401).json({
 				success: false,

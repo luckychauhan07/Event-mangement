@@ -6,6 +6,7 @@ import {
 	School,
 } from "lucide-react";
 import { forwardRef, useImperativeHandle } from "react";
+import toast from "react-hot-toast";
 
 const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 	const update = (field, value) => {
@@ -25,32 +26,67 @@ const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 			return { ...prev, [field]: updated };
 		});
 	};
+
+	const toggleAll = (field, options) => {
+		setEventData((prev) => {
+			const current = prev[field] || [];
+			const values = options.map((o) => o.value || o);
+
+			const allSelected = values.every((v) => current.includes(v));
+
+			return {
+				...prev,
+				[field]: allSelected ? [] : values,
+			};
+		});
+	};
+
+	const getToggleLabel = (field, options) => {
+		const current = eventData[field] || [];
+		const values = options.map((o) => o.value || o);
+
+		const allSelected = values.every((v) => current.includes(v));
+
+		return allSelected ? "Deselect All" : "Select All";
+	};
+
 	useImperativeHandle(ref, () => ({
 		validate() {
-			const selectedRoles = eventData.audienceRoles || [];
-			const selectedStudentYears = eventData.studentYears || [];
-
-			if (selectedRoles.length === 0) {
-				return "Select at least one target audience role";
-			}
-
-			if (
-				selectedRoles.includes("Students") &&
-				selectedStudentYears.length === 0
-			) {
-				return "Select at least one student year for student audience";
-			}
+			const roles = eventData.audienceRoles || [];
+			const years = eventData.studentYears || [];
+			const departments = eventData.departments || [];
+			const courses = eventData.courses || [];
 
 			if (!eventData.interCollege) {
-				return "Please choose whether inter-college participation is allowed";
+				toast.error("Select inter-institute participation");
+				return false;
+			}
+
+			if (roles.length === 0) {
+				toast.error("Select at least one audience role");
+				return false;
+			}
+
+			if (roles.includes("Students")) {
+				if (courses.length === 0) {
+					toast.error("Select at least one course");
+					return false;
+				}
+
+				if (departments.length === 0) {
+					toast.error("Select at least one department");
+					return false;
+				}
+
+				if (years.length === 0) {
+					toast.error("Select at least one student year");
+					return false;
+				}
 			}
 
 			return true;
 		},
 	}));
-
-	const inputStyle =
-		"w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm transition-all duration-200 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none bg-white";
 
 	const Card = ({ active, onClick, children }) => (
 		<div
@@ -67,9 +103,55 @@ const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 		</div>
 	);
 
+	const audienceOptions = ["Students", "Faculty", "Staff", "External Guests"];
+
+	const courseOptions = [
+		{ label: "B.Tech", value: "btech" },
+		{ label: "M.Tech", value: "mtech" },
+		{ label: "MBA", value: "mba" },
+		{ label: "BCA", value: "bca" },
+	];
+
+	const departmentOptions = [
+		{ label: "CSE", value: "cse" },
+		{ label: "ECE", value: "ece" },
+		{ label: "EEE", value: "eee" },
+		{ label: "Mechanical", value: "me" },
+		{ label: "Civil", value: "ce" },
+	];
+
+	const yearOptions = [
+		"1st Year",
+		"2nd Year",
+		"3rd Year",
+		"4th Year",
+		"5th Year",
+		"Alumni",
+	];
+
+	const hasSelectedInterInstitute = Boolean(eventData.interCollege);
+	const hasSelectedAudienceRoles = (eventData.audienceRoles || []).length > 0;
+
+	const hasSelectedStudentsAudience =
+		eventData.audienceRoles?.includes("Students");
+
+	const hasSelectedCourse = (eventData.courses || []).length > 0;
+
+	const hasSelectedDepartment = (eventData.departments || []).length > 0;
+
+	const showCourseStep =
+		hasSelectedInterInstitute && hasSelectedAudienceRoles;
+
+	const showDepartmentStep = showCourseStep && hasSelectedCourse;
+
+	const showYearStep =
+		showDepartmentStep &&
+		hasSelectedDepartment &&
+		hasSelectedStudentsAudience;
+
 	return (
 		<div className="space-y-6">
-			{/* Header */}
+			{/* HEADER */}
 			<div className="flex items-center gap-3 pb-4 border-b border-slate-100">
 				<div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
 					<Users size={20} />
@@ -84,153 +166,179 @@ const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-				{/* Audience Role */}
-				<div className="space-y-3">
-					<h3 className="font-medium text-slate-700 flex items-center gap-2">
-						<Users size={16} className="text-amber-500" />
-						Audience Role
-					</h3>
-
-					{["Students", "Faculty", "Staff", "External Guests"].map(
-						(role) => (
-							<Card
-								key={role}
-								active={eventData.audienceRoles?.includes(role)}
-								onClick={() => toggle("audienceRoles", role)}
-							>
-								<div className="flex items-center justify-between">
-									<span className="font-medium text-slate-700">
-										{role}
-									</span>
-
-									{eventData.audienceRoles?.includes(
-										role,
-									) && (
-										<span className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs">
-											✓
-										</span>
-									)}
-								</div>
-							</Card>
-						),
-					)}
-				</div>
-
-				{/* Course + Department */}
-				<div className="space-y-5">
-					<div>
-						<h3 className="font-medium text-slate-700 mb-2 flex items-center gap-2">
-							<GraduationCap
-								size={16}
-								className="text-amber-500"
-							/>
-							Course
-						</h3>
-
-						<select
-							className={inputStyle}
-							value={eventData.course || "all"}
-							onChange={(e) => update("course", e.target.value)}
-						>
-							<option value="all">All Courses</option>
-							<option value="btech">B.Tech</option>
-							<option value="mtech">M.Tech</option>
-							<option value="mba">MBA</option>
-							<option value="bca">BCA</option>
-						</select>
-					</div>
-
-					<div>
-						<h3 className="font-medium text-slate-700 mb-2 flex items-center gap-2">
-							<Building2 size={16} className="text-amber-500" />
-							Department
-						</h3>
-
-						<select
-							className={inputStyle}
-							value={eventData.department || "all"}
-							onChange={(e) =>
-								update("department", e.target.value)
-							}
-						>
-							<option value="all">All Departments</option>
-							<option value="cse">CSE</option>
-							<option value="ece">ECE</option>
-							<option value="eee">EEE</option>
-							<option value="me">Mechanical</option>
-							<option value="ce">Civil</option>
-						</select>
-					</div>
-				</div>
-
-				{/* Student Year */}
-				<div className="space-y-3">
-					<h3 className="font-medium text-slate-700 flex items-center gap-2">
-						<Calendar size={16} className="text-amber-500" />
-						Student Year
-					</h3>
-
-					{[
-						"1st Year",
-						"2nd Year",
-						"3rd Year",
-						"4th Year",
-						"5th Year",
-						"Alumni",
-					].map((year) => (
-						<Card
-							key={year}
-							active={eventData.studentYears?.includes(year)}
-							onClick={() => toggle("studentYears", year)}
-						>
-							<div className="flex justify-between">
-								<span className="text-slate-700">{year}</span>
-
-								{eventData.studentYears?.includes(year) && (
-									<span className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs">
-										✓
-									</span>
-								)}
-							</div>
-						</Card>
-					))}
-				</div>
-			</div>
-
-			{/* Inter College */}
-			<div className="border-2 border-slate-200 rounded-xl p-5 bg-slate-50">
-				<div className="flex items-center gap-2 mb-1">
-					<School size={18} className="text-amber-500" />
-					<h3 className="font-medium text-slate-800">
-						Inter-College Participation
-					</h3>
-				</div>
-
-				<p className="text-sm text-slate-500 mb-4">
-					Allow participants from other colleges
-				</p>
+			{/* STEP 1 */}
+			<div className="rounded-xl border-2 border-slate-200 p-5 bg-slate-50">
+				<h3 className="font-medium mb-4 flex items-center gap-2">
+					<School size={16} className="text-amber-500" />
+					Inter-Institute Participation
+				</h3>
 
 				<div className="flex gap-4">
 					<Card
 						active={eventData.interCollege === "no"}
 						onClick={() => update("interCollege", "no")}
 					>
-						<span className="text-slate-700">
-							No (Only this institution)
-						</span>
+						No (Only this institution)
 					</Card>
 
 					<Card
 						active={eventData.interCollege === "yes"}
 						onClick={() => update("interCollege", "yes")}
 					>
-						<span className="text-slate-700">
-							Yes (Open to all)
-						</span>
+						Yes (Open to all)
 					</Card>
 				</div>
 			</div>
+
+			{/* STEP 2 */}
+			{hasSelectedInterInstitute && (
+				<div className="space-y-3">
+					<div className="flex justify-between items-center">
+						<h3 className="font-medium text-slate-700">
+							Audience Roles
+						</h3>
+
+						<button
+							onClick={() =>
+								toggleAll("audienceRoles", audienceOptions)
+							}
+							className="text-sm text-amber-600"
+						>
+							{getToggleLabel("audienceRoles", audienceOptions)}
+						</button>
+					</div>
+
+					<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+						{audienceOptions.map((role) => {
+							const active =
+								eventData.audienceRoles?.includes(role);
+
+							return (
+								<Card
+									key={role}
+									active={active}
+									onClick={() =>
+										toggle("audienceRoles", role)
+									}
+								>
+									<div className="flex justify-between">
+										<span>{role}</span>
+										{active && <span>✓</span>}
+									</div>
+								</Card>
+							);
+						})}
+					</div>
+				</div>
+			)}
+
+			{/* STEP 3 - COURSE */}
+			{showCourseStep && (
+				<div className="space-y-3">
+					<div className="flex justify-between">
+						<h4 className="font-medium">Courses</h4>
+
+						<button
+							onClick={() => toggleAll("courses", courseOptions)}
+							className="text-sm text-amber-600"
+						>
+							{getToggleLabel("courses", courseOptions)}
+						</button>
+					</div>
+
+					<div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+						{courseOptions.map((c) => {
+							const active = eventData.courses?.includes(c.value);
+
+							return (
+								<Card
+									key={c.value}
+									active={active}
+									onClick={() => toggle("courses", c.value)}
+								>
+									{c.label}
+								</Card>
+							);
+						})}
+					</div>
+				</div>
+			)}
+
+			{/* STEP 4 - DEPARTMENT */}
+			{showDepartmentStep && (
+				<div className="space-y-3">
+					<div className="flex justify-between">
+						<h4 className="font-medium">Departments</h4>
+
+						<button
+							onClick={() =>
+								toggleAll("departments", departmentOptions)
+							}
+							className="text-sm text-amber-600"
+						>
+							{getToggleLabel("departments", departmentOptions)}
+						</button>
+					</div>
+
+					<div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+						{departmentOptions.map((d) => {
+							const active = eventData.departments?.includes(
+								d.value,
+							);
+
+							return (
+								<Card
+									key={d.value}
+									active={active}
+									onClick={() =>
+										toggle("departments", d.value)
+									}
+								>
+									{d.label}
+								</Card>
+							);
+						})}
+					</div>
+				</div>
+			)}
+
+			{/* STEP 5 - YEAR */}
+			{showYearStep && (
+				<div className="space-y-3">
+					<div className="flex justify-between">
+						<h4 className="font-medium">Student Year</h4>
+
+						<button
+							onClick={() =>
+								toggleAll("studentYears", yearOptions)
+							}
+							className="text-sm text-amber-600"
+						>
+							{getToggleLabel("studentYears", yearOptions)}
+						</button>
+					</div>
+
+					<div className="grid grid-cols-2 gap-3">
+						{yearOptions.map((year) => {
+							const active =
+								eventData.studentYears?.includes(year);
+
+							return (
+								<Card
+									key={year}
+									active={active}
+									onClick={() => toggle("studentYears", year)}
+								>
+									<div className="flex justify-between">
+										<span>{year}</span>
+										{active && <span>✓</span>}
+									</div>
+								</Card>
+							);
+						})}
+					</div>
+				</div>
+			)}
 		</div>
 	);
 });

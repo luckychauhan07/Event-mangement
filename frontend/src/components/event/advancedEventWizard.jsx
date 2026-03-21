@@ -61,9 +61,6 @@ const validateEventBeforeSubmit = (eventData) => {
 	if (isBlank(eventData.primaryCoordinator)) {
 		return "Primary coordinator is required";
 	}
-	if (isBlank(eventData.coordinatorEmail)) {
-		return "Coordinator email is required";
-	}
 
 	if (!eventData.startAt || !eventData.endAt) {
 		return "Event start and end date/time are required";
@@ -270,22 +267,22 @@ const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
 			data.allowRegistration === false ||
 			data.allowRegistration === "no"
 		) {
-			data.registrationType = null;
-			data.registrationStart = null;
-			data.registrationEnd = null;
-			data.participationType = null;
-			data.participantLimit = null;
-			data.minTeamSize = null;
-			data.maxTeamSize = null;
+			data.registrationType = "";
+			data.registrationStart = "";
+			data.registrationEnd = "";
+			data.participationType = "";
+			data.participantLimit = "";
+			data.minTeamSize = "";
+			data.maxTeamSize = "";
 		}
 		if (!data.accommodation) {
-			data.accommodationDetails = null;
+			data.accommodationDetails = "";
 		}
 		if (!data.equipmentRequired) {
-			data.equipmentName = null;
+			data.equipmentName = "";
 		}
 		if (!data.catering) {
-			data.cateringDetails = null;
+			data.cateringDetails = "";
 		}
 		if (data.resultConfig?.enabled !== true) {
 			data.resultConfig = {
@@ -301,10 +298,15 @@ const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
 
 		try {
 			setIsSubmitting(true);
-			await createEvent(data);
-			toast.success("Event created successfully 🎉", {
+			const response = await createEvent(data);
+			toast.success(`${response.message} 🎉`, {
 				id: "advanced-event-submit",
 			});
+			if (response.eventId && response.status === "success") {
+				setTimeout(() => {
+					window.location.href = `/event/${response.eventId}`;
+				}, 1500);
+			}
 		} catch (err) {
 			toast.error(
 				err.response?.data?.message || "Failed to create event",
