@@ -5,6 +5,8 @@ import AdminLayout from "../layouts/adminLayout";
 import AdminTeacherApprovals from "../pages/admin/adminTeacherApprovals";
 import AddEvent from "../pages/admin/addEvent";
 import EventList from "../pages/admin/eventsList";
+import EventDetails from "../pages/admin/eventDetails";
+import Users from "@/pages/admin/users";
 
 const AdminRoutes = () => {
 	return (
@@ -13,9 +15,10 @@ const AdminRoutes = () => {
 				<Route element={<AdminLayout />}>
 					<Route path="" element={<AdminDashboard />} />
 					<Route path="events" element={<EventList />} />
-					{/* <Route path="event/:id" element={<EventDetails />} />
-					<Route path="event/:id/edit" element={<EditEvent />} /> */}
+					<Route path="events/:id" element={<EventDetails />} />
+					{/* <Route path="event/:id/edit" element={<EditEvent />} /> */}
 					<Route path="add-event" element={<AddEvent />} />
+					<Route path="users" element={<Users />} />
 					<Route
 						path="teacher-approvals"
 						element={<AdminTeacherApprovals />}

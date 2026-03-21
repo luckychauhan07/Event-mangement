@@ -11,7 +11,7 @@ router.get(
 	adminMiddleware,
 	adminController.getPendingTeachers,
 );
-
+router.get("/users", authMiddleware, adminMiddleware, adminController.getUsers);
 router.patch(
 	"/users/:id/approve",
 	authMiddleware,

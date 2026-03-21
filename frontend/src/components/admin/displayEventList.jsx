@@ -8,6 +8,7 @@ import {
 	ArrowUpRight,
 	SquarePen,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const DisplayEventList = ({ events }) => {
 	const formatDateTime = (value) => {
@@ -25,6 +26,7 @@ const DisplayEventList = ({ events }) => {
 		});
 	};
 
+	const navigate = useNavigate();
 	const getEventStatus = (event) => {
 		const now = new Date();
 		const startDate = new Date(event.start_at || event.startAt || "");
@@ -147,11 +149,29 @@ const DisplayEventList = ({ events }) => {
 								</div>
 
 								<div className="flex items-center gap-2">
-									<button className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition-all duration-300 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800">
+									<button
+										className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition-all duration-300 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800"
+										onClick={() => {
+											console.log(
+												"Edit event with ID:",
+												event.id,
+											);
+											navigate(
+												`/admin/events/${event.id}/edit`,
+											);
+										}}
+									>
 										<SquarePen size={13} />
 										Edit
 									</button>
-									<button className="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-slate-800">
+									<button
+										className="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-slate-800"
+										onClick={() =>
+											navigate(
+												`/admin/events/${event.id}`,
+											)
+										}
+									>
 										View
 										<ArrowUpRight size={13} />
 									</button>

@@ -304,7 +304,7 @@ const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
 			});
 			if (response.eventId && response.status === "success") {
 				setTimeout(() => {
-					window.location.href = `/event/${response.eventId}`;
+					window.location.href = `/events/${response.eventId}`;
 				}, 1500);
 			}
 		} catch (err) {

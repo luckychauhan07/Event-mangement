@@ -1,4 +1,5 @@
 const pool = require("../db/config");
+const { getEventDetails } = require("../db/eventQuery");
 const { createEventSchema } = require("../validators/eventValidator");
 
 const mapDatabaseError = (error) => {
@@ -50,6 +51,19 @@ const mapDatabaseError = (error) => {
 		default:
 			return null;
 	}
+};
+
+const toNullableInteger = (value) => {
+	if (value === "" || value === null || value === undefined) {
+		return null;
+	}
+
+	const parsedValue = Number(value);
+	if (!Number.isFinite(parsedValue) || !Number.isInteger(parsedValue)) {
+		return null;
+	}
+
+	return parsedValue;
 };
 
 exports.addEvent = async (req, res) => {
@@ -138,25 +152,57 @@ exports.addEvent = async (req, res) => {
 
 		// 🧱 4. REGISTRATION FORM FIELDS
 		if (registrationSchema?.length) {
-			for (let i = 0; i < registrationSchema.length; i++) {
-				const field = registrationSchema[i];
+			const allowedTypes = [
+				"text",
+				"textarea",
+				"email",
+				"number",
+				"tel",
+				"url",
+				"date",
+				"select",
+				"checkbox",
+				"file",
+			];
 
-				await client.query(
-					`INSERT INTO event_form_fields (
+			const values = [];
+			const placeholders = [];
+
+			registrationSchema.forEach((field, index) => {
+				// 🔒 Validate type
+				if (!allowedTypes.includes(field.type)) {
+					throw new Error(`Invalid field type: ${field.type}`);
+				}
+				const serializedOptions = JSON.stringify(
+					Array.isArray(field.options) ? field.options : [],
+				);
+				console.log("OPTIONS:", field.options);
+				values.push(
+					eventId,
+					field.label,
+					field.type,
+					field.required ?? false,
+					serializedOptions,
+					index + 1, // better ordering
+				);
+
+				const baseIndex = index * 6;
+
+				placeholders.push(
+					`($${baseIndex + 1}, $${baseIndex + 2}, $${baseIndex + 3}, $${baseIndex + 4}, $${baseIndex + 5}::jsonb, $${baseIndex + 6})`,
+				);
+			});
+
+			await client.query(
+				`
+				INSERT INTO event_form_fields (
 					event_id, label, field_type, is_required,
 					options, display_order
 				)
-				VALUES ($1,$2,$3,$4,$5,$6)`,
-					[
-						eventId,
-						field.label,
-						field.type,
-						field.required,
-						field.options || [],
-						i,
-					],
-				);
-			}
+				VALUES ${placeholders.join(", ")}
+				`,
+				values,
+			);
 		}
 
 		// 🧱 5. AUDIENCE
@@ -178,6 +224,13 @@ exports.addEvent = async (req, res) => {
 
 		// 🧱 6. RESULT CONFIG
 		if (resultConfig?.enabled) {
+			const normalizedPositions = toNullableInteger(
+				resultConfig.positions,
+			);
+			const normalizedJudgesCount = toNullableInteger(
+				resultConfig.judgesCount,
+			);
+
 			await client.query(
 				`INSERT INTO event_result_config (
 				event_id, mode, positions, judges_count, criteria
@@ -186,9 +239,9 @@ exports.addEvent = async (req, res) => {
 				[
 					eventId,
 					resultConfig.type,
-					Number(resultConfig.positions),
-					Number(resultConfig.judgesCount),
-					JSON.stringify(resultConfig.criteria || []),
+					normalizedPositions,
+					normalizedJudgesCount,
+					resultConfig.criteria || [],
 				],
 			);
 		}
@@ -250,28 +303,158 @@ exports.getAllTeachers = async (req, res) => {
 };
 
 exports.getEventDetails = async (req, res) => {
-	const eventId = req.params.id;
+	const { id } = req.params;
+
+	if (!id || isNaN(id)) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid event ID",
+		});
+	}
+
 	try {
-		const response = await pool.query(
-			`SELECT * FROM events WHERE id = $1`,
-			[eventId],
-		);
-		if (response.rows.length === 0) {
-			return res
-				.status(404)
-				.json({ message: "Event not found", status: "failure" });
+		const query = `
+    SELECT 
+      e.*,
+
+      -- Coordinators
+      COALESCE((
+        SELECT json_agg(
+          jsonb_build_object(
+            'userId', u.user_id,
+            'name', u.full_name,
+            'email', u.email,
+            'phone', u.phone,
+            'role', ec.role
+          )
+        )
+        FROM event_coordinators ec
+        JOIN users u ON u.user_id = ec.user_id
+        WHERE ec.event_id = e.id
+      ), '[]') AS coordinators,
+
+      -- Registration Rules
+      COALESCE((
+        SELECT json_agg(
+          jsonb_build_object(
+            'allow', r.allow_registration,
+            'type', r.registration_type,
+            'participation', r.participation_type,
+            'start', r.registration_start,
+            'end', r.registration_end,
+            'limit', r.participant_limit,
+            'teamMin', r.min_team_size,
+            'teamMax', r.max_team_size
+          )
+        )
+        FROM event_registration_settings r
+        WHERE r.event_id = e.id
+      ), '[]') AS registration_rules,
+
+      -- Form Fields
+      COALESCE((
+        SELECT json_agg(
+          jsonb_build_object(
+            'id', f.field_id,
+            'label', f.label,
+            'type', f.field_type,
+            'required', f.is_required,
+            'options', f.options,
+            'order', f.display_order
+          )
+          ORDER BY f.display_order
+        )
+        FROM event_form_fields f
+        WHERE f.event_id = e.id
+      ), '[]') AS form_fields
+
+    FROM events e
+    WHERE e.id = $1;
+    `;
+
+		const result = await pool.query(query, [id]);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Event not found",
+			});
 		}
-		const eventDetails = response.rows[0];
-		res.json({
-			message: "Event details fetched successfully",
-			event: eventDetails,
-			status: "success",
+
+		const event = result.rows[0];
+		console.log("Raw event data from DB:", event);
+		// 🔥 Normalize safely
+		const formattedEvent = {
+			id: event.id,
+
+			basic: {
+				title: event.title,
+				subtitle: event.subtitle || null,
+				description: event.description,
+				category: event.category,
+				eventType: event.event_type,
+				entryFee: event.entry_fee || 0,
+				tags: event.tags || [],
+			},
+
+			schedule: {
+				startAt: event.start_at,
+				endAt: event.end_at,
+				mode: event.event_mode,
+				venue: event.venue || null,
+				onlineLink: event.online_link || null,
+			},
+
+			registration: {
+				config: {
+					required: event.registration_rules[0]?.allow ?? false,
+					type: event.registration_rules[0]?.type || null,
+					start: event.registration_rules[0]?.start || null,
+					end: event.registration_rules[0]?.end || null,
+					limit: event.registration_rules[0]?.limit || null,
+					participationType:
+						event.registration_rules[0]?.participation || null,
+				},
+				rules: event.registration_rules || [],
+			},
+
+			team: {
+				enabled:
+					event.registration_rules[0]?.participation === "team" &&
+					event.registration_rules[0]?.allow
+						? true
+						: false,
+				min: event.registration_rules[0]?.teamMin || null,
+				max: event.registration_rules[0]?.teamMax || null,
+				joinMode: event.registration_rules[0]?.teamJoinMode || null,
+			},
+
+			coordinators: event.coordinators || [],
+
+			formFields: event.form_fields || [],
+
+			stats: {
+				totalRegistrations: Number(event.total_registrations) || 0,
+				totalTeams: Number(event.total_teams) || 0,
+			},
+
+			meta: {
+				status: event.status,
+				visibility: event.visibility,
+				createdAt: event.created_at,
+			},
+		};
+		console.log("Formatted event data:", formattedEvent);
+		return res.status(200).json({
+			success: true,
+			event: formattedEvent,
 		});
 	} catch (error) {
 		console.error("Error fetching event details:", error);
-		res.status(500).json({
+
+		return res.status(500).json({
+			success: false,
 			message: "Internal server error",
-			status: "error",
 		});
 	}
 };

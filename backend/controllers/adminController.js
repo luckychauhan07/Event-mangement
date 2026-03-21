@@ -44,3 +44,24 @@ exports.approveTeacher = async (req, res) => {
 		});
 	}
 };
+
+exports.getUsers = async (req, res) => {
+	console.log("Fetching all users...", req.user, req.url); // Debug log to check if user info is available
+	try {
+		const result = await pool.query(
+			`SELECT user_id, full_name, email, phone, role, status
+       FROM users
+       ORDER BY created_at DESC`,
+		);
+
+		res.json({
+			success: true,
+			data: result.rows,
+		});
+	} catch (err) {
+		res.status(500).json({
+			success: false,
+			message: "Failed to fetch users",
+		});
+	}
+};

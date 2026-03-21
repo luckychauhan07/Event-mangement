@@ -5,6 +5,6 @@ module.exports = function (req, res, next) {
 			message: "Admin access required",
 		});
 	}
-
+	console.log("Admin access granted for user:", req.user.email, req.url);
 	next();
 };
