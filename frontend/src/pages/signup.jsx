@@ -22,8 +22,7 @@ const Register = () => {
 		setLoading(true);
 
 		try {
-			const res = await registerUser(form);
-
+			await registerUser(form);
 			navigate("/");
 		} catch (err) {
 			setError(
@@ -36,12 +35,12 @@ const Register = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-slate-100 flex flex-col">
+		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col">
 			{/* Topbar */}
-			<header className="bg-white border-b shadow-sm">
+			<header className="bg-white/80 backdrop-blur border-b shadow-sm">
 				<div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
 					<div className="flex items-center gap-3">
-						<div className="w-10 h-10 bg-blue-600 text-white font-bold flex items-center justify-center rounded-lg">
+						<div className="w-10 h-10 bg-blue-600 text-white font-bold flex items-center justify-center rounded-xl shadow">
 							EE
 						</div>
 						<div>
@@ -56,56 +55,54 @@ const Register = () => {
 
 					<Link
 						to="/"
-						className="px-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
+						className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow"
 					>
 						Log in
 					</Link>
 				</div>
 			</header>
-
-			{/* Main content */}
-			<main className="flex-1 flex items-center justify-center px-6 py-10">
-				<div className="max-w-5xl w-full bg-white rounded-3xl shadow-xl p-10 grid md:grid-cols-2 gap-10">
-					{/* Left Intro */}
-					<div>
-						<h2 className="text-3xl font-bold text-slate-800 mb-4">
-							Create your account
+			{/* Main */}
+			<main className="flex-1 flex items-center justify-center px-6 py-12">
+				<div className="max-w-6xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+					{/* LEFT SIDE */}
+					<div className="p-10 bg-gradient-to-br from-blue-50 to-white">
+						<h2 className="text-4xl font-bold text-slate-900 mb-4">
+							Create your account 🚀
 						</h2>
 
 						<p className="text-slate-600 leading-relaxed">
-							Join Event Ease to explore and participate in campus
-							events. Students can register instantly while
-							teacher accounts require admin approval before
-							activation.
+							Join Event Ease to explore, manage, and participate
+							in campus events. Students can register instantly
+							while teacher accounts require admin approval.
 						</p>
 
-						<div className="mt-8 bg-blue-50 border border-blue-100 rounded-xl p-5">
-							<h4 className="font-semibold text-slate-800 mb-3">
-								Account Benefits
+						<div className="mt-10 bg-white border rounded-xl p-6 shadow-sm">
+							<h4 className="font-semibold text-slate-800 mb-4">
+								Why join?
 							</h4>
 
-							<ul className="text-sm text-slate-600 space-y-2">
-								<li>
-									✔ Discover and register for campus events
-								</li>
-								<li>✔ Manage event participation</li>
-								<li>✔ Get notifications and updates</li>
-								<li>✔ Track your event activity</li>
+							<ul className="text-sm text-slate-600 space-y-3">
+								<li>🎯 Discover exciting campus events</li>
+								<li>📅 Manage registrations easily</li>
+								<li>🔔 Get real-time updates</li>
+								<li>📊 Track your participation</li>
 							</ul>
 						</div>
 					</div>
-
-					{/* Right Form */}
-					<div className="border rounded-xl p-6">
-						<form onSubmit={handleSubmit} className="space-y-4">
-							{/* Full Name */}
+					{/* RIGHT FORM */}
+					<div className="p-10">
+						<h3 className="text-2xl font-bold text-slate-800 mb-6">
+							Register
+						</h3>
+						<form onSubmit={handleSubmit} className="space-y-5">
+							{/* Input Group */}
 							<div>
 								<label className="text-sm font-medium text-slate-700">
 									Full Name
 								</label>
 								<input
 									type="text"
-									className="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+									className="w-full mt-1 border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
 									placeholder="John Doe"
 									onChange={(e) =>
 										setForm({
@@ -115,15 +112,13 @@ const Register = () => {
 									}
 								/>
 							</div>
-
-							{/* Email */}
 							<div>
 								<label className="text-sm font-medium text-slate-700">
 									Email
 								</label>
 								<input
 									type="email"
-									className="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+									className="w-full mt-1 border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
 									placeholder="you@college.edu"
 									onChange={(e) =>
 										setForm({
@@ -133,19 +128,14 @@ const Register = () => {
 									}
 								/>
 							</div>
-							{/* Phone (Optional) */}
 							<div>
 								<label className="text-sm font-medium text-slate-700">
-									Phone Number{" "}
-									<span className="text-slate-400">
-										(optional)
-									</span>
+									Phone (optional)
 								</label>
-
 								<input
 									type="tel"
-									className="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-									placeholder="+91 98XXXXXXXX"
+									className="w-full mt-1 border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+									placeholder="+91 XXXXXXXX"
 									onChange={(e) =>
 										setForm({
 											...form,
@@ -154,15 +144,14 @@ const Register = () => {
 									}
 								/>
 							</div>
-							{/* Password */}
 							<div>
 								<label className="text-sm font-medium text-slate-700">
 									Password
 								</label>
 								<input
 									type="password"
-									className="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-									placeholder="Create a password"
+									className="w-full mt-1 border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+									placeholder="Create a strong password"
 									onChange={(e) =>
 										setForm({
 											...form,
@@ -171,15 +160,12 @@ const Register = () => {
 									}
 								/>
 							</div>
-
-							{/* Role */}
 							<div>
 								<label className="text-sm font-medium text-slate-700">
 									Account Type
 								</label>
-
 								<select
-									className="w-full mt-1 border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+									className="w-full mt-1 border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
 									onChange={(e) =>
 										setForm({
 											...form,
@@ -191,34 +177,30 @@ const Register = () => {
 									<option value="teacher">Teacher</option>
 								</select>
 							</div>
-
 							{form.role === "teacher" && (
-								<p className="text-xs text-amber-600">
-									Teacher accounts require admin approval
-									before login.
-								</p>
+								<>
+									<div></div>
+									<div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-2">
+										Teacher accounts require admin approval
+										before login.
+									</div>
+								</>
 							)}
-
-							{/* Error */}
 							{error && (
-								<div className="text-red-500 text-sm">
+								<div className="text-sm text-red-600 bg-red-50 border border-red-200 p-2 rounded-lg">
 									{error}
 								</div>
 							)}
-
-							{/* Button */}
 							<button
 								type="submit"
 								disabled={loading}
-								className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
+								className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition shadow-md disabled:opacity-60"
 							>
 								{loading
 									? "Creating account..."
 									: "Create Account"}
 							</button>
 						</form>
-
-						{/* Footer */}
 						<div className="text-center text-sm text-slate-500 mt-6">
 							Already have an account?
 							<Link

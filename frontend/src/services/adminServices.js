@@ -6,8 +6,8 @@ export const getPendingTeachers = async () => {
 	return res.data;
 };
 
-export const approveTeacher = async (id) => {
-	const res = await api.patch(`/admin/users/${id}/approve`);
+export const approveTeacher = async (id, action) => {
+	const res = await api.patch(`/admin/users/${id}/${action}`);
 
 	return res.data;
 };

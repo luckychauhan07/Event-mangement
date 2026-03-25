@@ -24,20 +24,42 @@ exports.getPendingTeachers = async (req, res) => {
 
 exports.approveTeacher = async (req, res) => {
 	try {
-		const { id } = req.params;
-
-		await pool.query(
-			`UPDATE users
-       SET status='active'
-       WHERE user_id=$1`,
-			[id],
-		);
-
+		const { id, action } = req.params;
+		const { rejectReason } = req.body;
+		// incoming parameters
+		if (action === "reject") {
+			const result = await pool.query(
+				`UPDATE users
+				SET status='rejected'
+				WHERE user_id=$1`,
+				[id],
+			);
+			// Optionally, you can log the rejection reason in a separate table for audit purposes
+			await pool.query(
+				`INSERT INTO teacher_rejections (user_id, reason)
+					VALUES ($1, $2)`,
+				[id, rejectReason],
+			);
+		} else if (action === "approve") {
+			await pool.query(
+				`UPDATE users
+				SET status='active'
+				WHERE user_id=$1`,
+				[id],
+			);
+		} else {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid action",
+			});
+		}
 		res.json({
 			success: true,
-			message: "Teacher approved successfully",
+			message: "Teacher updated successfully",
 		});
 	} catch (err) {
+		// Log the error for debugging
+		console.error("Error in approveTeacher:", err);
 		res.status(500).json({
 			success: false,
 			message: "Approval failed",

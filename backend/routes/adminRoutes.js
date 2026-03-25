@@ -13,7 +13,7 @@ router.get(
 );
 router.get("/users", authMiddleware, adminMiddleware, adminController.getUsers);
 router.patch(
-	"/users/:id/approve",
+	"/users/:id/:action",
 	authMiddleware,
 	adminMiddleware,
 	adminController.approveTeacher,

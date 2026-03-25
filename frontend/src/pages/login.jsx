@@ -8,11 +8,13 @@ const Login = () => {
 		password: "",
 		terms: false,
 	});
+
+	const [showPassword, setShowPassword] = useState(false);
 	const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const handleChange = (e) => {
 		const { name, value, type, checked } = e.target;
-		console.log(name, value, type, checked);
 		setFormData((prev) => ({
 			...prev,
 			[name]: type === "checkbox" ? checked : value,
@@ -21,166 +23,199 @@ const Login = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// This is where you will call your backend API later!
+		setError("");
+		setLoading(true);
+
 		try {
 			const response = await loginUser({
 				email: formData.email,
 				password: formData.password,
 			});
 
-			// store token
 			localStorage.setItem("token", response.token);
-
-			// store user info
 			localStorage.setItem("user", JSON.stringify(response.user));
-			console.log(response, "lucky");
 
-			// redirect based on role
 			if (response.user.role === "admin") {
 				window.location.href = "/admin";
 			}
-
 			if (response.user.role === "teacher") {
 				window.location.href = "/teacher/dashboard";
 			}
-
 			if (response.user.role === "student") {
 				window.location.href = "/student/dashboard";
 			}
 		} catch (err) {
-			const message =
+			setError(
 				err.response?.data?.message ||
-				"Login failed. Please try again.";
-
-			setError(message);
+					"Login failed. Please try again.",
+			);
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	return (
-		<div className="min-h-screen flex items-center justify-center p-5 bg-[linear-gradient(135deg,#f8fafc_0%,#f1f5f9_100%)] relative overflow-hidden font-['Inter']">
-			{/* Background Pattern */}
-			<div
-				className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
-				style={{
-					backgroundImage: `url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23000000"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>')`,
-				}}
-			/>
-
-			<div className="w-full max-w-[460px] relative z-10">
-				{/* Header */}
-				<header className="text-center mb-12 animate-[fadeInDown_0.6s_ease-out]">
-					<div className="flex items-center justify-center gap-4 mb-6">
-						<div className="w-16 h-16 flex items-center justify-center text-white text-2xl font-bold rounded-2xl bg-[linear-gradient(135deg,#667eea_0%,#764ba2_100%)] shadow-[0_12px_32px_rgba(102,126,234,0.4)] animate-[logoFloat_3s_ease-in-out_infinite]">
+		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col">
+			{/* Header (same as signup) */}
+			<header className="bg-white/80 backdrop-blur border-b shadow-sm">
+				<div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
+					<div className="flex items-center gap-3">
+						<div className="w-10 h-10 bg-blue-600 text-white font-bold flex items-center justify-center rounded-xl shadow">
 							EE
 						</div>
-						<h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
-							Event Ease
-						</h2>
+						<div>
+							<div className="font-semibold text-slate-800">
+								Event Ease
+							</div>
+							<div className="text-xs text-slate-500">
+								Campus Event Management
+							</div>
+						</div>
 					</div>
-				</header>
 
-				{/* Login Card */}
-				<main className="bg-white rounded-[28px] p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.04)] border border-slate-100 animate-[fadeInUp_0.6s_ease-out_0.2s_both]">
-					<h3 className="mb-3 text-slate-900 text-3xl font-bold tracking-tight">
-						Welcome back!
-					</h3>
-					<p className="text-slate-500 mb-9 text-[15px] leading-relaxed">
-						Sign in to continue to your account
-					</p>
-					{error && (
-						<div className="text-red-500 text-sm mt-2">{error}</div>
-					)}
-					<form onSubmit={handleSubmit} className="space-y-6">
-						{/* Email Field */}
-						<div>
-							<label
-								htmlFor="email"
-								className="block mb-2.5 text-slate-900 font-semibold text-sm tracking-wide"
-							>
-								Email address
-							</label>
-							<input
-								type="email"
-								id="email"
-								name="email"
-								value={formData.email}
-								onChange={handleChange}
-								placeholder="you@college.edu"
-								required
-								className="w-full px-[18px] py-3.5 border-2 border-slate-200 rounded-xl text-[15px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:-translate-y-0.5 placeholder:text-slate-400"
-							/>
+					<Link
+						to="/signup"
+						className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow"
+					>
+						Sign up
+					</Link>
+				</div>
+			</header>
+
+			{/* Main */}
+			<main className="flex-1 flex items-center justify-center px-6 py-12">
+				<div className="max-w-5xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+					{/* LEFT SIDE (same style as signup) */}
+					<div className="p-10 bg-gradient-to-br from-blue-50 to-white">
+						<h2 className="text-4xl font-bold text-slate-900 mb-4">
+							Welcome back 👋
+						</h2>
+
+						<p className="text-slate-600 leading-relaxed">
+							Log in to access your dashboard, manage events, and
+							stay updated with campus activities.
+						</p>
+
+						<div className="mt-10 bg-white border rounded-xl p-6 shadow-sm">
+							<h4 className="font-semibold text-slate-800 mb-4">
+								Why login?
+							</h4>
+
+							<ul className="text-sm text-slate-600 space-y-3">
+								<li>📅 Manage your events</li>
+								<li>🔔 Get notifications</li>
+								<li>📊 Track your activity</li>
+								<li>🚀 Access your dashboard</li>
+							</ul>
 						</div>
+					</div>
+					{/* RIGHT FORM */}
+					<div className="p-10">
+						<h3 className="text-2xl font-bold text-slate-800 mb-6">
+							Sign In
+						</h3>
 
-						{/* Password Field */}
-						<div>
-							<label
-								htmlFor="password"
-								className="block mb-2.5 text-slate-900 font-semibold text-sm tracking-wide"
+						{error && (
+							<div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg">
+								{error}
+							</div>
+						)}
+
+						<form onSubmit={handleSubmit} className="space-y-5">
+							{/* Email */}
+							<div>
+								<label className="text-sm font-medium text-slate-700">
+									Email
+								</label>
+								<input
+									type="email"
+									name="email"
+									value={formData.email}
+									onChange={handleChange}
+									placeholder="you@college.edu"
+									required
+									className="w-full mt-1 border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+								/>
+							</div>
+
+							{/* Password with toggle */}
+							<div>
+								<label className="text-sm font-medium text-slate-700">
+									Password
+								</label>
+
+								<div className="relative">
+									<input
+										type={
+											showPassword ? "text" : "password"
+										}
+										name="password"
+										value={formData.password}
+										onChange={handleChange}
+										placeholder="Enter your password"
+										required
+										className="w-full mt-1 border border-slate-300 rounded-xl px-4 py-2 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+									/>
+
+									<button
+										type="button"
+										onClick={() =>
+											setShowPassword(!showPassword)
+										}
+										className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-blue-600 font-semibold"
+									>
+										{showPassword ? "Hide" : "Show"}
+									</button>
+								</div>
+							</div>
+
+							{/* Terms */}
+							<div className="flex items-center gap-2 text-sm">
+								<input
+									type="checkbox"
+									name="terms"
+									checked={formData.terms}
+									onChange={handleChange}
+									required
+									className="accent-blue-600"
+								/>
+								<span className="text-slate-600">
+									I agree to terms & conditions
+								</span>
+							</div>
+
+							{/* Button */}
+							<button
+								type="submit"
+								disabled={loading}
+								className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition shadow-md disabled:opacity-60"
 							>
-								Password
-							</label>
-							<input
-								type="password"
-								id="password"
-								name="password"
-								value={formData.password}
-								onChange={handleChange}
-								placeholder="Enter your password"
-								required
-								className="w-full px-[18px] py-3.5 border-2 border-slate-200 rounded-xl text-[15px] transition-all duration-200 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:-translate-y-0.5 placeholder:text-slate-400"
-							/>
-						</div>
+								{loading ? "Signing in..." : "Sign In"}
+							</button>
 
-						{/* Terms Checkbox */}
-						<div className="flex items-center gap-3 p-3.5 bg-gradient-to-br from-blue-50 to-sky-100 rounded-xl border border-blue-100">
-							<input
-								type="checkbox"
-								id="terms"
-								name="terms"
-								checked={formData.terms}
-								onChange={handleChange}
-								required
-								className="w-5 h-5 cursor-pointer accent-blue-600"
-							/>
-							<label
-								htmlFor="terms"
-								className="text-sm font-medium text-slate-900 cursor-pointer"
-							>
-								I agree to the terms and conditions
-							</label>
-						</div>
-
-						{/* Submit Button */}
-						<button
-							type="submit"
-							className="group relative w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl text-base font-semibold shadow-[0_8px_24px_rgba(59,130,246,0.3)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(59,130,246,0.4)] active:translate-y-0 overflow-hidden"
-						>
-							<span className="relative z-10">Sign In</span>
-							<div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-						</button>
-
-						{/* Actions */}
-						<div className="text-center pt-4">
-							<div className="text-sm text-slate-500">
-								Don't have an account?
+							{/* Links */}
+							<div className="text-center text-sm text-slate-500 mt-4">
+								Don’t have an account?
 								<Link
 									to="/signup"
-									className="inline-block ml-1 font-semibold text-blue-600 hover:text-blue-700 hover:translate-x-0.5 transition-all"
+									className="ml-1 text-blue-600 font-semibold hover:underline"
 								>
 									Create one
 								</Link>
 							</div>
 
-							<Link
-								to="/forgot-password"
-								className="inline-block mt-3 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:translate-x-0.5 transition-all"
-							>
-								Forgot your password?
-							</Link>
-						</div>
-					</form>
-				</main>
-			</div>
+							<div className="text-center">
+								<Link
+									to="/forgot-password"
+									className="text-sm text-blue-600 font-semibold hover:underline"
+								>
+									Forgot password?
+								</Link>
+							</div>
+						</form>
+					</div>
+				</div>
+			</main>
 		</div>
 	);
 };

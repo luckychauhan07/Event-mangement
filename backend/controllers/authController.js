@@ -102,10 +102,20 @@ exports.login = async (req, res) => {
 				message: "no user found with this email",
 			});
 		}
-		if (userResult.rows[0].status !== "active") {
+		if (userResult.rows[0].status === "pending") {
 			return res.status(401).json({
 				success: false,
-				message: "User is not active, waiting admin approval",
+				message: "User is pending approval from admin",
+			});
+		}
+		if (
+			userResult.rows[0].status !== "active" &&
+			userResult.rows[0].role === "teacher"
+		) {
+			return res.status(401).json({
+				success: false,
+				message:
+					"your account has been rejected by admin. Please contact support for more info.",
 			});
 		}
 		const user = userResult.rows[0];
