@@ -7,6 +7,8 @@ import AddEvent from "../pages/admin/addEvent";
 import EventList from "../pages/admin/eventsList";
 import EventDetails from "../pages/admin/eventDetails";
 import Users from "@/pages/admin/users";
+import EditUser from "@/pages/admin/editUser";
+import UserDetails from "@/pages/admin/userDetails";
 
 const AdminRoutes = () => {
 	return (
@@ -19,6 +21,8 @@ const AdminRoutes = () => {
 					{/* <Route path="event/:id/edit" element={<EditEvent />} /> */}
 					<Route path="add-event" element={<AddEvent />} />
 					<Route path="users" element={<Users />} />
+					<Route path="users/:id" element={<UserDetails />} />
+					<Route path="users/:id/edit" element={<EditUser />} />
 					<Route
 						path="teacher-approvals"
 						element={<AdminTeacherApprovals />}
