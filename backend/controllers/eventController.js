@@ -474,3 +474,68 @@ exports.getAllEvents = async (req, res) => {
 		res.status(500).json({ message: "Error fetching events" });
 	}
 };
+
+exports.deleteEvent = async (req, res) => {
+	const { id } = req.params;
+	console.log("Request to delete event with ID:", id);
+	if (!id || isNaN(id)) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid event ID",
+		});
+	}
+	try {
+		// const result = await pool.query("DELETE FROM events WHERE id = $1", [
+		// 	id,
+		// ]);
+		// if (result.rowCount === 0) {
+		// 	return res.status(404).json({
+		// 		success: false,
+		// 		message: "Event not found",
+		// 	});
+		// }
+		return res.status(200).json({
+			success: true,
+			message: "Event deleted successfully",
+		});
+	} catch (error) {
+		console.error("Error deleting event:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};
+
+exports.cancelEvent = async (req, res) => {
+	const { id } = req.params;
+	console.log("Request to cancel event with ID:", id);
+	if (!id || isNaN(id)) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid event ID",
+		});
+	}
+	try {
+		const result = await pool.query(
+			`UPDATE events SET status = 'cancelled' WHERE id = $1 AND status != 'cancelled'`,
+			[id],
+		);
+		if (result.rowCount === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Event not found or already cancelled",
+			});
+		}
+		return res.status(200).json({
+			success: true,
+			message: "Event cancelled successfully",
+		});
+	} catch (error) {
+		console.error("Error cancelling event:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};

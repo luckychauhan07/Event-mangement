@@ -20,3 +20,14 @@ export const getEventById = async (id) => {
 	const res = await api.get(`/event/${id}`);
 	return res.data;
 };
+
+export const deleteEvent = async (id) => {
+	console.log("Attempting to delete event with ID:", id);
+	const res = await api.delete(`/event/${id}`);
+	return res.data;
+};
+
+export const cancelEvent = async (id) => {
+	const res = await api.put(`/event/${id}/cancel`);
+	return res.data;
+};

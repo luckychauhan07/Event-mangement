@@ -21,7 +21,7 @@ const EventList = () => {
 		const now = new Date();
 		const startDate = getEventStartDate(event);
 		const endDate = getEventEndDate(event);
-
+		if (event.status === "cancelled") return "cancelled";
 		if (Number.isNaN(startDate.getTime())) return "unknown";
 		if (now < startDate) return "upcoming";
 		if (!Number.isNaN(endDate.getTime()) && now <= endDate)
@@ -104,6 +104,7 @@ const EventList = () => {
 			try {
 				const data = await getAllEvents();
 				setAllEvents(data?.events || []);
+				console.log("Fetched events:", data?.events || []);
 			} catch {
 				setAllEvents([]);
 			} finally {

@@ -61,12 +61,14 @@ export default function EventDetails() {
 			try {
 				const res = await getEventById(id);
 				setEvent(res.event);
+				console.log(res.event);
 			} catch (e) {
 				console.error(e);
 			} finally {
 				setLoading(false);
 			}
 		};
+
 		fetchData();
 	}, [id]);
 
