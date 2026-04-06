@@ -42,6 +42,7 @@ const AdminTeacherApprovals = () => {
 
 		setSelectedTeacher(teacher);
 		setRejectionReason("");
+
 		setIsRejectModalOpen(true);
 	};
 

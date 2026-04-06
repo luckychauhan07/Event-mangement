@@ -20,3 +20,24 @@ export const rejectTeacher = async (id, reason) => {
 	});
 	return res.data;
 };
+
+export const getAdminProfile = async () => {
+	const res = await api.get("/admin/profile");
+	return res.data;
+};
+
+export const getAdminProfileIncomplete = async () => {
+	const res = await api.get("/admin/profile/incomplete");
+	return res.data;
+};
+
+export const updateAdminProfile = async (profileData) => {
+	const res = await api.put("/admin/profile", profileData);
+	return res.data;
+};
+
+export const patchAdminProfile = async (data) => {
+	const res = await api.patch("/admin/profile", data);
+	console.log("Patch Admin Profile Response:", res);
+	return res.data;
+};

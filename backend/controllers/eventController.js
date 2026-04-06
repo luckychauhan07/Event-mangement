@@ -463,7 +463,7 @@ exports.getAllEvents = async (req, res) => {
 	console.log(req.body, "Fetching all events");
 	try {
 		const response = await pool.query(
-			`SELECT * FROM events ORDER BY created_at DESC`,
+			`SELECT * FROM events where is_deleted = false ORDER BY created_at DESC`,
 		);
 		res.json({
 			message: "Events fetched successfully",
@@ -485,15 +485,16 @@ exports.deleteEvent = async (req, res) => {
 		});
 	}
 	try {
-		// const result = await pool.query("DELETE FROM events WHERE id = $1", [
-		// 	id,
-		// ]);
-		// if (result.rowCount === 0) {
-		// 	return res.status(404).json({
-		// 		success: false,
-		// 		message: "Event not found",
-		// 	});
-		// }
+		const result = await pool.query(
+			"UPDATE events SET is_deleted = true, updated_at = NOW() WHERE id = $1",
+			[id],
+		);
+		if (result.rowCount === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Event not found",
+			});
+		}
 		return res.status(200).json({
 			success: true,
 			message: "Event deleted successfully",

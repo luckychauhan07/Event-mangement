@@ -1,4 +1,6 @@
+const { s } = require("framer-motion/client");
 const pool = require("../db/config");
+const { m } = require("framer-motion");
 
 exports.getPendingTeachers = async (req, res) => {
 	try {
@@ -367,6 +369,296 @@ exports.updateUser = async (req, res) => {
 		return res.status(500).json({
 			success: false,
 			message: "Failed to update user",
+		});
+	}
+};
+
+exports.getAdminProfile = async (req, res) => {
+	try {
+		const { user_id } = req.user;
+		const result = await pool.query(
+			`SELECT
+					-- =========================
+					-- USER CORE INFO
+					-- =========================
+					u.user_id,
+					u.full_name,
+					u.email,
+					u.phone,
+					u.role,
+					u.status,
+					u.created_at AS account_created_at,
+					u.updated_at AS account_updated_at,
+
+					-- =========================
+					-- PROFILE COMPLETION STATUS
+					-- =========================
+					CASE
+						WHEN
+							u.full_name IS NOT NULL
+							AND u.email IS NOT NULL
+							AND ap.designation IS NOT NULL
+							AND ap.institution_id IS NOT NULL
+						THEN TRUE
+						ELSE FALSE
+					END AS profile_completed,
+
+					-- =========================
+					-- ADMIN PROFILE
+					-- =========================
+					ap.designation,
+					ap.department,
+					ap.employee_code,
+					ap.alternate_email,
+					ap.office_phone,
+					ap.office_location,
+					ap.signature_image_url,
+					ap.joined_on,
+					ap.institution_id,
+					ap.created_at AS admin_profile_created_at,
+					ap.updated_at AS admin_profile_updated_at,
+
+					-- =========================
+					-- INSTITUTION INFO
+					-- =========================
+					i.institution_name,
+					i.logo_url AS institution_logo_url,
+					i.banner_url AS institution_banner_url,
+					i.address,
+					i.city,
+					i.state,
+					i.country,
+					i.pincode,
+					i.contact_email AS institution_contact_email,
+					i.contact_phone AS institution_contact_phone,
+					i.website,
+					i.principal_name,
+					i.academic_year,
+					i.updated_at AS institution_updated_at
+				FROM users u
+				LEFT JOIN admin_profiles ap
+					ON ap.admin_id = u.user_id
+				LEFT JOIN institution_settings i
+					ON i.institution_id = ap.institution_id
+
+				WHERE u.user_id = $1
+				AND u.role = 'admin'
+				LIMIT 1;`,
+			[user_id],
+		);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Admin profile not found",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			data: result.rows[0],
+		});
+	} catch (err) {
+		console.error("Get admin profile error:", err);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch admin profile",
+		});
+	}
+};
+
+exports.getAdminProfileSummary = async (req, res) => {
+	try {
+		const { user_id } = req.user;
+		const result = await pool.query(
+			`SELECT
+				u.full_name,
+				u.email,
+				u.phone,		
+
+				ap.designation,
+				ap.office_phone,
+				ap.alternate_email,
+				ap.office_location,
+				ap.signature_image_url,
+				ap.institution_id,
+				ap.employee_code AS employee_id
+
+			FROM users u
+			LEFT JOIN admin_profiles ap
+				ON ap.admin_id = u.user_id
+
+			WHERE u.user_id = $1
+			AND u.role = 'admin'
+			LIMIT 1`,
+			[user_id],
+		);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Admin profile not found",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			data: result.rows[0],
+		});
+	} catch (err) {
+		console.error("Get admin profile error:", err);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch admin profile",
+		});
+	}
+};
+
+exports.updateAdminProfile = async (req, res) => {
+	const client = await pool.connect();
+
+	try {
+		const { user_id, role } = req.user;
+		if (role !== "admin") {
+			return res.status(403).json({
+				success: false,
+				message: "Access denied. Only admins can update this profile.",
+			});
+		}
+		console.log(user_id);
+
+		const full_name = req.body.full_name?.trim() || "";
+		const phone = req.body.phone?.trim() || null;
+
+		const designation = req.body.designation?.trim() || "";
+		const department = req.body.department?.trim() || null;
+		const employee_code = req.body.employee_id?.trim() || null;
+		const alternate_email =
+			req.body.alternate_email?.trim().toLowerCase() || null;
+		const office_phone = req.body.office_phone?.trim() || null;
+		const office_location = req.body.office_location?.trim() || null;
+		const signature_image_url = req.body.signature_image_url?.trim() || "";
+
+		if (!full_name || !designation || !signature_image_url) {
+			return res.status(400).json({
+				success: false,
+				message:
+					"Full name, designation, and signature image are required.",
+			});
+		}
+
+		// =========================
+		// START TRANSACTION
+		// =========================
+		await client.query("BEGIN");
+
+		const userCheck = await client.query(
+			`SELECT user_id, role FROM users WHERE user_id = $1 LIMIT 1`,
+			[user_id],
+		);
+
+		if (userCheck.rows.length === 0) {
+			await client.query("ROLLBACK");
+			return res.status(404).json({
+				success: false,
+				message: "User not found.",
+			});
+		}
+
+		if (userCheck.rows[0].role !== "admin") {
+			await client.query("ROLLBACK");
+			return res.status(403).json({
+				success: false,
+				message: "Only admin accounts can update admin profile.",
+			});
+		}
+
+		await client.query(
+			`
+			UPDATE users
+			SET full_name = $1,
+			    phone = $2,
+			    updated_at = CURRENT_TIMESTAMP
+			WHERE user_id = $3
+			`,
+			[full_name, phone, user_id],
+		);
+
+		// await client.query(
+		// 	`
+		// 	INSERT INTO admin_profiles (admin_id)
+		// 	VALUES ($1)
+		// 	ON CONFLICT (admin_id) DO NOTHING
+		// 	`,
+		// 	[user_id],
+		// );
+
+		await client.query(
+			`
+			UPDATE admin_profiles
+			SET designation = $1,
+			    department = $2,
+			    employee_code = $3,
+			    alternate_email = $4,
+			    office_phone = $5,
+			    office_location = $6,
+			    signature_image_url = $7,
+			    updated_at = CURRENT_TIMESTAMP
+			WHERE admin_id = $8
+			`,
+			[
+				designation,
+				department,
+				employee_code,
+				alternate_email,
+				office_phone,
+				office_location,
+				signature_image_url,
+				user_id,
+			],
+		);
+
+		// =========================
+		// COMMIT
+		// =========================
+		await client.query("COMMIT");
+
+		return res.status(200).json({
+			success: true,
+			message: "Admin profile updated successfully",
+		});
+	} catch (err) {
+		await client.query("ROLLBACK");
+
+		console.error("Update admin profile error:", err);
+
+		return res.status(500).json({
+			success: false,
+			message: "Failed to update admin profile",
+		});
+	} finally {
+		client.release();
+	}
+};
+
+exports.patchAdminProfile = async (req, res) => {
+	try {
+		const { user_id, role } = req.user;
+		if (role !== "admin") {
+			return res.status(403).json({
+				success: false,
+				message: "Access denied. Only admins can update this profile.",
+			});
+		}
+		res.status(200).json({
+			success: true,
+			message: "Admin profile patched successfully",
+		});
+	} catch (err) {
+		console.error("Patch admin profile error:", err);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to patch admin profile",
 		});
 	}
 };
