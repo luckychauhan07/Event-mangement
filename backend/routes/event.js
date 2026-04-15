@@ -12,8 +12,7 @@ const {
 } = require("../controllers/eventController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
-const pool = require("../db/config");
-const { del } = require("framer-motion/client");
+
 
 const eventRouter = express.Router();
 
