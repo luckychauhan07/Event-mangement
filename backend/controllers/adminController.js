@@ -1,6 +1,6 @@
-const { s } = require("framer-motion/client");
+
 const pool = require("../db/config");
-const { m } = require("framer-motion");
+
 
 exports.getPendingTeachers = async (req, res) => {
 	try {
