@@ -71,7 +71,9 @@ exports.addEvent = async (req, res) => {
 	if (!parsed.success) {
 		// Zod's .flatten() method perfectly formats the errors for React
 		const flattened = parsed.error.flatten();
-		return res.status(400).json({
+		console.log("Validation errors:", flattened);
+
+		return res.status(401).json({
 			message: "Please check the form for errors.",
 			errors: flattened.fieldErrors,
 			formErrors: flattened.formErrors,

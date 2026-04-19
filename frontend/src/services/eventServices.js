@@ -2,6 +2,7 @@ import api from "../api/api";
 
 export const createEvent = async (data) => {
 	const res = await api.post("/event", data);
+	console.log("Event created:", res);
 	return res.data;
 };
 
