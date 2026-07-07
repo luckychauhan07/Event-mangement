@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
-import { getAllEvents } from "../../services/eventServices";
+import { getTeacherEvents } from "../../services/eventServices";
 import DisplayEventList from "../../components/teacher/displayEventList";
 
 const EventList = () => {
@@ -102,7 +102,7 @@ const EventList = () => {
         const fetchEvents = async () => {
             setLoading(true);
             try {
-                const data = await getAllEvents();
+                const data = await getTeacherEvents();
                 setAllEvents(data?.events || []);
                 console.log("Fetched events:", data?.events || []);
             } catch {

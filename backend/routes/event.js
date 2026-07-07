@@ -7,6 +7,7 @@ const {
 	getAllTeachers,
 	getEventDetails,
 	getAllEvents,
+	getTeacherEvents,
 	deleteEvent,
 	cancelEvent,
 } = require("../controllers/eventController");
@@ -23,6 +24,11 @@ eventRouter.delete("/:id", authMiddleware, adminMiddleware, deleteEvent);
 eventRouter.put("/:id/cancel", authMiddleware, adminMiddleware, cancelEvent);
 
 // no admin middleware here since teachers and coordinators should be able to view event details
+eventRouter.get(
+	"/teacher/events",
+	authMiddleware,
+	getTeacherEvents,
+);
 eventRouter.get("/", authMiddleware, getAllEvents);
 eventRouter.get("/:id", authMiddleware, getEventDetails);
 

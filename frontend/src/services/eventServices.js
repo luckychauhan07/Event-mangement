@@ -17,6 +17,11 @@ export const getAllEvents = async () => {
 	return res.data;
 };
 
+export const getTeacherEvents = async () => {
+	const res = await api.get("/event/teacher/events");
+	return res.data;
+};
+
 export const getEventById = async (id) => {
 	const res = await api.get(`/event/${id}`);
 	return res.data;

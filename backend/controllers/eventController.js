@@ -477,6 +477,38 @@ exports.getAllEvents = async (req, res) => {
 	}
 };
 
+exports.getTeacherEvents = async (req, res) => {
+	
+	try {
+		const teacherId = req.user.user_id;
+
+		const response = await pool.query(
+			`
+			SELECT e.*
+			FROM events e
+			INNER JOIN event_coordinators ec
+				ON e.id = ec.event_id
+			WHERE
+				ec.user_id = $1
+				AND e.is_deleted = false
+			ORDER BY e.created_at DESC
+			`,
+			[teacherId],
+		);
+
+		res.json({
+			message: "Teacher events fetched successfully",
+			events: response.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching teacher events:", error);
+
+		res.status(500).json({
+			message: "Error fetching teacher events",
+		});
+	}
+};
+
 exports.deleteEvent = async (req, res) => {
 	const { id } = req.params;
 	console.log("Request to delete event with ID:", id);
