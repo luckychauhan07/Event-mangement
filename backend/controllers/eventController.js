@@ -509,6 +509,78 @@ exports.getTeacherEvents = async (req, res) => {
 	}
 };
 
+exports.getTeacherDashboard = async (req, res) => {
+	try {
+		const teacherId = req.user.user_id;
+
+		const eventsQuery = `
+			SELECT
+				e.*,
+				ec.role,
+				COUNT(DISTINCT er.registration_id) AS registrations
+			FROM events e
+			JOIN event_coordinators ec
+				ON e.id = ec.event_id
+			LEFT JOIN event_registrations er
+				ON er.event_id = e.id
+			WHERE
+				ec.user_id = $1
+				AND e.is_deleted = false
+			GROUP BY e.id, ec.role
+			ORDER BY e.created_at DESC;
+		`;
+
+		const statsQuery = `
+			SELECT
+				COUNT(DISTINCT e.id) AS assigned_events,
+
+				COUNT(
+					DISTINCT CASE
+						WHEN e.status = 'published' THEN e.id
+					END
+				) AS active_events,
+
+				COUNT(DISTINCT er.registration_id) AS total_registrations,
+
+				COUNT(
+					DISTINCT CASE
+						WHEN er.status = 'pending' THEN er.registration_id
+					END
+				) AS pending_registrations
+
+			FROM event_coordinators ec
+
+			JOIN events e
+				ON e.id = ec.event_id
+
+			LEFT JOIN event_registrations er
+				ON er.event_id = e.id
+
+			WHERE
+				ec.user_id = $1
+				AND e.is_deleted = false;
+		`;
+
+		const [statsResult, eventsResult] = await Promise.all([
+			pool.query(statsQuery, [teacherId]),
+			pool.query(eventsQuery, [teacherId]),
+		]);
+
+		return res.status(200).json({
+			success: true,
+			stats: statsResult.rows[0],
+			events: eventsResult.rows,
+		});
+	} catch (error) {
+		console.error("Error loading teacher dashboard:", error);
+
+		return res.status(500).json({
+			success: false,
+			message: "Failed to load dashboard",
+		});
+	}
+};
+	
 exports.deleteEvent = async (req, res) => {
 	const { id } = req.params;
 	console.log("Request to delete event with ID:", id);
@@ -571,6 +643,52 @@ exports.cancelEvent = async (req, res) => {
 		return res.status(500).json({
 			success: false,
 			message: "Internal server error",
+		});
+	}
+};
+
+exports.getEventRegistrations = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		const query = `
+			SELECT
+				er.registration_id,
+				er.status,
+				er.created_at,
+
+				u.user_id,
+				u.full_name,
+				u.email,
+
+				t.team_id,
+				t.team_name
+
+			FROM event_registrations er
+
+			JOIN users u
+				ON u.user_id = er.user_id
+
+			LEFT JOIN teams t
+				ON t.team_id = er.team_id
+
+			WHERE er.event_id = $1
+
+			ORDER BY er.created_at DESC;
+		`;
+
+		const result = await pool.query(query, [id]);
+
+		return res.status(200).json({
+			success: true,
+			registrations: result.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching registrations:", error);
+
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch registrations",
 		});
 	}
 };

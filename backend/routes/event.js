@@ -8,6 +8,7 @@ const {
 	getEventDetails,
 	getAllEvents,
 	getTeacherEvents,
+	getTeacherDashboard,
 	deleteEvent,
 	cancelEvent,
 } = require("../controllers/eventController");
@@ -28,6 +29,11 @@ eventRouter.get(
 	"/teacher/events",
 	authMiddleware,
 	getTeacherEvents,
+);
+eventRouter.get(
+    "/teacher/dashboard",
+    authMiddleware,
+    getTeacherDashboard,
 );
 eventRouter.get("/", authMiddleware, getAllEvents);
 eventRouter.get("/:id", authMiddleware, getEventDetails);

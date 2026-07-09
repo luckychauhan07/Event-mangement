@@ -4,11 +4,11 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { getEventById } from "../../services/eventServices";
 import EventSummary from "../../components/event/eventDetails/eventSummary";
 import TeacherEventDetailsTabs from "@/components/teacher/eventDetails/TeacherEventDetailsTabs";
-import EventDetailsOverview from "@/components/event/eventDetails/eventDetailsOverview";
 import EventDetailsRegistration from "@/components/event/eventDetails/eventDetailsRegistration";
-import EventDetailsCoordinators from "@/components/event/eventDetails/eventDetailsCoordinators";
 import EventDetailsTeam from "@/components/event/eventDetails/eventDetailsTeam";
 import TeacherStudentCoordinators from "@/components/teacher/eventDetails/TeacherStudentCoordinators";
+import TeacherEventDetailsOverview from "@/components/teacher/eventDetails/TeacherEventDetailsOverview";
+import TeacherEventDetailsRegistration from "@/components/teacher/eventDetails/TeacherEventDetailsRegistration";
 
 // Lightweight UI primitives (no shadcn dependency)
 const Card = ({ children, className = "" }) => (
@@ -48,6 +48,14 @@ const Badge = ({ children, tone = "slate" }) => {
 		</span>
 	);
 };
+const Progress = ({ value }) => (
+	<div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+		<div
+			className="h-full rounded-full bg-indigo-600 transition-all duration-500"
+			style={{ width: `${value}%` }}
+		/>
+	</div>
+);
 
 export default function EventDetails() {
 	const { id } = useParams();
@@ -99,44 +107,138 @@ export default function EventDetails() {
 	return (
 		<div className="min-h-screen bg-slate-50 p-6 space-y-6">
 			{/* Header */}
-			<div className="flex items-center justify-between">
-				<Button
-	variant="ghost"
-	onClick={() => navigate("/teacher/events")}
->
-	<ArrowLeft className="inline mr-2" />
-	Back to My Events
-</Button>
-				<div className="flex items-center gap-2">
-					<Badge tone="slate">{event.meta.status}</Badge>
-					<Badge tone={phase.tone}>{phase.label}</Badge>
-				</div>
+			{/* Header */}
+<div className="flex items-center justify-between">
+
+	<Button
+		variant="ghost"
+		onClick={() => navigate("/teacher/events")}
+		className="flex items-center gap-2"
+	>
+		<ArrowLeft size={18} />
+		Back to My Events
+	</Button>
+
+	<div className="flex gap-2">
+		<Badge tone="slate">{event.meta.status}</Badge>
+		<Badge tone={phase.tone}>{phase.label}</Badge>
+	</div>
+
+</div>
+
+{/* Hero */}
+<Card className="overflow-hidden">
+
+	<div className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-500 px-8 py-7 text-white">
+
+		<div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+
+			<div>
+
+				<p className="text-sm uppercase tracking-wider text-indigo-100">
+					{event.basic.category}
+				</p>
+
+				<h1 className="mt-2 text-4xl font-bold">
+					{event.basic.title}
+				</h1>
+
+				{event.basic.subtitle && (
+					<p className="mt-2 text-indigo-100">
+						{event.basic.subtitle}
+					</p>
+				)}
+
 			</div>
 
-			{/* Hero / Summary */}
-			<Card className="p-6 bg-gradient-to-br from-white to-blue-50">
-				<EventSummary event={event} />
+			<div className="grid grid-cols-2 gap-4">
 
-				{limit ? (
-					<div className="mt-4">
-						<Progress value={pct} />
-						<p className="text-xs text-slate-500 mt-1">
-							{filled} of {limit} filled
-						</p>
-					</div>
-				) : null}
-			</Card>
+				<div className="rounded-2xl bg-white/15 p-5 backdrop-blur">
+
+					<p className="text-3xl font-bold">
+						{event.stats.totalRegistrations}
+					</p>
+
+					<p className="text-sm text-indigo-100">
+						Registrations
+					</p>
+
+				</div>
+
+				<div className="rounded-2xl bg-white/15 p-5 backdrop-blur">
+
+					<p className="text-lg font-semibold">
+						{new Date(
+							event.schedule.startAt
+						).toLocaleDateString()}
+					</p>
+
+					<p className="text-sm text-indigo-100">
+						Event Date
+					</p>
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<div className="grid gap-5 border-t border-slate-200 bg-white p-6 md:grid-cols-3">
+
+		<div>
+
+			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+				Venue
+			</p>
+
+			<p className="mt-1 font-medium text-slate-700">
+				{event.schedule.venue || "Online"}
+			</p>
+
+		</div>
+
+		<div>
+
+			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+				Event Type
+			</p>
+
+			<p className="mt-1 font-medium text-slate-700 capitalize">
+				{event.basic.eventType}
+			</p>
+
+		</div>
+
+		<div>
+
+			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+				Participation
+			</p>
+
+			<p className="mt-1 font-medium text-slate-700 capitalize">
+				{event.registration.config.participationType || "Individual"}
+			</p>
+
+		</div>
+
+	</div>
+
+</Card>
 <TeacherEventDetailsTabs
 	activeTab={tab}
 	onTabChange={setTab}
 />
 			{/* Overview */}
-			{tab === "overview" && <EventDetailsOverview event={event} />}
+			{tab === "overview" && (
+	<TeacherEventDetailsOverview event={event} />
+)}
 
 			{/* Registration */}
 			{tab === "registration" && (
-				<EventDetailsRegistration event={event} />
-			)}
+    <TeacherEventDetailsRegistration event={event} />
+)}
 
 			{/* Team */}
 {tab === "team" && (

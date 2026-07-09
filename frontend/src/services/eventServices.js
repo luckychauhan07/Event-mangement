@@ -37,3 +37,16 @@ export const cancelEvent = async (id) => {
 	const res = await api.put(`/event/${id}/cancel`);
 	return res.data;
 };
+
+export const getTeacherDashboard = async () => {
+    const res = await api.get("/event/teacher/dashboard");
+    return res.data;
+};
+
+export const getEventRegistrations = async (eventId) => {
+	const response = await axiosInstance.get(
+		`/events/${eventId}/registrations`
+	);
+
+	return response.data;
+};
