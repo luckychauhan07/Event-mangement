@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { getEventById } from "@/services/eventServices";
 import TeacherEventRegistrations from "@/components/teacher/manageEvent/TeacherEventRegistrations";
+import TeacherEventTeams from "@/components/teacher/manageEvent/TeacherEventTeams";
 
 export default function ManageEvent() {
 	const { id } = useParams();
@@ -185,11 +186,12 @@ export default function ManageEvent() {
 	<TeacherEventRegistrations eventId={id} />
 )}
 
-		{activeTab === "teams" && event.team.enabled && <div>Teams</div>}
-
+{activeTab === "teams" && event.team.enabled && (
+	<TeacherEventTeams eventId={id} />
+)}
 		{activeTab === "announcements" && <div>Announcements</div>}
 
-		{activeTab === "results" && <div>Results</div>}
+		
 
 	</div>
 

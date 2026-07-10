@@ -44,9 +44,15 @@ export const getTeacherDashboard = async () => {
 };
 
 export const getEventRegistrations = async (eventId) => {
-	const response = await axiosInstance.get(
-		`/events/${eventId}/registrations`
+	const response = await api.get(
+		`/event/${eventId}/registrations`
 	);
 
 	return response.data;
 };
+
+export const getEventTeams = async (eventId) => {
+	const response = await api.get(`/event/${eventId}/teams`);
+	return response.data;
+};
+

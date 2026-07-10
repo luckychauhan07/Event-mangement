@@ -652,30 +652,31 @@ exports.getEventRegistrations = async (req, res) => {
 		const { id } = req.params;
 
 		const query = `
-			SELECT
-				er.registration_id,
-				er.status,
-				er.created_at,
+SELECT
+    er.registration_id,
+    er.status,
+    er.submitted_at,
 
-				u.user_id,
-				u.full_name,
-				u.email,
+    u.user_id,
+    u.full_name,
+    u.email,
+    u.phone,
 
-				t.team_id,
-				t.team_name
+    t.id AS team_id,
+    t.team_name AS team_name
 
-			FROM event_registrations er
+FROM event_registrations er
 
-			JOIN users u
-				ON u.user_id = er.user_id
+JOIN users u
+    ON u.user_id = er.user_id
 
-			LEFT JOIN teams t
-				ON t.team_id = er.team_id
+LEFT JOIN teams t
+    ON t.id = er.team_id
 
-			WHERE er.event_id = $1
+WHERE er.event_id = $1
 
-			ORDER BY er.created_at DESC;
-		`;
+ORDER BY er.submitted_at DESC;
+`;
 
 		const result = await pool.query(query, [id]);
 
@@ -692,3 +693,60 @@ exports.getEventRegistrations = async (req, res) => {
 		});
 	}
 };
+
+exports.getEventTeams = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		const query = `
+SELECT
+    t.id AS team_id,
+    t.team_name,
+    t.created_at,
+    COUNT(tm.user_id) AS member_count
+
+FROM teams t
+
+LEFT JOIN team_members tm
+    ON tm.team_id = t.id
+
+WHERE t.event_id = $1
+
+GROUP BY
+    t.id,
+    t.team_name,
+    t.created_at
+
+ORDER BY t.created_at DESC;
+`;
+
+		const result = await pool.query(query, [id]);
+
+		return res.status(200).json({
+			success: true,
+			teams: result.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching teams:", error);
+
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch teams",
+		});
+	}
+};
+
+exports.getEventResults = async (req, res) => {
+    return res.status(200).json({
+        success: true,
+        results: [],
+    });
+};
+
+exports.createEventResult = async (req, res) => {
+    return res.status(501).json({
+        success: false,
+        message: "Result module is not implemented yet.",
+    });
+};
+

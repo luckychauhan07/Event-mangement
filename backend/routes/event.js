@@ -11,6 +11,10 @@ const {
 	getTeacherDashboard,
 	deleteEvent,
 	cancelEvent,
+	getEventRegistrations,
+	getEventTeams,
+	createEventResult,
+	getEventResults,
 } = require("../controllers/eventController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
@@ -31,11 +35,28 @@ eventRouter.get(
 	getTeacherEvents,
 );
 eventRouter.get(
-    "/teacher/dashboard",
-    authMiddleware,
-    getTeacherDashboard,
+	"/teacher/dashboard",
+	authMiddleware,
+	getTeacherDashboard,
 );
+
+// Registration list
+eventRouter.get(
+	"/:id/registrations",
+	authMiddleware,
+	getEventRegistrations,
+);
+
+// Team list
+eventRouter.get(
+	"/:id/teams",
+	authMiddleware,
+	getEventTeams,
+);
+
+
 eventRouter.get("/", authMiddleware, getAllEvents);
+
 eventRouter.get("/:id", authMiddleware, getEventDetails);
 
 module.exports = eventRouter;
