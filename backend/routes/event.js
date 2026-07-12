@@ -12,6 +12,9 @@ const {
 	getTeacherDashboard,
 	deleteEvent,
 	cancelEvent,
+	getPendingEventRequests,
+	approveEventRequest,
+	rejectEventRequest,
 	getEventRegistrations,
 	getEventTeams,
 	createEventResult,
@@ -29,6 +32,24 @@ const eventRouter = express.Router();
 eventRouter.delete("/:id", authMiddleware, adminMiddleware, deleteEvent);
 eventRouter.put("/:id/cancel", authMiddleware, adminMiddleware, cancelEvent);
 eventRouter.get("/teachers", authMiddleware, adminMiddleware, getAllTeachers);
+eventRouter.get(
+	"/admin/pending-requests",
+	authMiddleware,
+	adminMiddleware,
+	getPendingEventRequests,
+);
+eventRouter.patch(
+	"/:id/approve",
+	authMiddleware,
+	adminMiddleware,
+	approveEventRequest,
+);
+eventRouter.patch(
+	"/:id/reject",
+	authMiddleware,
+	adminMiddleware,
+	rejectEventRequest,
+);
 
 // All routes here are protected and require either admin or teacher access
 eventRouter.post("/", authMiddleware, adminTeacherMiddleware, addEvent);

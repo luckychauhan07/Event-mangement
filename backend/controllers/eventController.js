@@ -64,6 +64,13 @@ const toNullableInteger = (value) => {
 	return parsedValue;
 };
 
+const isEventExpired = (event) => {
+	if (!event?.end_at) return false;
+	const endTime = new Date(event.end_at).getTime();
+	if (Number.isNaN(endTime)) return false;
+	return endTime < Date.now();
+};
+
 exports.addEvent = async (req, res) => {
 	console.log("Received request to add event:", req.user);
 	if (!req.user || !req.user.user_id) {
@@ -91,10 +98,7 @@ exports.addEvent = async (req, res) => {
 		primaryCoordinatorId,
 		...cleanEventData
 	} = eventData;
-	const eventStatus =
-		req.user.role === "teacher"
-			? "draft"
-			: cleanEventData.status || "draft";
+	const eventStatus = req.user.role === "teacher" ? "draft" : "published";
 	const client = await pool.connect();
 	try {
 		await client.query("BEGIN");
@@ -474,7 +478,10 @@ exports.getAllEvents = async (req, res) => {
 	console.log(req.body, "Fetching all events");
 	try {
 		const response = await pool.query(
-			`SELECT * FROM events where is_deleted = false and status = 'draft' ORDER BY created_at DESC`,
+			`SELECT *
+			 FROM events
+			 WHERE is_deleted = false
+			 ORDER BY created_at DESC`,
 		);
 		res.json({
 			message: "Events fetched successfully",
@@ -483,6 +490,116 @@ exports.getAllEvents = async (req, res) => {
 	} catch (error) {
 		console.error("Error fetching events:", error);
 		res.status(500).json({ message: "Error fetching events" });
+	}
+};
+
+exports.getPendingEventRequests = async (req, res) => {
+	console.log(req.body, "Fetching pending event requests");
+	try {
+		const response = await pool.query(
+			`SELECT *
+			 FROM events
+			 WHERE is_deleted = false
+			   AND status = 'draft'
+			 ORDER BY created_at DESC`,
+		);
+
+		const activeRequests = response.rows.filter(
+			(event) => event.status === "draft" && !isEventExpired(event),
+		);
+
+		res.json({
+			message: "Pending events fetched successfully",
+			events: activeRequests,
+		});
+	} catch (error) {
+		console.error("Error fetching pending events:", error);
+		res.status(500).json({ message: "Error fetching pending events" });
+	}
+};
+
+exports.approveEventRequest = async (req, res) => {
+	const { id } = req.params;
+	if (!id || isNaN(id)) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid event ID",
+		});
+	}
+
+	try {
+		const result = await pool.query(
+			`UPDATE events
+			 SET status = 'published', updated_at = NOW()
+			 WHERE id = $1
+			   AND is_deleted = false
+			   AND status = 'draft'
+			 RETURNING id, title, status`,
+			[id],
+		);
+
+		if (result.rowCount === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Event not found or already processed",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "Event approved successfully",
+			event: result.rows[0],
+		});
+	} catch (error) {
+		console.error("Error approving event:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to approve event",
+		});
+	}
+};
+
+exports.rejectEventRequest = async (req, res) => {
+	const { id } = req.params;
+	const { reason } = req.body;
+
+	if (!id || isNaN(id)) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid event ID",
+		});
+	}
+
+	try {
+		const result = await pool.query(
+			`UPDATE events
+			 SET status = 'rejected', updated_at = NOW()
+			 WHERE id = $1
+			   AND is_deleted = false
+			   AND status = 'draft'
+			 RETURNING id, title, status`,
+			[id],
+		);
+
+		if (result.rowCount === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Event not found or already processed",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "Event rejected successfully",
+			reason: reason || "No reason provided",
+			event: result.rows[0],
+		});
+	} catch (error) {
+		console.error("Error rejecting event:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to reject event",
+		});
 	}
 };
 

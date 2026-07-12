@@ -134,6 +134,19 @@ const AdminDashboard = () => {
 								/>
 							</Link>
 							<Link
+								to="/admin/event-approvals"
+								className="group flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm"
+							>
+								<span className="inline-flex items-center gap-2">
+									<ClipboardCheck size={16} />
+									Event Requests
+								</span>
+								<ArrowUpRight
+									size={16}
+									className="text-slate-400 transition group-hover:text-slate-700"
+								/>
+							</Link>
+							<Link
 								to="/admin/users"
 								className="group flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm"
 							>

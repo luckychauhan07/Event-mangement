@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { getTeacherEvents } from "../../services/eventServices";
 import DisplayEventList from "../../components/teacher/displayEventList";
+import { getEventTimelinePhase } from "../../utils/eventStatus";
 
 const EventList = () => {
     const [allEvents, setAllEvents] = useState([]);
@@ -14,20 +15,6 @@ const EventList = () => {
     // ---------- Helpers ----------
     const getEventStartDate = (event) =>
         new Date(event.start_at || event.startAt || event.date || "");
-    const getEventEndDate = (event) =>
-        new Date(event.end_at || event.endAt || "");
-
-    const getEventPhase = (event) => {
-        const now = new Date();
-        const startDate = getEventStartDate(event);
-        const endDate = getEventEndDate(event);
-        if (event.status === "cancelled") return "cancelled";
-        if (Number.isNaN(startDate.getTime())) return "unknown";
-        if (now < startDate) return "upcoming";
-        if (!Number.isNaN(endDate.getTime()) && now <= endDate)
-            return "ongoing";
-        return "past";
-    };
 
     // ---------- Derived Data ----------
     const categoryOptions = useMemo(() => {
@@ -46,7 +33,7 @@ const EventList = () => {
             past = 0;
 
         allEvents.forEach((event) => {
-            const phase = getEventPhase(event);
+            const phase = getEventTimelinePhase(event);
             if (phase === "upcoming") upcoming++;
             else if (phase === "ongoing") ongoing++;
             else if (phase === "past") past++;
@@ -60,7 +47,7 @@ const EventList = () => {
             .filter((event) =>
                 timeFilter === "all"
                     ? true
-                    : getEventPhase(event) === timeFilter,
+                    : getEventTimelinePhase(event) === timeFilter,
             )
             .filter((event) =>
                 categoryFilter === "all"

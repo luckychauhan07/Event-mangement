@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, ArrowRight } from "lucide-react";
+import { Bell, ArrowRight, UserCheck, CalendarCheck2 } from "lucide-react";
 
 const Notifications = () => {
 	const navigate = useNavigate();
@@ -33,13 +33,55 @@ const Notifications = () => {
 							</p>
 						</div>
 
-						<button
-							onClick={() => navigate("/admin/teacher-approvals")}
-							className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold shadow-sm transition-colors"
-						>
-							Review approvals
-							<ArrowRight className="w-4 h-4" />
-						</button>
+						<div className="flex flex-col sm:flex-row gap-4">
+							<button
+								onClick={() =>
+									navigate("/admin/teacher-approvals")
+								}
+								className="group flex items-center justify-between gap-4 rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-indigo-100 px-5 py-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-lg"
+							>
+								<div className="flex items-center gap-4">
+									<div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white shadow">
+										<UserCheck className="h-6 w-6" />
+									</div>
+
+									<div className="text-left">
+										<p className="text-base font-semibold text-slate-900">
+											Teacher Approvals
+										</p>
+										<p className="text-sm text-slate-600">
+											Review pending teacher requests
+										</p>
+									</div>
+								</div>
+
+								<ArrowRight className="h-5 w-5 text-slate-500 transition-transform group-hover:translate-x-1" />
+							</button>
+
+							<button
+								onClick={() =>
+									navigate("/admin/event-approvals")
+								}
+								className="group flex items-center justify-between gap-4 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-emerald-100 px-5 py-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg"
+							>
+								<div className="flex items-center gap-4">
+									<div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-600 text-white shadow">
+										<CalendarCheck2 className="h-6 w-6" />
+									</div>
+
+									<div className="text-left">
+										<p className="text-base font-semibold text-slate-900">
+											Event Approvals
+										</p>
+										<p className="text-sm text-slate-600">
+											Approve or reject event requests
+										</p>
+									</div>
+								</div>
+
+								<ArrowRight className="h-5 w-5 text-slate-500 transition-transform group-hover:translate-x-1" />
+							</button>
+						</div>
 					</div>
 				</div>
 

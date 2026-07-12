@@ -17,6 +17,26 @@ export const getAllEvents = async () => {
 	return res.data;
 };
 
+export const getPendingEventRequests = async () => {
+	const res = await api.get("/event/admin/pending-requests");
+	return res.data;
+};
+
+export const approveEventRequest = async (id) => {
+	const res = await api.patch(`/event/${id}/approve`, {
+		action: "approve",
+	});
+	return res.data;
+};
+
+export const rejectEventRequest = async (id, reason) => {
+	const res = await api.patch(`/event/${id}/reject`, {
+		action: "reject",
+		reason,
+	});
+	return res.data;
+};
+
 export const getTeacherEvents = async () => {
 	const res = await api.get("/event/teacher/events");
 	return res.data;

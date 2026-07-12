@@ -3,6 +3,7 @@ import AdminRoute from "../components/admin/adminProtectionRoutes";
 import AdminDashboard from "../pages/admin/adminDashboard";
 import AdminLayout from "../layouts/adminLayout";
 import AdminTeacherApprovals from "../pages/admin/adminTeacherApprovals";
+import EventApprovals from "../pages/admin/eventApprovals";
 import AddEvent from "../pages/admin/addEvent";
 import EventList from "../pages/admin/eventsList";
 import EventDetails from "../pages/admin/eventDetails";
@@ -38,6 +39,7 @@ const AdminRoutes = () => {
 						path="teacher-approvals"
 						element={<AdminTeacherApprovals />}
 					/>
+					<Route path="event-approvals" element={<EventApprovals />} />
 					<Route
 						path="reports"
 						element={<div>Admin Reports Page (Coming Soon)</div>}

@@ -9,6 +9,7 @@ import {
 	SquarePen,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getEventStatusMeta } from "../../utils/eventStatus";
 
 const DisplayEventList = ({ events }) => {
 	const formatDateTime = (value) => {
@@ -27,59 +28,6 @@ const DisplayEventList = ({ events }) => {
 	};
 
 	const navigate = useNavigate();
-	const getEventStatus = (event) => {
-		const now = new Date();
-		const startDate = new Date(event.start_at || event.startAt || "");
-		const endDate = new Date(event.end_at || event.endAt || "");
-		if (event.status === "cancelled") {
-			return {
-				label: "Cancelled",
-				badgeClass: "bg-red-100 text-red-700 border border-red-200",
-				borderClass: "border-red-200/80",
-				dotClass: "bg-red-500",
-			};
-		}
-
-		if (Number.isNaN(startDate.getTime())) {
-			return {
-				label: "Unknown",
-				badgeClass:
-					"bg-slate-100 text-slate-700 border border-slate-200",
-				borderClass: "border-slate-200",
-				dotClass: "bg-slate-500",
-			};
-		}
-
-		if (
-			!Number.isNaN(endDate.getTime()) &&
-			now >= startDate &&
-			now <= endDate
-		) {
-			return {
-				label: "Ongoing",
-				badgeClass: "bg-blue-100 text-blue-700 border border-blue-200",
-				borderClass: "border-blue-200/70",
-				dotClass: "bg-blue-500",
-			};
-		}
-
-		if (now < startDate) {
-			return {
-				label: "Upcoming",
-				badgeClass:
-					"bg-emerald-100 text-emerald-700 border border-emerald-200",
-				borderClass: "border-emerald-200/80",
-				dotClass: "bg-emerald-500",
-			};
-		}
-
-		return {
-			label: "Past",
-			badgeClass: "bg-slate-100 text-slate-700 border border-slate-200",
-			borderClass: "border-slate-200",
-			dotClass: "bg-slate-500",
-		};
-	};
 
 	const MetaChip = ({ icon: Icon, label, value }) => (
 		<div className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2 transition-all duration-300 group-hover:border-slate-300 group-hover:bg-white">
@@ -121,7 +69,7 @@ const DisplayEventList = ({ events }) => {
 
 			<div className="grid gap-4 xl:grid-cols-2">
 				{events.map((event) => {
-					const status = getEventStatus(event);
+					const status = getEventStatusMeta(event);
 					const eventMode =
 						event.event_mode || event.eventMode || "-";
 					const eventType =
