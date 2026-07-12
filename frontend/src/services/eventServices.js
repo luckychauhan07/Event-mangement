@@ -17,16 +17,12 @@ export const getAllEvents = async () => {
 	return res.data;
 };
 
-<<<<<<< HEAD
-export const getEventById = async (id, edit = false) => {
-=======
 export const getTeacherEvents = async () => {
 	const res = await api.get("/event/teacher/events");
 	return res.data;
 };
 
 export const getEventById = async (id) => {
->>>>>>> taniya-teacher-coordinator
 	const res = await api.get(`/event/${id}`);
 	return res.data;
 };
@@ -48,14 +44,12 @@ export const cancelEvent = async (id) => {
 };
 
 export const getTeacherDashboard = async () => {
-    const res = await api.get("/event/teacher/dashboard");
-    return res.data;
+	const res = await api.get("/event/teacher/dashboard");
+	return res.data;
 };
 
 export const getEventRegistrations = async (eventId) => {
-	const response = await api.get(
-		`/event/${eventId}/registrations`
-	);
+	const response = await api.get(`/event/${eventId}/registrations`);
 
 	return response.data;
 };
@@ -64,4 +58,3 @@ export const getEventTeams = async (eventId) => {
 	const response = await api.get(`/event/${eventId}/teams`);
 	return response.data;
 };
-

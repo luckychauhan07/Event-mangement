@@ -18,14 +18,10 @@ const {
 	getEventResults,
 } = require("../controllers/eventController");
 const authMiddleware = require("../middlewares/authMiddleware");
-<<<<<<< HEAD
-const adminMiddleware = require("../middlewares/adminMiddleware");
-=======
 const {
 	adminMiddleware,
 	adminTeacherMiddleware,
 } = require("../middlewares/adminMiddleware");
->>>>>>> taniya-teacher-coordinator
 
 const eventRouter = express.Router();
 
