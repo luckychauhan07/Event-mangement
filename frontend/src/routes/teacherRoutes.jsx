@@ -12,20 +12,15 @@ const TeacherRoutes = () => {
 	return (
 		<TeacherRoute>
 			<Routes>
-
 				<Route element={<TeacherLayout />}>
 					<Route path="dashboard" element={<TeacherDashboard />} />
 					<Route path="events" element={<EventList />} />
 					<Route path="events/view/:id" element={<EventDetails />} />
 					<Route path="events/:id" element={<EventDetails />} />
-					<Route
-	path="events/:id/manage"
-	element={<ManageEvent />}
-/>
+					<Route path="events/:id/manage" element={<ManageEvent />} />
 					<Route path="events/edit/:id" element={<AddEvent />} />
 					<Route path="add-event" element={<AddEvent />} />
 				</Route>
-
 			</Routes>
 		</TeacherRoute>
 	);

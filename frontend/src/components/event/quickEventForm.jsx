@@ -15,6 +15,14 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
+	const [currentUser] = useState(() => {
+		try {
+			return JSON.parse(localStorage.getItem("user"));
+		} catch {
+			return null;
+		}
+	});
+	const currentUserRole = currentUser?.role || "";
 	const organizerUnits = [
 		{ id: "cs", name: "Computer Science Department" },
 		{ id: "ee", name: "Electrical Engineering Department" },
@@ -52,8 +60,60 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 			}
 		};
 
-		loadTeachers();
-	}, []);
+		if (currentUserRole === "admin") {
+			loadTeachers();
+		}
+	}, [currentUserRole]);
+
+	useEffect(() => {
+		if (currentUserRole !== "teacher") return;
+
+		const teacherFromList = teachers.find(
+			(t) =>
+				String(t.user_id) === String(currentUser?.id) ||
+				t.email === currentUser?.email,
+		);
+
+		const coordinatorId = String(
+			teacherFromList?.user_id ?? currentUser?.id ?? "",
+		);
+		const coordinatorName =
+			teacherFromList?.name || currentUser?.name || "";
+		const coordinatorEmail =
+			teacherFromList?.email || currentUser?.email || "";
+		const coordinatorPhone =
+			teacherFromList?.phone || currentUser?.phone || "";
+
+		if (!coordinatorId || !coordinatorName || !coordinatorEmail) return;
+
+		setEventData((prev) => {
+			if (
+				String(prev.primaryCoordinatorId) === coordinatorId &&
+				prev.primaryCoordinator === coordinatorName &&
+				prev.primaryCoordinatorEmail === coordinatorEmail &&
+				(prev.primaryCoordinatorPhone || "") === coordinatorPhone
+			) {
+				return prev;
+			}
+
+			return {
+				...prev,
+				coordinator: coordinatorId,
+				primaryCoordinator: coordinatorName,
+				primaryCoordinatorEmail: coordinatorEmail,
+				primaryCoordinatorPhone: coordinatorPhone,
+				primaryCoordinatorId: coordinatorId,
+			};
+		});
+	}, [
+		currentUser?.email,
+		currentUser?.id,
+		currentUser?.name,
+		currentUser?.phone,
+		currentUserRole,
+		setEventData,
+		teachers,
+	]);
 
 	const handleChange = (field, value) => {
 		if (field === "startAt") {
@@ -70,6 +130,18 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 		}
 
 		if (field === "coordinator") {
+			if (currentUserRole === "teacher") {
+				setEventData({
+					...eventData,
+					coordinator: String(currentUser?.id || ""),
+					primaryCoordinator: currentUser?.name,
+					primaryCoordinatorEmail: currentUser?.email,
+					primaryCoordinatorPhone: currentUser?.phone || "",
+					primaryCoordinatorId: String(currentUser?.id || ""),
+				});
+				return;
+			}
+
 			const teacher = teachers.find(
 				(t) => String(t.user_id) === String(value),
 			);
@@ -78,11 +150,11 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 
 			setEventData({
 				...eventData,
-				coordinator: teacher.user_id,
+				coordinator: String(teacher.user_id),
 				primaryCoordinator: teacher.name,
 				primaryCoordinatorEmail: teacher.email,
 				primaryCoordinatorPhone: teacher.phone || "",
-				primaryCoordinatorId: teacher.user_id,
+				primaryCoordinatorId: String(teacher.user_id),
 			});
 			return;
 		}
@@ -120,7 +192,10 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 			toast.success("Event created successfully 🎉");
 
 			setTimeout(() => {
-				window.location.href = "/admin/events";
+				window.location.href =
+					currentUserRole === "teacher"
+						? "/teacher/events"
+						: "/admin/events";
 			}, 1000);
 		} catch (err) {
 			toast.error(
@@ -280,20 +355,45 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 								}))}
 							/>
 
-							<SearchDropdown
-								label="Primary Coordinator"
-								icon={<Users size={18} />}
-								value={eventData.coordinator}
-								onSelect={(val) =>
-									handleChange("coordinator", val)
-								}
-								loading={loadingTeachers}
-								options={teachers.map((t) => ({
-									value: t.user_id,
-									label: t.name,
-									meta: `${t.email} • ${t.phone || "No phone"}`,
-								}))}
-							/>
+							{currentUserRole === "teacher" ? (
+								<div className="rounded-2xl border border-slate-300 bg-white px-4 py-3">
+									<p className="text-xs text-slate-500">
+										Primary Coordinator
+									</p>
+									<p className="text-sm font-medium text-slate-900 truncate">
+										{eventData.primaryCoordinator ||
+											currentUser?.name ||
+											"No coordinator"}
+									</p>
+									<p className="text-xs text-slate-500 mt-1 truncate">
+										{eventData.primaryCoordinatorEmail ||
+											currentUser?.email ||
+											"No email"}
+										{" • "}
+										{eventData.primaryCoordinatorPhone ||
+											currentUser?.phone ||
+											"No phone"}
+									</p>
+									<p className="text-xs text-slate-500 mt-1">
+										Auto-assigned to your teacher account
+									</p>
+								</div>
+							) : (
+								<SearchDropdown
+									label="Primary Coordinator"
+									icon={<Users size={18} />}
+									value={eventData.coordinator}
+									onSelect={(val) =>
+										handleChange("coordinator", val)
+									}
+									loading={loadingTeachers}
+									options={teachers.map((t) => ({
+										value: t.user_id,
+										label: t.name,
+										meta: `${t.email} • ${t.phone || "No phone"}`,
+									}))}
+								/>
+							)}
 						</div>
 					</Section>
 

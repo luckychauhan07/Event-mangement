@@ -67,6 +67,12 @@ const toNullableInteger = (value) => {
 };
 
 exports.addEvent = async (req, res) => {
+	console.log("Received request to add event:", req.user);
+	if (!req.user || !req.user.user_id) {
+		return res.status(401).json({
+			message: "Unauthorized: User information is missing.",
+		});
+	}
 	const parsed = createEventSchema.safeParse(req.body);
 	if (!parsed.success) {
 		// Zod's .flatten() method perfectly formats the errors for React
@@ -87,7 +93,10 @@ exports.addEvent = async (req, res) => {
 		primaryCoordinatorId,
 		...cleanEventData
 	} = eventData;
-
+	const eventStatus =
+		req.user.role === "teacher"
+			? "draft"
+			: cleanEventData.status || "draft";
 	const client = await pool.connect();
 	try {
 		await client.query("BEGIN");
@@ -98,10 +107,10 @@ exports.addEvent = async (req, res) => {
 			title, subtitle, description, category,
 			event_type, entry_fee,
 			start_at, end_at,
-			event_mode, venue,
+			event_mode, venue,status,
 			organizer_unit,created_by
 		)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 		RETURNING id`,
 			[
 				cleanEventData.title,
@@ -116,6 +125,7 @@ exports.addEvent = async (req, res) => {
 				cleanEventData.endAt,
 				cleanEventData.eventMode,
 				cleanEventData.venue,
+				eventStatus,
 				cleanEventData.organizerUnit,
 				req.user.user_id, // created_by
 			],
@@ -284,7 +294,7 @@ exports.addEvent = async (req, res) => {
 };
 
 exports.getAllTeachers = async (req, res) => {
-	console.log(req.body);
+	console.log(req.body, req.user, "Fetching all teachers");
 	try {
 		const teachers = await pool.query(
 			`SELECT full_name AS name, email, phone, user_id
@@ -465,7 +475,7 @@ exports.getAllEvents = async (req, res) => {
 	console.log(req.body, "Fetching all events");
 	try {
 		const response = await pool.query(
-			`SELECT * FROM events where is_deleted = false ORDER BY created_at DESC`,
+			`SELECT * FROM events where is_deleted = false and status = 'draft' ORDER BY created_at DESC`,
 		);
 		res.json({
 			message: "Events fetched successfully",
@@ -478,7 +488,6 @@ exports.getAllEvents = async (req, res) => {
 };
 
 exports.getTeacherEvents = async (req, res) => {
-	
 	try {
 		const teacherId = req.user.user_id;
 
@@ -580,7 +589,7 @@ exports.getTeacherDashboard = async (req, res) => {
 		});
 	}
 };
-	
+
 exports.deleteEvent = async (req, res) => {
 	const { id } = req.params;
 	console.log("Request to delete event with ID:", id);
@@ -737,16 +746,15 @@ ORDER BY t.created_at DESC;
 };
 
 exports.getEventResults = async (req, res) => {
-    return res.status(200).json({
-        success: true,
-        results: [],
-    });
+	return res.status(200).json({
+		success: true,
+		results: [],
+	});
 };
 
 exports.createEventResult = async (req, res) => {
-    return res.status(501).json({
-        success: false,
-        message: "Result module is not implemented yet.",
-    });
+	return res.status(501).json({
+		success: false,
+		message: "Result module is not implemented yet.",
+	});
 };
-
