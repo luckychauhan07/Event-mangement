@@ -17,8 +17,13 @@ export const getAllEvents = async () => {
 	return res.data;
 };
 
-export const getEventById = async (id) => {
+export const getEventById = async (id, edit = false) => {
 	const res = await api.get(`/event/${id}`);
+	return res.data;
+};
+
+export const patchEvent = async (id, data) => {
+	const res = await api.patch(`/event/${id}`, data);
 	return res.data;
 };
 

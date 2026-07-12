@@ -223,7 +223,14 @@ const EventSummary = ({ event }) => {
 						)}
 					</span>
 					{phase.label === "Upcoming" && (
-						<button className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-700 font-semibold hover:bg-emerald-100 transition-colors shadow-sm">
+						<button
+							className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-700 font-semibold hover:bg-emerald-100 transition-colors shadow-sm"
+							onClick={() =>
+								navigate(
+									`/admin/events/${event.id}/assign-coordinator`,
+								)
+							}
+						>
 							<UserPlus className="w-3.5 h-3.5" />
 							Assign Coordinator
 						</button>

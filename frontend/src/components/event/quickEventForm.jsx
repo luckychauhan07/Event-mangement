@@ -14,7 +14,13 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
+const QuickEventForm = ({
+	eventData,
+	setEventData,
+	setAdvancedMode,
+	isEditing,
+}) => {
+	console.count("QuickEventForm");
 	const organizerUnits = [
 		{ id: "cs", name: "Computer Science Department" },
 		{ id: "ee", name: "Electrical Engineering Department" },
@@ -116,9 +122,12 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 
 		try {
 			setCreating(true);
-			await createEvent(eventData);
-			toast.success("Event created successfully 🎉");
-
+			if (isEditing) {
+				toast.success("Event updated successfully 🎉");
+			} else {
+				await createEvent(eventData);
+				toast.success("Event created successfully 🎉");
+			}
 			setTimeout(() => {
 				window.location.href = "/admin/events";
 			}, 1000);
@@ -130,6 +139,7 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 			setCreating(false);
 		}
 	};
+	console.log("Rendering QuickEventForm with data:", eventData);
 
 	return (
 		<div className="max-w-7xl mx-auto">
@@ -147,6 +157,15 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 								Premium quick event builder
 							</p>
 						</div>
+						<div className="ml-auto">
+							<button
+								type="button"
+								onClick={() => window.history.back()}
+								className="inline-flex items-center rounded-xl border border-white/40 bg-white/12 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+							>
+								Go Back
+							</button>
+						</div>
 					</div>
 				</div>
 
@@ -156,6 +175,7 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 							<FloatingInput
 								label="Event Title"
+								placeholder="e.g. Hackathon 2026"
 								icon={<Tag size={18} />}
 								value={eventData.title || ""}
 								onChange={(v) => handleChange("title", v)}
@@ -163,6 +183,7 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 
 							<FloatingInput
 								label="Subtitle"
+								placeholder="e.g. AI Innovation Challenge"
 								value={eventData.subtitle || ""}
 								onChange={(v) => handleChange("subtitle", v)}
 							/>
@@ -170,6 +191,7 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 							<div className="md:col-span-2">
 								<FloatingTextarea
 									label="Description"
+									placeholder="Describe your event"
 									icon={<FileText size={18} />}
 									value={eventData.description || ""}
 									onChange={(v) =>
@@ -229,6 +251,7 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 							{eventData.eventType === "paid" && (
 								<FloatingInput
 									label="Entry Fee ₹"
+									placeholder="e.g. 200"
 									type="number"
 									icon={<DollarSign size={18} />}
 									value={eventData.entryFee || ""}
@@ -244,6 +267,7 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 								eventData.eventMode === "hybrid") && (
 								<FloatingInput
 									label="Venue"
+									placeholder="e.g. Auditorium Hall A"
 									icon={<MapPin size={18} />}
 									value={eventData.venue || ""}
 									onChange={(v) => handleChange("venue", v)}
@@ -254,6 +278,7 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 								eventData.eventMode === "hybrid") && (
 								<FloatingInput
 									label="Meeting Link"
+									placeholder="https://meet.google.com/..."
 									icon={<LinkIcon size={18} />}
 									value={eventData.onlineLink || ""}
 									onChange={(v) =>
@@ -335,7 +360,13 @@ const QuickEventForm = ({ eventData, setEventData, setAdvancedMode }) => {
 							className="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-lg hover:scale-[1.02] transition disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
 							disabled={creating}
 						>
-							{creating ? "Creating..." : "Create Event"}
+							{creating
+								? isEditing
+									? "Updating..."
+									: "Creating..."
+								: isEditing
+									? "update event"
+									: "Create Event"}
 						</button>
 					</div>
 				</form>
@@ -365,10 +396,11 @@ const FloatingInput = ({
 	type = "text",
 	icon,
 	min,
+	placeholder,
 }) => (
 	<div className="relative">
 		{icon && (
-			<div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+			<div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10">
 				{icon}
 			</div>
 		)}
@@ -377,12 +409,14 @@ const FloatingInput = ({
 			type={type}
 			value={value}
 			min={min}
-			placeholder=" "
+			placeholder={placeholder || " "}
 			onChange={(e) => onChange(e.target.value)}
-			className={`${inputBase} ${icon ? "pl-11" : ""}`}
+			className={`${inputBase} ${icon ? "pl-11" : ""} placeholder:text-slate-400 placeholder:text-xs`}
 		/>
 
-		<label className="absolute left-4 top-2 text-xs text-slate-500">
+		<label
+			className={`absolute top-2 text-xs text-slate-500 ${icon ? "left-11" : "left-4"}`}
+		>
 			{label}
 		</label>
 	</div>
@@ -396,21 +430,25 @@ const getDateTimeLocalValue = (date) => {
 	)}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
-const FloatingTextarea = ({ label, value, onChange, icon }) => (
+const FloatingTextarea = ({ label, value, onChange, icon, placeholder }) => (
 	<div className="relative">
 		{icon && (
-			<div className="absolute left-4 top-5 text-slate-400">{icon}</div>
+			<div className="absolute left-4 top-5 text-slate-400 pointer-events-none z-10">
+				{icon}
+			</div>
 		)}
 
 		<textarea
 			rows="3"
 			value={value}
-			placeholder=" "
+			placeholder={placeholder || " "}
 			onChange={(e) => onChange(e.target.value)}
-			className={`${inputBase} resize-none ${icon ? "pl-11" : ""}`}
+			className={`${inputBase} resize-none ${icon ? "pl-11" : ""} placeholder:text-slate-400 placeholder:text-xs`}
 		/>
 
-		<label className="absolute left-4 top-2 text-xs text-slate-500">
+		<label
+			className={`absolute top-2 text-xs text-slate-500 ${icon ? "left-11" : "left-4"}`}
+		>
 			{label}
 		</label>
 	</div>

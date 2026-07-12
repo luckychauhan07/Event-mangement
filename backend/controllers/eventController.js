@@ -1,7 +1,5 @@
-const pool = require("../db/config");
-const { getEventDetails } = require("../db/eventQuery");
 const { createEventSchema } = require("../validators/eventValidator");
-
+const pool = require("../db/config");
 const mapDatabaseError = (error) => {
 	switch (error?.code) {
 		case "23505":
@@ -306,7 +304,7 @@ exports.getAllTeachers = async (req, res) => {
 
 exports.getEventDetails = async (req, res) => {
 	const { id } = req.params;
-
+	console.log(req.body, `Fetching details for event ID: ${id}`);
 	if (!id || isNaN(id)) {
 		return res.status(400).json({
 			success: false,
@@ -397,6 +395,7 @@ exports.getEventDetails = async (req, res) => {
 				eventType: event.event_type,
 				entryFee: event.entry_fee || 0,
 				tags: event.tags || [],
+				organizerUnit: event.organizer_unit || null,
 			},
 
 			schedule: {
@@ -540,5 +539,262 @@ exports.cancelEvent = async (req, res) => {
 			success: false,
 			message: "Internal server error",
 		});
+	}
+};
+
+exports.getAllDetailsForEvent = async (req, res) => {
+	const { id } = req.params;
+	if (!id || isNaN(id)) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid event ID",
+		});
+	}
+	try {
+		const details = await pool.query(
+			`SELECT 
+				e.id, e.title, e.subtitle, e.description, e.category,
+				e.event_type, e.entry_fee, e.start_at, e.end_at,
+				e.event_mode, e.venue, e.organizer_unit,
+				e.status, e.visibility, e.created_at,
+				COALESCE((
+					SELECT json_agg(
+						jsonb_build_object(
+							'userId', u.user_id,
+							'name', u.full_name,
+							'email', u.email,
+							'phone', u.phone,
+							'role', ec.role
+						)
+					)
+					FROM event_coordinators ec
+					JOIN users u ON u.user_id = ec.user_id
+					WHERE ec.event_id = e.id
+				), '[]') AS coordinators,
+				COALESCE((
+					SELECT json_agg(
+						jsonb_build_object(
+							'allow', r.allow_registration,
+							'type', r.registration_type,
+							'participation', r.participation_type,
+							'start', r.registration_start,
+							'end', r.registration_end,
+							'limit', r.participant_limit,
+							'teamMin', r.min_team_size,
+							'teamMax', r.max_team_size
+						)
+					)
+					FROM event_registration_settings r
+					WHERE r.event_id = e.id
+				), '[]') AS registration_settings
+			FROM events e
+			WHERE e.id = $1`,
+		);
+		console.log(details);
+		// return res.status(200).json({
+		// 	success: true,
+		// 	details,
+		// });
+	} catch (error) {
+		console.error("Error fetching event details:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};
+
+exports.updateEvent = async (req, res) => {
+	const client = await pool.connect();
+
+	try {
+		const { id } = req.params;
+		const updates = req.body;
+
+		await client.query("BEGIN");
+		const existingEvent = await client.query(
+			`
+			SELECT 
+				id,
+				title,
+				status,
+				is_deleted,
+				participant_limit,
+				event_type,
+				registration_start,
+				registration_end
+			FROM events
+			WHERE id = $1
+			`,
+			[id],
+		);
+
+		if (!existingEvent.rows.length) {
+			await client.query("ROLLBACK");
+			return res.status(404).json({
+				message: "Event not found",
+			});
+		}
+
+		const event = existingEvent.rows[0];
+
+		if (event.is_deleted) {
+			await client.query("ROLLBACK");
+			return res.status(400).json({
+				message: "Deleted events cannot be edited",
+			});
+		}
+
+		if (event.status === "cancelled" || event.status === "completed") {
+			await client.query("ROLLBACK");
+			return res.status(400).json({
+				message: `Cannot edit ${event.status} events`,
+			});
+		}
+
+		const registrationStats = await client.query(
+			`
+			SELECT COUNT(*)::int AS total
+			FROM event_registrations
+			WHERE event_id = $1
+			AND status IN ('registered','confirmed')
+			`,
+			[id],
+		);
+
+		const currentRegistrations = registrationStats.rows[0].total || 0;
+
+		const registrationStarted =
+			currentRegistrations > 0 ||
+			(event.registration_start &&
+				new Date(event.registration_start) <= new Date());
+
+		// Date validation
+		if (
+			updates.startAt &&
+			updates.endAt &&
+			new Date(updates.startAt) >= new Date(updates.endAt)
+		) {
+			await client.query("ROLLBACK");
+			return res.status(400).json({
+				message: "End date must be after start date",
+			});
+		}
+
+		// Paid event validation
+		if (
+			updates.eventType === "paid" &&
+			(!updates.entryFee || Number(updates.entryFee) <= 0)
+		) {
+			await client.query("ROLLBACK");
+			return res.status(400).json({
+				message: "Paid event requires valid entry fee",
+			});
+		}
+
+		if (registrationStarted) {
+			// cannot change event type
+			if (updates.eventType && updates.eventType !== event.event_type) {
+				await client.query("ROLLBACK");
+				return res.status(400).json({
+					message:
+						"Cannot change event type after registrations start",
+				});
+			}
+
+			// participant limit rule
+			if (updates.participantLimit !== undefined) {
+				const newLimit = Number(updates.participantLimit);
+
+				if (newLimit < currentRegistrations) {
+					await client.query("ROLLBACK");
+					return res.status(400).json({
+						message: `Participant limit cannot be less than current registrations (${currentRegistrations})`,
+					});
+				}
+			}
+		}
+
+		const updatedEvent = await client.query(
+			`
+			UPDATE events
+			SET
+				title = COALESCE($1, title),
+				subtitle = COALESCE($2, subtitle),
+				description = COALESCE($3, description),
+				category = COALESCE($4, category),
+				event_type = COALESCE($5, event_type),
+				entry_fee = COALESCE($6, entry_fee),
+
+				event_mode = COALESCE($7, event_mode),
+				venue = COALESCE($8, venue),
+				online_link = COALESCE($9, online_link),
+
+				start_at = COALESCE($10, start_at),
+				end_at = COALESCE($11, end_at),
+
+				participant_limit = COALESCE($12, participant_limit),
+
+				updated_at = NOW()
+
+			WHERE id = $13
+			RETURNING *;
+			`,
+			[
+				updates.title ?? null,
+				updates.subtitle ?? null,
+				updates.description ?? null,
+				updates.category ?? null,
+				updates.eventType ?? null,
+				updates.entryFee ?? null,
+
+				updates.eventMode ?? null,
+				updates.venue ?? null,
+				updates.onlineLink ?? null,
+
+				updates.startAt ?? null,
+				updates.endAt ?? null,
+
+				updates.participantLimit ?? null,
+
+				id,
+			],
+		);
+
+		if (updates.coordinator) {
+			await client.query(
+				`
+				DELETE FROM event_coordinators
+				WHERE event_id = $1
+				`,
+				[id],
+			);
+
+			await client.query(
+				`
+				INSERT INTO event_coordinators
+				(event_id, user_id, role)
+				VALUES ($1, $2, 'primary')
+				`,
+				[id, updates.coordinator],
+			);
+		}
+
+		await client.query("COMMIT");
+
+		return res.status(200).json({
+			message: "Event updated successfully",
+			event: updatedEvent.rows[0],
+		});
+	} catch (error) {
+		await client.query("ROLLBACK");
+
+		console.error("Update Event Error:", error);
+
+		return res.status(500).json({
+			message: "Failed to update event",
+		});
+	} finally {
+		client.release();
 	}
 };

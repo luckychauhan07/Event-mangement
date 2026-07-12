@@ -13,6 +13,8 @@ import Notifications from "@/pages/admin/notifications";
 import AdminProfile from "@/pages/admin/adminProfile";
 import CompleteAdminProfile from "@/pages/admin/completeAdminProfile";
 import EditAdminProfile from "@/pages/admin/editAdminProfile";
+import EditEvent from "@/pages/admin/editEvent";
+import EventCoordinator from "@/pages/admin/eventCoordinator";
 
 const AdminRoutes = () => {
 	return (
@@ -22,10 +24,14 @@ const AdminRoutes = () => {
 					<Route path="" element={<AdminDashboard />} />
 					<Route path="events" element={<EventList />} />
 					<Route path="events/:id" element={<EventDetails />} />
-					{/* <Route path="event/:id/edit" element={<EditEvent />} /> */}
+					<Route path="events/:id/edit" element={<EditEvent />} />
 					<Route path="add-event" element={<AddEvent />} />
 					<Route path="users" element={<Users />} />
 					<Route path="users/:id" element={<UserDetails />} />
+					<Route
+						path="events/:id/assign-coordinator"
+						element={<EventCoordinator />}
+					/>
 					<Route path="users/:id/edit" element={<EditUser />} />
 					<Route path="notifications" element={<Notifications />} />
 					<Route
