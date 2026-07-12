@@ -65,6 +65,12 @@ const toNullableInteger = (value) => {
 };
 
 exports.addEvent = async (req, res) => {
+	console.log("Received request to add event:", req.user);
+	if (!req.user || !req.user.user_id) {
+		return res.status(401).json({
+			message: "Unauthorized: User information is missing.",
+		});
+	}
 	const parsed = createEventSchema.safeParse(req.body);
 	if (!parsed.success) {
 		// Zod's .flatten() method perfectly formats the errors for React
@@ -85,7 +91,10 @@ exports.addEvent = async (req, res) => {
 		primaryCoordinatorId,
 		...cleanEventData
 	} = eventData;
-
+	const eventStatus =
+		req.user.role === "teacher"
+			? "draft"
+			: cleanEventData.status || "draft";
 	const client = await pool.connect();
 	try {
 		await client.query("BEGIN");
@@ -96,10 +105,10 @@ exports.addEvent = async (req, res) => {
 			title, subtitle, description, category,
 			event_type, entry_fee,
 			start_at, end_at,
-			event_mode, venue,
+			event_mode, venue,status,
 			organizer_unit,created_by
 		)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 		RETURNING id`,
 			[
 				cleanEventData.title,
@@ -114,6 +123,7 @@ exports.addEvent = async (req, res) => {
 				cleanEventData.endAt,
 				cleanEventData.eventMode,
 				cleanEventData.venue,
+				eventStatus,
 				cleanEventData.organizerUnit,
 				req.user.user_id, // created_by
 			],
@@ -282,7 +292,7 @@ exports.addEvent = async (req, res) => {
 };
 
 exports.getAllTeachers = async (req, res) => {
-	console.log(req.body);
+	console.log(req.body, req.user, "Fetching all teachers");
 	try {
 		const teachers = await pool.query(
 			`SELECT full_name AS name, email, phone, user_id
@@ -464,7 +474,7 @@ exports.getAllEvents = async (req, res) => {
 	console.log(req.body, "Fetching all events");
 	try {
 		const response = await pool.query(
-			`SELECT * FROM events where is_deleted = false ORDER BY created_at DESC`,
+			`SELECT * FROM events where is_deleted = false and status = 'draft' ORDER BY created_at DESC`,
 		);
 		res.json({
 			message: "Events fetched successfully",
@@ -473,6 +483,109 @@ exports.getAllEvents = async (req, res) => {
 	} catch (error) {
 		console.error("Error fetching events:", error);
 		res.status(500).json({ message: "Error fetching events" });
+	}
+};
+
+exports.getTeacherEvents = async (req, res) => {
+	try {
+		const teacherId = req.user.user_id;
+
+		const response = await pool.query(
+			`
+			SELECT e.*
+			FROM events e
+			INNER JOIN event_coordinators ec
+				ON e.id = ec.event_id
+			WHERE
+				ec.user_id = $1
+				AND e.is_deleted = false
+			ORDER BY e.created_at DESC
+			`,
+			[teacherId],
+		);
+
+		res.json({
+			message: "Teacher events fetched successfully",
+			events: response.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching teacher events:", error);
+
+		res.status(500).json({
+			message: "Error fetching teacher events",
+		});
+	}
+};
+
+exports.getTeacherDashboard = async (req, res) => {
+	try {
+		const teacherId = req.user.user_id;
+
+		const eventsQuery = `
+			SELECT
+				e.*,
+				ec.role,
+				COUNT(DISTINCT er.registration_id) AS registrations
+			FROM events e
+			JOIN event_coordinators ec
+				ON e.id = ec.event_id
+			LEFT JOIN event_registrations er
+				ON er.event_id = e.id
+			WHERE
+				ec.user_id = $1
+				AND e.is_deleted = false
+			GROUP BY e.id, ec.role
+			ORDER BY e.created_at DESC;
+		`;
+
+		const statsQuery = `
+			SELECT
+				COUNT(DISTINCT e.id) AS assigned_events,
+
+				COUNT(
+					DISTINCT CASE
+						WHEN e.status = 'published' THEN e.id
+					END
+				) AS active_events,
+
+				COUNT(DISTINCT er.registration_id) AS total_registrations,
+
+				COUNT(
+					DISTINCT CASE
+						WHEN er.status = 'pending' THEN er.registration_id
+					END
+				) AS pending_registrations
+
+			FROM event_coordinators ec
+
+			JOIN events e
+				ON e.id = ec.event_id
+
+			LEFT JOIN event_registrations er
+				ON er.event_id = e.id
+
+			WHERE
+				ec.user_id = $1
+				AND e.is_deleted = false;
+		`;
+
+		const [statsResult, eventsResult] = await Promise.all([
+			pool.query(statsQuery, [teacherId]),
+			pool.query(eventsQuery, [teacherId]),
+		]);
+
+		return res.status(200).json({
+			success: true,
+			stats: statsResult.rows[0],
+			events: eventsResult.rows,
+		});
+	} catch (error) {
+		console.error("Error loading teacher dashboard:", error);
+
+		return res.status(500).json({
+			success: false,
+			message: "Failed to load dashboard",
+		});
 	}
 };
 
@@ -797,4 +910,107 @@ exports.updateEvent = async (req, res) => {
 	} finally {
 		client.release();
 	}
+};
+
+exports.getEventRegistrations = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		const query = `
+SELECT
+    er.registration_id,
+    er.status,
+    er.submitted_at,
+
+    u.user_id,
+    u.full_name,
+    u.email,
+    u.phone,
+
+    t.id AS team_id,
+    t.team_name AS team_name
+
+FROM event_registrations er
+
+JOIN users u
+    ON u.user_id = er.user_id
+
+LEFT JOIN teams t
+    ON t.id = er.team_id
+
+WHERE er.event_id = $1
+
+ORDER BY er.submitted_at DESC;
+`;
+
+		const result = await pool.query(query, [id]);
+
+		return res.status(200).json({
+			success: true,
+			registrations: result.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching registrations:", error);
+
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch registrations",
+		});
+	}
+};
+
+exports.getEventTeams = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		const query = `
+SELECT
+    t.id AS team_id,
+    t.team_name,
+    t.created_at,
+    COUNT(tm.user_id) AS member_count
+
+FROM teams t
+
+LEFT JOIN team_members tm
+    ON tm.team_id = t.id
+
+WHERE t.event_id = $1
+
+GROUP BY
+    t.id,
+    t.team_name,
+    t.created_at
+
+ORDER BY t.created_at DESC;
+`;
+
+		const result = await pool.query(query, [id]);
+
+		return res.status(200).json({
+			success: true,
+			teams: result.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching teams:", error);
+
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch teams",
+		});
+	}
+};
+
+exports.getEventResults = async (req, res) => {
+	return res.status(200).json({
+		success: true,
+		results: [],
+	});
+};
+
+exports.createEventResult = async (req, res) => {
+	return res.status(501).json({
+		success: false,
+		message: "Result module is not implemented yet.",
+	});
 };
