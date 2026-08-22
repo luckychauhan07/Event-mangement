@@ -42,14 +42,16 @@ const Login = () => {
 				window.location.href = "/teacher/dashboard";
 			}
 			if (response.user.role === "student") {
-				window.location.href = "/student/dashboard";
+				window.location.href = "/user/dashboard";
 			}
-		} catch (err) {
-			setError(
-				err.response?.data?.message ||
-					"Login failed. Please try again.",
-			);
-		} finally {
+		}  catch (err) {
+    console.error("LOGIN ERROR:", err);
+    setError(
+        err.response?.data?.message ||
+        err.message ||
+        "Login failed. Please try again."
+    );
+} finally {
 			setLoading(false);
 		}
 	};

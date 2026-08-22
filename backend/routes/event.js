@@ -5,8 +5,6 @@ const express = require("express");
 const {
 	addEvent,
 	getAllTeachers,
-	getEventDetails,
-	getAllEvents,
 	deleteEvent,
 	cancelEvent,
 } = require("../controllers/eventController");
@@ -21,9 +19,5 @@ eventRouter.post("/", authMiddleware, adminMiddleware, addEvent);
 eventRouter.get("/teachers", authMiddleware, adminMiddleware, getAllTeachers);
 eventRouter.delete("/:id", authMiddleware, adminMiddleware, deleteEvent);
 eventRouter.put("/:id/cancel", authMiddleware, adminMiddleware, cancelEvent);
-
-// no admin middleware here since teachers and coordinators should be able to view event details
-eventRouter.get("/", authMiddleware, getAllEvents);
-eventRouter.get("/:id", authMiddleware, getEventDetails);
 
 module.exports = eventRouter;

@@ -91,27 +91,61 @@ export const teacherMenu = [
 		icon: User,
 	},
 ];
-export const studentMenu = [
+
+export const userMenu = [
 	{
 		title: "🏠 Dashboard",
 		key: "dashboard",
-		path: "/student",
+		path: "/user",
 		icon: LayoutDashboard,
 	},
 	{
 		title: "📅 Events",
 		key: "events",
+		path: "/user/events",
+		icon: CalendarDays,
+	},
+	{
+		title: "👥 My Registrations",
+		key: "registrations",
+		path: "/user/registrations",
+		icon: Users,
+	},
+	{
+		title: "🔔 Notifications",
+		key: "notifications",
+		path: "/user/notifications",
+		icon: Bell,
+	},
+	{
+		title: "👤 Profile",
+		key: "profile",
+		path: "/user/profile",
+		icon: User,
+	},
+];
+
+export const studentMenu = [
+	{
+		title: "Dashboard",
+		key: "dashboard",
+		path: "/student",
+		icon: LayoutDashboard,
+	},
+	{
+		title: "Events",
+		key: "events",
 		path: "/student/events",
 		icon: CalendarDays,
 	},
 	{
-		title: "🔔 Notifications",
+		title: "Notifications",
 		key: "notifications",
 		path: "/student/notifications",
 		icon: Bell,
 	},
 	{
-		title: "👤 Profile",
+		title: "Profile",
 		key: "profile",
 		path: "/student/profile",
 		icon: User,

@@ -2,16 +2,39 @@ const pool = require("../db/config");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+const getDatabaseErrorMessage = (error) => {
+	if (!error?.code) {
+		return null;
+	}
+
+	switch (error.code) {
+		case "ENOTFOUND":
+			return "Database host could not be resolved. Check your DATABASE_URL in .env. If you are using Supabase, your project may be paused due to inactivity.";
+		case "ECONNREFUSED":
+			return "Database connection was refused. Verify the database host, port, and network access.";
+		case "28P01":
+			return "Database authentication failed. Check the username or password in DATABASE_URL.";
+		case "3D000":
+			return "Database does not exist. Check the database name in DATABASE_URL.";
+		default:
+			return null;
+	}
+};
+
 exports.register = async (req, res) => {
 	try {
-		const { full_name, email, phone, password, role } = req.body;
+		const full_name = req.body.full_name?.trim();
+		const email = req.body.email?.trim().toLowerCase();
+		const phone = req.body.phone?.trim() || null;
+		const password = req.body.password;
+		const role = req.body.role;
 
 		if (
 			typeof full_name !== "string" ||
 			typeof email !== "string" ||
 			typeof password !== "string" ||
-			!full_name.trim() ||
-			!email.trim() ||
+			!full_name ||
+			!email ||
 			!password
 		) {
 			return res.status(400).json({
@@ -68,21 +91,28 @@ exports.register = async (req, res) => {
 			message: "User registered",
 		});
 	} catch (err) {
-		console.error(err);
-		res.status(500).json({
+		console.error("REGISTER ERROR:", err);
+		const dbMessage = getDatabaseErrorMessage(err);
+		if (dbMessage) {
+			return res.status(503).json({ success: false, message: dbMessage });
+		}
+		return res.status(500).json({
 			success: false,
-			message: "Server error",
+			message: "Registration failed due to a server error.",
+			error: process.env.NODE_ENV !== "production" ? err.message : undefined,
 		});
 	}
 };
 
 exports.login = async (req, res) => {
+	console.log("LOGIN HANDLER START", { path: req.path, body: req.body, envDatabaseUrl: !!process.env.DATABASE_URL });
 	try {
-		const { email, password } = req.body;
+		const email = req.body.email?.trim().toLowerCase();
+		const password = req.body.password;
 		if (
 			typeof email !== "string" ||
 			typeof password !== "string" ||
-			!email.trim() ||
+			!email ||
 			!password
 		) {
 			return res.status(400).json({
@@ -119,67 +149,49 @@ exports.login = async (req, res) => {
 			});
 		}
 		const user = userResult.rows[0];
-		console.log("User from DB:", user);
 		if (typeof user.password_hash !== "string" || !user.password_hash) {
+			console.error(`Login attempt for user ${user.email} with no password hash set.`);
 			return res.status(401).json({
 				success: false,
 				message: "Invalid credentials",
 			});
 		}
-		if (user.email === "admin@example.com") {
-			const token = jwt.sign(
-				{
-					user_id: user.user_id,
-					role: user.role,
-				},
-				process.env.JWT_SECRET,
-				{ expiresIn: process.env.JWT_EXPIRES },
-			);
 
-			res.json({
-				success: true,
-				token,
-				user: {
-					id: user.user_id,
-					name: user.full_name,
-					email: user.email,
-					role: user.role,
-				},
-			});
-		} else {
-			const match = await bcrypt.compare(password, user.password_hash);
+		const match = await bcrypt.compare(password, user.password_hash);
 
-			if (!match) {
-				return res.status(401).json({
-					success: false,
-					message: "Invalid credentials",
-				});
-			}
-
-			const token = jwt.sign(
-				{
-					user_id: user.user_id,
-					role: user.role,
-				},
-				process.env.JWT_SECRET,
-				{ expiresIn: process.env.JWT_EXPIRES },
-			);
-
-			res.json({
-				success: true,
-				token,
-				user: {
-					id: user.user_id,
-					name: user.full_name,
-					email: user.email,
-					role: user.role,
-				},
+		if (!match) {
+			return res.status(401).json({
+				success: false,
+				message: "Invalid credentials",
 			});
 		}
+
+		const token = jwt.sign(
+			{ user_id: user.user_id, role: user.role },
+			process.env.JWT_SECRET,
+			{ expiresIn: process.env.JWT_EXPIRES },
+		);
+
+		res.json({
+			success: true,
+			token,
+			user: {
+				id: user.user_id,
+				name: user.full_name,
+				email: user.email,
+				role: user.role,
+			},
+		});
 	} catch (err) {
-		res.status(500).json({
+		console.error("LOGIN ERROR:", err);
+		const dbMessage = getDatabaseErrorMessage(err);
+		if (dbMessage) {
+			return res.status(503).json({ success: false, message: dbMessage });
+		}
+		return res.status(500).json({
 			success: false,
-			message: "Server error",
+			message: "Login failed due to a server error.",
+			stack: process.env.NODE_ENV !== "production" ? err.stack : undefined,
 		});
 	}
 };

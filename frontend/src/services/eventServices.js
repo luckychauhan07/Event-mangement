@@ -12,7 +12,12 @@ export const getAllTeachers = async () => {
 };
 
 export const getAllEvents = async () => {
-	const res = await api.get("/event");
+	const res = await api.get("/api/user/events");
+	return res.data;
+};
+
+export const getUserEventById = async (id) => {
+	const res = await api.get(`/api/user/events/${id}`);
 	return res.data;
 };
 

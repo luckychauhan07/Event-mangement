@@ -1,57 +1,6 @@
 const pool = require("../db/config");
-const { getEventDetails } = require("../db/eventQuery");
 const { createEventSchema } = require("../validators/eventValidator");
-
-const mapDatabaseError = (error) => {
-	switch (error?.code) {
-		case "23505":
-			return {
-				status: 409,
-				message: "A duplicate value was found.",
-				errors: {
-					database: [error.detail || "Duplicate record"],
-				},
-			};
-		case "23503":
-			return {
-				status: 400,
-				message: "A referenced record was not found.",
-				errors: {
-					database: [error.detail || "Invalid reference"],
-				},
-			};
-		case "23502":
-			return {
-				status: 400,
-				message: "A required value is missing.",
-				errors: {
-					database: [
-						error.column
-							? `${error.column} is required`
-							: error.detail || "Missing required value",
-					],
-				},
-			};
-		case "22P02":
-			return {
-				status: 400,
-				message: "Invalid input format.",
-				errors: {
-					database: [error.detail || "Invalid value format"],
-				},
-			};
-		case "23514":
-			return {
-				status: 400,
-				message: "One or more values are outside allowed range.",
-				errors: {
-					database: [error.detail || "Constraint violation"],
-				},
-			};
-		default:
-			return null;
-	}
-};
+const { mapDatabaseError } = require("../utils/dbHelpers");
 
 const toNullableInteger = (value) => {
 	if (value === "" || value === null || value === undefined) {
@@ -176,7 +125,6 @@ exports.addEvent = async (req, res) => {
 				const serializedOptions = JSON.stringify(
 					Array.isArray(field.options) ? field.options : [],
 				);
-				console.log("OPTIONS:", field.options);
 				values.push(
 					eventId,
 					field.label,
@@ -282,7 +230,6 @@ exports.addEvent = async (req, res) => {
 };
 
 exports.getAllTeachers = async (req, res) => {
-	console.log(req.body);
 	try {
 		const teachers = await pool.query(
 			`SELECT full_name AS name, email, phone, user_id
@@ -291,7 +238,6 @@ exports.getAllTeachers = async (req, res) => {
 				AND status = 'active'
 			 ORDER BY full_name ASC`,
 		);
-		console.log("Fetched teachers:", teachers.rows);
 		res.json({
 			message: "Teachers fetched successfully",
 			teachers: teachers.rows,
@@ -302,182 +248,8 @@ exports.getAllTeachers = async (req, res) => {
 	}
 };
 
-exports.getEventDetails = async (req, res) => {
-	const { id } = req.params;
-
-	if (!id || isNaN(id)) {
-		return res.status(400).json({
-			success: false,
-			message: "Invalid event ID",
-		});
-	}
-
-	try {
-		const query = `
-    SELECT 
-      e.*,
-
-      -- Coordinators
-      COALESCE((
-        SELECT json_agg(
-          jsonb_build_object(
-            'userId', u.user_id,
-            'name', u.full_name,
-            'email', u.email,
-            'phone', u.phone,
-            'role', ec.role
-          )
-        )
-        FROM event_coordinators ec
-        JOIN users u ON u.user_id = ec.user_id
-        WHERE ec.event_id = e.id
-      ), '[]') AS coordinators,
-
-      -- Registration Rules
-      COALESCE((
-        SELECT json_agg(
-          jsonb_build_object(
-            'allow', r.allow_registration,
-            'type', r.registration_type,
-            'participation', r.participation_type,
-            'start', r.registration_start,
-            'end', r.registration_end,
-            'limit', r.participant_limit,
-            'teamMin', r.min_team_size,
-            'teamMax', r.max_team_size
-          )
-        )
-        FROM event_registration_settings r
-        WHERE r.event_id = e.id
-      ), '[]') AS registration_rules,
-
-      -- Form Fields
-      COALESCE((
-        SELECT json_agg(
-          jsonb_build_object(
-            'id', f.field_id,
-            'label', f.label,
-            'type', f.field_type,
-            'required', f.is_required,
-            'options', f.options,
-            'order', f.display_order
-          )
-          ORDER BY f.display_order
-        )
-        FROM event_form_fields f
-        WHERE f.event_id = e.id
-      ), '[]') AS form_fields
-
-    FROM events e
-    WHERE e.id = $1;
-    `;
-
-		const result = await pool.query(query, [id]);
-
-		if (result.rows.length === 0) {
-			return res.status(404).json({
-				success: false,
-				message: "Event not found",
-			});
-		}
-
-		const event = result.rows[0];
-		console.log("Raw event data from DB:", event);
-		// 🔥 Normalize safely
-		const formattedEvent = {
-			id: event.id,
-
-			basic: {
-				title: event.title,
-				subtitle: event.subtitle || null,
-				description: event.description,
-				category: event.category,
-				eventType: event.event_type,
-				entryFee: event.entry_fee || 0,
-				tags: event.tags || [],
-			},
-
-			schedule: {
-				startAt: event.start_at,
-				endAt: event.end_at,
-				mode: event.event_mode,
-				venue: event.venue || null,
-				onlineLink: event.online_link || null,
-			},
-
-			registration: {
-				config: {
-					required: event.registration_rules[0]?.allow ?? false,
-					type: event.registration_rules[0]?.type || null,
-					start: event.registration_rules[0]?.start || null,
-					end: event.registration_rules[0]?.end || null,
-					limit: event.registration_rules[0]?.limit || null,
-					participationType:
-						event.registration_rules[0]?.participation || null,
-				},
-				rules: event.registration_rules || [],
-			},
-
-			team: {
-				enabled:
-					event.registration_rules[0]?.participation === "team" &&
-					event.registration_rules[0]?.allow
-						? true
-						: false,
-				min: event.registration_rules[0]?.teamMin || null,
-				max: event.registration_rules[0]?.teamMax || null,
-				joinMode: event.registration_rules[0]?.teamJoinMode || null,
-			},
-
-			coordinators: event.coordinators || [],
-
-			formFields: event.form_fields || [],
-
-			stats: {
-				totalRegistrations: Number(event.total_registrations) || 0,
-				totalTeams: Number(event.total_teams) || 0,
-			},
-
-			meta: {
-				status: event.status,
-				visibility: event.visibility,
-				createdAt: event.created_at,
-			},
-		};
-		console.log("Formatted event data:", formattedEvent);
-		return res.status(200).json({
-			success: true,
-			event: formattedEvent,
-		});
-	} catch (error) {
-		console.error("Error fetching event details:", error);
-
-		return res.status(500).json({
-			success: false,
-			message: "Internal server error",
-		});
-	}
-};
-
-exports.getAllEvents = async (req, res) => {
-	console.log(req.body, "Fetching all events");
-	try {
-		const response = await pool.query(
-			`SELECT * FROM events where is_deleted = false ORDER BY created_at DESC`,
-		);
-		res.json({
-			message: "Events fetched successfully",
-			events: response.rows,
-		});
-	} catch (error) {
-		console.error("Error fetching events:", error);
-		res.status(500).json({ message: "Error fetching events" });
-	}
-};
-
 exports.deleteEvent = async (req, res) => {
 	const { id } = req.params;
-	console.log("Request to delete event with ID:", id);
 	if (!id || isNaN(id)) {
 		return res.status(400).json({
 			success: false,
@@ -510,7 +282,6 @@ exports.deleteEvent = async (req, res) => {
 
 exports.cancelEvent = async (req, res) => {
 	const { id } = req.params;
-	console.log("Request to cancel event with ID:", id);
 	if (!id || isNaN(id)) {
 		return res.status(400).json({
 			success: false,
