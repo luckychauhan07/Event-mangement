@@ -88,6 +88,55 @@
             transform: translateY(-2px);
         }
 
+        .advanced-filters {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 18px;
+        }
+
+        .advanced-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+
+        .advanced-filters label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .advanced-filters .form-control,
+        .advanced-filters .form-select {
+            height: 36px;
+            font-size: 0.84rem;
+        }
+
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .active-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
         /* Events Grid */
         .events-grid {
             display: grid;
@@ -493,6 +542,50 @@
                 <button class="filter-tab" data-filter="workshop">Workshops</button>
             </div>
 
+            <div class="advanced-filters">
+                <div class="advanced-grid">
+                    <div>
+                        <label for="eventDateFrom">Date from</label>
+                        <input id="eventDateFrom" type="date" class="form-control form-control-sm" />
+                    </div>
+                    <div>
+                        <label for="eventDateTo">Date to</label>
+                        <input id="eventDateTo" type="date" class="form-control form-control-sm" />
+                    </div>
+                    <div>
+                        <label for="venueFilter">Venue</label>
+                        <input id="venueFilter" type="text" class="form-control form-control-sm" placeholder="e.g. Auditorium" />
+                    </div>
+                    <div>
+                        <label for="approvalFilter">Approval</label>
+                        <select id="approvalFilter" class="form-select form-select-sm">
+                            <option value="all">All</option>
+                            <option value="requires">Requires approval</option>
+                            <option value="auto">Auto approved</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="teamFilter">Participation</label>
+                        <select id="teamFilter" class="form-select form-select-sm">
+                            <option value="all">All</option>
+                            <option value="team">Team events</option>
+                            <option value="solo">Solo events</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="sortFilter">Sort by</label>
+                        <select id="sortFilter" class="form-select form-select-sm">
+                            <option value="date_asc">Date: earliest</option>
+                            <option value="date_desc">Date: latest</option>
+                            <option value="seats_desc">Seats left: high to low</option>
+                            <option value="seats_asc">Seats left: low to high</option>
+                            <option value="name_asc">Name: A to Z</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="activeFilters" class="active-filters"></div>
+            </div>
+
             <!-- Events Grid -->
             <div id="eventsGrid" class="events-grid"></div>
 
@@ -519,6 +612,76 @@
         ];
 
         let currentRegistrations = new Map(); // Store {eventId: 'pending' | 'success'}
+        const FILTER_STORAGE_KEY = "ee_user_event_filters_v1";
+
+        function getFilterState() {
+            return {
+                search: document.getElementById("searchUserTop").value.trim().toLowerCase(),
+                activeFilter: document.querySelector(".filter-tab.active")?.dataset.filter || "all",
+                dateFrom: document.getElementById("eventDateFrom").value,
+                dateTo: document.getElementById("eventDateTo").value,
+                venue: document.getElementById("venueFilter").value.trim().toLowerCase(),
+                approval: document.getElementById("approvalFilter").value,
+                team: document.getElementById("teamFilter").value,
+                sort: document.getElementById("sortFilter").value,
+            };
+        }
+
+        function saveFilterState() {
+            localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(getFilterState()));
+        }
+
+        function restoreFilterState() {
+            const raw = localStorage.getItem(FILTER_STORAGE_KEY);
+            if (!raw) return;
+            try {
+                const state = JSON.parse(raw);
+                if (state.search != null) document.getElementById("searchUserTop").value = state.search;
+                if (state.dateFrom != null) document.getElementById("eventDateFrom").value = state.dateFrom;
+                if (state.dateTo != null) document.getElementById("eventDateTo").value = state.dateTo;
+                if (state.venue != null) document.getElementById("venueFilter").value = state.venue;
+                if (state.approval != null) document.getElementById("approvalFilter").value = state.approval;
+                if (state.team != null) document.getElementById("teamFilter").value = state.team;
+                if (state.sort != null) document.getElementById("sortFilter").value = state.sort;
+                if (state.activeFilter) {
+                    const tab = document.querySelector(`.filter-tab[data-filter="${state.activeFilter}"]`);
+                    if (tab) {
+                        document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+                        tab.classList.add("active");
+                    }
+                }
+            } catch (err) {
+                /* ignore malformed filter state */
+            }
+        }
+
+        function renderActiveFilterChips(state) {
+            const container = document.getElementById("activeFilters");
+            const chips = [];
+            if (state.activeFilter !== "all") chips.push(`Category: ${state.activeFilter}`);
+            if (state.dateFrom) chips.push(`From: ${state.dateFrom}`);
+            if (state.dateTo) chips.push(`To: ${state.dateTo}`);
+            if (state.venue) chips.push(`Venue: ${state.venue}`);
+            if (state.approval !== "all") chips.push(`Approval: ${state.approval}`);
+            if (state.team !== "all") chips.push(`Participation: ${state.team}`);
+            if (state.search) chips.push(`Search: ${state.search}`);
+            if (state.sort && state.sort !== "date_asc") chips.push(`Sort: ${state.sort.replace("_", " ")}`);
+            container.innerHTML = chips.map(label => `<span class="active-chip">${label}</span>`).join("");
+        }
+
+        function sortEvents(events, sortMode) {
+            const sorted = [...events];
+            sorted.sort((a, b) => {
+                const seatsA = a.capacity - a.participants;
+                const seatsB = b.capacity - b.participants;
+                if (sortMode === "date_desc") return new Date(b.date) - new Date(a.date);
+                if (sortMode === "seats_desc") return seatsB - seatsA;
+                if (sortMode === "seats_asc") return seatsA - seatsB;
+                if (sortMode === "name_asc") return a.name.localeCompare(b.name);
+                return new Date(a.date) - new Date(b.date);
+            });
+            return sorted;
+        }
 
         function getCapacityClass(percent) {
             if (percent < 50) return 'green';
@@ -540,23 +703,41 @@
         function render() {
             const grid = document.getElementById("eventsGrid");
             const empty = document.getElementById("emptyState");
-            const searchQuery = document.getElementById("searchUserTop").value.toLowerCase();
-            const activeFilter = document.querySelector('.filter-tab.active').dataset.filter;
+            const state = getFilterState();
+            const fromDate = state.dateFrom ? new Date(`${state.dateFrom}T00:00:00`) : null;
+            const toDate = state.dateTo ? new Date(`${state.dateTo}T23:59:59`) : null;
 
-            const filtered = EVENTS.filter(e => {
-                const matchesSearch = !searchQuery || 
-                    e.name.toLowerCase().includes(searchQuery) || 
-                    e.venue.toLowerCase().includes(searchQuery);
-                const matchesFilter = activeFilter === 'all' || e.subtype === activeFilter;
-                return matchesSearch && matchesFilter;
+            let filtered = EVENTS.filter(e => {
+                const eventDate = new Date(e.date);
+                const matchesSearch = !state.search || 
+                    e.name.toLowerCase().includes(state.search) || 
+                    e.venue.toLowerCase().includes(state.search);
+                const matchesFilter = state.activeFilter === 'all' || e.subtype === state.activeFilter;
+                const matchesFrom = !fromDate || eventDate >= fromDate;
+                const matchesTo = !toDate || eventDate <= toDate;
+                const matchesVenue = !state.venue || e.venue.toLowerCase().includes(state.venue);
+                const matchesApproval =
+                    state.approval === "all" ||
+                    (state.approval === "requires" && e.requiresApproval) ||
+                    (state.approval === "auto" && !e.requiresApproval);
+                const matchesTeam =
+                    state.team === "all" ||
+                    (state.team === "team" && e.teamParticipation) ||
+                    (state.team === "solo" && !e.teamParticipation);
+                return matchesSearch && matchesFilter && matchesFrom && matchesTo && matchesVenue && matchesApproval && matchesTeam;
             });
+            filtered = sortEvents(filtered, state.sort);
 
             if (!filtered.length) {
                 empty.classList.remove("d-none");
                 grid.innerHTML = '';
+                renderActiveFilterChips(state);
+                saveFilterState();
                 return;
             }
             empty.classList.add("d-none");
+            renderActiveFilterChips(state);
+            saveFilterState();
 
             grid.innerHTML = filtered.map(event => {
                 const usedPercent = Math.round((event.participants / event.capacity) * 100);
@@ -657,7 +838,6 @@
     bootstrap.Modal.getInstance(
         document.getElementById("registrationModal")
     ).hide();
-
     showToast("Registration submitted successfully!", "success");
     render();
 }
@@ -665,6 +845,13 @@
         function clearFilters() {
             document.querySelector('.filter-tab[data-filter="all"]').click();
             document.getElementById("searchUserTop").value = '';
+            document.getElementById("eventDateFrom").value = '';
+            document.getElementById("eventDateTo").value = '';
+            document.getElementById("venueFilter").value = '';
+            document.getElementById("approvalFilter").value = 'all';
+            document.getElementById("teamFilter").value = 'all';
+            document.getElementById("sortFilter").value = 'date_asc';
+            localStorage.removeItem(FILTER_STORAGE_KEY);
             render();
         }
 
@@ -682,6 +869,12 @@
 
         // Event Listeners
         document.getElementById("searchUserTop").addEventListener("input", render);
+        document.getElementById("eventDateFrom").addEventListener("change", render);
+        document.getElementById("eventDateTo").addEventListener("change", render);
+        document.getElementById("venueFilter").addEventListener("input", render);
+        document.getElementById("approvalFilter").addEventListener("change", render);
+        document.getElementById("teamFilter").addEventListener("change", render);
+        document.getElementById("sortFilter").addEventListener("change", render);
         document.querySelectorAll('.filter-tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -690,6 +883,7 @@
             });
         });
 
+        restoreFilterState();
         render();
     </script>
     
@@ -703,7 +897,6 @@
 
       <div class="modal-body">
         <input id="regEventName" class="form-control mb-2" disabled>
-
         <input id="pName" class="form-control mb-2" placeholder="Full Name">
         <input id="pEmail" class="form-control mb-2" placeholder="Email">
         <input id="pPhone" class="form-control mb-2" placeholder="Mobile Number">
