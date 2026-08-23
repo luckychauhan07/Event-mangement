@@ -15,7 +15,7 @@ const userRoutes = require("./routes/userRoutes"); // Import user routes
 const userEventRoutes = require("./routes/userEventRoutes"); // Import user event routes
 const notificationRouter = require("./routes/notificationRoutes"); // Added for notifications
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
