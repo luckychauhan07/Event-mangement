@@ -3,7 +3,7 @@ import { logout } from "../../utils/auth";
 
 const AdminHeader = ({ toggleSidebar }) => {
 	const user = JSON.parse(localStorage.getItem("user"));
-
+	console.log("AdminHeader user:", user); // Debugging line to check the user object
 	return (
 		<header className="bg-white/80 backdrop-blur border-b border-blue-200 px-6 py-3 flex items-center justify-between">
 			<div className="flex items-center gap-4">
@@ -14,7 +14,7 @@ const AdminHeader = ({ toggleSidebar }) => {
 					<Menu size={20} />
 				</button>
 				<div className="flex items-center gap-2">
-					<img
+					{/* <img
 						src="../../../assets/react.svg"
 						alt="Event Ease"
 						style={{
@@ -22,7 +22,7 @@ const AdminHeader = ({ toggleSidebar }) => {
 							width: "auto",
 							marginRight: "10px",
 						}}
-					/>
+					/> */}
 					<div className="w-9 h-9 bg-gradient-to-br from-blue-900 to-blue-700 text-white flex items-center justify-center rounded-lg font-bold shadow-sm">
 						EE
 					</div>
@@ -30,6 +30,9 @@ const AdminHeader = ({ toggleSidebar }) => {
 					<span className="font-semibold text-blue-800 tracking-wide">
 						Event Ease
 					</span>
+					<p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+						{user?.role || "User"} Module
+					</p>
 				</div>
 			</div>
 
@@ -50,11 +53,11 @@ const AdminHeader = ({ toggleSidebar }) => {
 
 				<div className="flex items-center gap-2">
 					<div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center text-sm shadow-sm">
-						{user?.full_name?.charAt(0) || "A"}
+						{user?.name?.charAt(0) || "A"}
 					</div>
 
 					<span className="hidden md:block text-sm font-medium text-blue-700">
-						{user?.full_name || "Admin"}
+						{user?.name || "Adm"}
 					</span>
 				</div>
 

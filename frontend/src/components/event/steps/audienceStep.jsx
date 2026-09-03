@@ -1,10 +1,4 @@
-import {
-	Users,
-	GraduationCap,
-	Building2,
-	Calendar,
-	School,
-} from "lucide-react";
+import { Users } from "lucide-react";
 import { forwardRef, useImperativeHandle } from "react";
 import toast from "react-hot-toast";
 
@@ -56,11 +50,6 @@ const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 			const years = eventData.studentYears || [];
 			const departments = eventData.departments || [];
 			const courses = eventData.courses || [];
-
-			if (!eventData.interCollege) {
-				toast.error("Select inter-institute participation");
-				return false;
-			}
 
 			if (roles.length === 0) {
 				toast.error("Select at least one audience role");
@@ -129,7 +118,6 @@ const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 		"Alumni",
 	];
 
-	const hasSelectedInterInstitute = Boolean(eventData.interCollege);
 	const hasSelectedAudienceRoles = (eventData.audienceRoles || []).length > 0;
 
 	const hasSelectedStudentsAudience =
@@ -139,8 +127,7 @@ const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 
 	const hasSelectedDepartment = (eventData.departments || []).length > 0;
 
-	const showCourseStep =
-		hasSelectedInterInstitute && hasSelectedAudienceRoles;
+	const showCourseStep = hasSelectedAudienceRoles;
 
 	const showDepartmentStep = showCourseStep && hasSelectedCourse;
 
@@ -166,71 +153,42 @@ const AudienceStep = forwardRef(({ eventData, setEventData }, ref) => {
 				</div>
 			</div>
 
-			{/* STEP 1 */}
-			<div className="rounded-xl border-2 border-slate-200 p-5 bg-slate-50">
-				<h3 className="font-medium mb-4 flex items-center gap-2">
-					<School size={16} className="text-amber-500" />
-					Inter-Institute Participation
-				</h3>
+			{/* AUDIENCE ROLES */}
+			<div className="space-y-3">
+				<div className="flex justify-between items-center">
+					<h3 className="font-medium text-slate-700">
+						Audience Roles
+					</h3>
 
-				<div className="flex gap-4">
-					<Card
-						active={eventData.interCollege === "no"}
-						onClick={() => update("interCollege", "no")}
+					<button
+						onClick={() =>
+							toggleAll("audienceRoles", audienceOptions)
+						}
+						className="text-sm text-amber-600"
 					>
-						No (Only this institution)
-					</Card>
+						{getToggleLabel("audienceRoles", audienceOptions)}
+					</button>
+				</div>
 
-					<Card
-						active={eventData.interCollege === "yes"}
-						onClick={() => update("interCollege", "yes")}
-					>
-						Yes (Open to all)
-					</Card>
+				<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+					{audienceOptions.map((role) => {
+						const active = eventData.audienceRoles?.includes(role);
+
+						return (
+							<Card
+								key={role}
+								active={active}
+								onClick={() => toggle("audienceRoles", role)}
+							>
+								<div className="flex justify-between">
+									<span>{role}</span>
+									{active && <span>✓</span>}
+								</div>
+							</Card>
+						);
+					})}
 				</div>
 			</div>
-
-			{/* STEP 2 */}
-			{hasSelectedInterInstitute && (
-				<div className="space-y-3">
-					<div className="flex justify-between items-center">
-						<h3 className="font-medium text-slate-700">
-							Audience Roles
-						</h3>
-
-						<button
-							onClick={() =>
-								toggleAll("audienceRoles", audienceOptions)
-							}
-							className="text-sm text-amber-600"
-						>
-							{getToggleLabel("audienceRoles", audienceOptions)}
-						</button>
-					</div>
-
-					<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-						{audienceOptions.map((role) => {
-							const active =
-								eventData.audienceRoles?.includes(role);
-
-							return (
-								<Card
-									key={role}
-									active={active}
-									onClick={() =>
-										toggle("audienceRoles", role)
-									}
-								>
-									<div className="flex justify-between">
-										<span>{role}</span>
-										{active && <span>✓</span>}
-									</div>
-								</Card>
-							);
-						})}
-					</div>
-				</div>
-			)}
 
 			{/* STEP 3 - COURSE */}
 			{showCourseStep && (

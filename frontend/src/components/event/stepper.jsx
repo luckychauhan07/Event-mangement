@@ -6,7 +6,6 @@ const labels = [
 	"Schedule",
 	"Registration",
 	"Resources",
-	"Media",
 	"Audience",
 	"Form",
 	"Results",
@@ -21,7 +20,10 @@ const Stepper = ({ step }) => {
 				const isUpcoming = i > step;
 
 				return (
-					<div key={i} className="flex flex-col items-center min-w-[60px] md:min-w-[80px]">
+					<div
+						key={i}
+						className="flex flex-col items-center min-w-[60px] md:min-w-[80px]"
+					>
 						<div
 							className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
 								isActive
@@ -50,7 +52,9 @@ const Stepper = ({ step }) => {
 						{i < labels.length - 1 && (
 							<div
 								className={`hidden md:block absolute h-0.5 w-12 lg:w-16 left-1/2 translate-x-5 top-5 transition-colors ${
-									isCompleted ? "bg-emerald-500" : "bg-slate-200"
+									isCompleted
+										? "bg-emerald-500"
+										: "bg-slate-200"
 								}`}
 							/>
 						)}

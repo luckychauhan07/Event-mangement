@@ -7,6 +7,7 @@ import {
 	Shapes,
 	ArrowUpRight,
 	SquarePen,
+	Users,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getEventStatusMeta } from "../../utils/eventStatus";
@@ -177,6 +178,11 @@ const DisplayEventList = ({ events }) => {
 									icon={Clock3}
 									label="Ends"
 									value={formatDateTime(endsAt)}
+								/>
+								<MetaChip
+									icon={Users}
+									label="Participants"
+									value={event.total_registrations ?? 0}
 								/>
 							</div>
 						</div>

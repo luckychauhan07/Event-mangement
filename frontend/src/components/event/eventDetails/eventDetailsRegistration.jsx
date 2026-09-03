@@ -37,6 +37,12 @@ const EventDetailsRegistration = ({ event }) => {
 							<span className="text-slate-500">Limit:</span>{" "}
 							{event.registration.config.limit || "—"}
 						</p>
+						<p>
+							<span className="text-slate-500">
+								Current registrations:
+							</span>{" "}
+							{event.stats?.totalRegistrations || 0}
+						</p>
 					</CardContent>
 				</Card>
 

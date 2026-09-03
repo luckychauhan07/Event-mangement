@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Loader2, ArrowLeft } from "lucide-react";
-import { getEventById } from "../../services/eventServices";
+import { getTeacherEventById } from "../../services/eventServices";
 import EventSummary from "../../components/event/eventDetails/eventSummary";
 import TeacherEventDetailsTabs from "@/components/teacher/eventDetails/TeacherEventDetailsTabs";
 import EventDetailsRegistration from "@/components/event/eventDetails/eventDetailsRegistration";
 import EventDetailsTeam from "@/components/event/eventDetails/eventDetailsTeam";
-import TeacherStudentCoordinators from "@/components/teacher/eventDetails/TeacherStudentCoordinators";
 import TeacherEventDetailsOverview from "@/components/teacher/eventDetails/TeacherEventDetailsOverview";
 import TeacherEventDetailsRegistration from "@/components/teacher/eventDetails/TeacherEventDetailsRegistration";
 
@@ -60,6 +59,19 @@ const Progress = ({ value }) => (
 export default function EventDetails() {
 	const { id } = useParams();
 	const navigate = useNavigate();
+	const location = useLocation();
+	const returnPath = [
+		"/teacher/events/assigned",
+		"/teacher/events/all",
+	].includes(location.state?.from)
+		? location.state.from
+		: "/teacher/events/assigned";
+	const returnLabel =
+		returnPath === "/teacher/events/all"
+			? "Back to All Events"
+			: "Back to Assigned Events";
+	const cameFromAssignedEvents =
+		location.state?.from === "/teacher/events/assigned";
 
 	const [event, setEvent] = useState(null);
 	const [loading, setLoading] = useState(true);
@@ -68,7 +80,7 @@ export default function EventDetails() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await getEventById(id);
+				const res = await getTeacherEventById(id);
 				setEvent(res.event);
 				console.log(res.event);
 			} catch (e) {
@@ -91,6 +103,9 @@ export default function EventDetails() {
 
 	if (!event) return <div className="p-6">Event not found</div>;
 
+	const canViewParticipants =
+		event.meta.teacherIsCoordinator ?? cameFromAssignedEvents;
+
 	const phase = (() => {
 		const now = new Date();
 		const s = new Date(event.schedule.startAt);
@@ -108,144 +123,125 @@ export default function EventDetails() {
 		<div className="min-h-screen bg-slate-50 p-6 space-y-6">
 			{/* Header */}
 			{/* Header */}
-<div className="flex items-center justify-between">
+			<div className="flex items-center justify-between">
+				<Button
+					variant="ghost"
+					onClick={() => navigate(returnPath)}
+					className="flex items-center gap-2"
+				>
+					<ArrowLeft size={18} />
+					{returnLabel}
+				</Button>
 
-	<Button
-		variant="ghost"
-		onClick={() => navigate("/teacher/events")}
-		className="flex items-center gap-2"
-	>
-		<ArrowLeft size={18} />
-		Back to My Events
-	</Button>
-
-	<div className="flex gap-2">
-		<Badge tone="slate">{event.meta.status}</Badge>
-		<Badge tone={phase.tone}>{phase.label}</Badge>
-	</div>
-
-</div>
-
-{/* Hero */}
-<Card className="overflow-hidden">
-
-	<div className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-500 px-8 py-7 text-white">
-
-		<div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-
-			<div>
-
-				<p className="text-sm uppercase tracking-wider text-indigo-100">
-					{event.basic.category}
-				</p>
-
-				<h1 className="mt-2 text-4xl font-bold">
-					{event.basic.title}
-				</h1>
-
-				{event.basic.subtitle && (
-					<p className="mt-2 text-indigo-100">
-						{event.basic.subtitle}
-					</p>
-				)}
-
+				<div className="flex gap-2">
+					<Badge tone="slate">{event.meta.status}</Badge>
+					<Badge tone={phase.tone}>{phase.label}</Badge>
+				</div>
 			</div>
 
-			<div className="grid grid-cols-2 gap-4">
+			{/* Hero */}
+			<Card className="overflow-hidden">
+				<div className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-500 px-8 py-7 text-white">
+					<div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+						<div>
+							<p className="text-sm uppercase tracking-wider text-indigo-100">
+								{event.basic.category}
+							</p>
 
-				<div className="rounded-2xl bg-white/15 p-5 backdrop-blur">
+							<h1 className="mt-2 text-4xl font-bold">
+								{event.basic.title}
+							</h1>
 
-					<p className="text-3xl font-bold">
-						{event.stats.totalRegistrations}
-					</p>
+							{event.basic.subtitle && (
+								<p className="mt-2 text-indigo-100">
+									{event.basic.subtitle}
+								</p>
+							)}
+						</div>
 
-					<p className="text-sm text-indigo-100">
-						Registrations
-					</p>
+						<div className="grid grid-cols-2 gap-4">
+							<div className="rounded-2xl bg-white/15 p-5 backdrop-blur">
+								<p className="text-3xl font-bold">
+									{event.stats.totalRegistrations}
+								</p>
 
+								<p className="text-sm text-indigo-100">
+									Registrations
+								</p>
+							</div>
+
+							<div className="rounded-2xl bg-white/15 p-5 backdrop-blur">
+								<p className="text-lg font-semibold">
+									{new Date(
+										event.schedule.startAt,
+									).toLocaleDateString()}
+								</p>
+
+								<p className="text-sm text-indigo-100">
+									Event Date
+								</p>
+							</div>
+						</div>
+					</div>
 				</div>
 
-				<div className="rounded-2xl bg-white/15 p-5 backdrop-blur">
+				<div className="grid gap-5 border-t border-slate-200 bg-white p-6 md:grid-cols-3">
+					<div>
+						<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+							Venue
+						</p>
 
-					<p className="text-lg font-semibold">
-						{new Date(
-							event.schedule.startAt
-						).toLocaleDateString()}
-					</p>
+						<p className="mt-1 font-medium text-slate-700">
+							{event.schedule.venue || "Online"}
+						</p>
+					</div>
 
-					<p className="text-sm text-indigo-100">
-						Event Date
-					</p>
+					<div>
+						<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+							Event Type
+						</p>
 
+						<p className="mt-1 font-medium text-slate-700 capitalize">
+							{event.basic.eventType}
+						</p>
+					</div>
+
+					<div>
+						<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+							Participation
+						</p>
+
+						<p className="mt-1 font-medium text-slate-700 capitalize">
+							{event.registration.config.participationType ||
+								"Individual"}
+						</p>
+					</div>
 				</div>
-
-			</div>
-
-		</div>
-
-	</div>
-
-	<div className="grid gap-5 border-t border-slate-200 bg-white p-6 md:grid-cols-3">
-
-		<div>
-
-			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-				Venue
-			</p>
-
-			<p className="mt-1 font-medium text-slate-700">
-				{event.schedule.venue || "Online"}
-			</p>
-
-		</div>
-
-		<div>
-
-			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-				Event Type
-			</p>
-
-			<p className="mt-1 font-medium text-slate-700 capitalize">
-				{event.basic.eventType}
-			</p>
-
-		</div>
-
-		<div>
-
-			<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-				Participation
-			</p>
-
-			<p className="mt-1 font-medium text-slate-700 capitalize">
-				{event.registration.config.participationType || "Individual"}
-			</p>
-
-		</div>
-
-	</div>
-
-</Card>
-<TeacherEventDetailsTabs
-	activeTab={tab}
-	onTabChange={setTab}
-/>
+			</Card>
+			<TeacherEventDetailsTabs
+				activeTab={tab}
+				onTabChange={(nextTab) => {
+					if (nextTab === "people") {
+						navigate(`/teacher/events/${id}/participants`, {
+							state: { from: returnPath },
+						});
+						return;
+					}
+					setTab(nextTab);
+				}}
+				showParticipants={canViewParticipants}
+			/>
 			{/* Overview */}
 			{tab === "overview" && (
-	<TeacherEventDetailsOverview event={event} />
-)}
+				<TeacherEventDetailsOverview event={event} />
+			)}
 
 			{/* Registration */}
 			{tab === "registration" && (
-    <TeacherEventDetailsRegistration event={event} />
-)}
+				<TeacherEventDetailsRegistration event={event} />
+			)}
 
-			{/* Team */}
-{tab === "team" && (
-	<TeacherStudentCoordinators event={event} />
-)}
 			{/* Coordinators & Form Fields */}
-			{tab === "people" && <EventDetailsCoordinators event={event} />}
 		</div>
 	);
 }

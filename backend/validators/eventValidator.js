@@ -55,14 +55,7 @@ const createEventSchema = z
 		catering: z.boolean().optional(),
 		cateringDetails: z.string().optional(),
 
-		//    media details validations
-		eventPoster: z.file().optional(),
-		promoVideo: z.string().optional(),
-		termsAndConditions: z.file().optional(),
-		privacyLevel: z.enum(["public", "private", "unlisted"]).optional(),
-
 		// audience details validations
-		interCollege: z.string().optional(),
 		audienceRoles: z.array(z.string()).optional(),
 		department: z.string().optional(),
 		studentYears: z.array(z.string()).optional(),

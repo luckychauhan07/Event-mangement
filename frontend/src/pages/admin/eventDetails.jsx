@@ -93,8 +93,6 @@ export default function EventDetails() {
 
 	const limit = event.registration.config.limit || 0;
 	const filled = event.stats.totalRegistrations || 0;
-	const pct = limit ? Math.round((filled / limit) * 100) : 0;
-
 	return (
 		<div className="min-h-screen bg-slate-50 p-6 space-y-6">
 			{/* Header */}
@@ -116,7 +114,7 @@ export default function EventDetails() {
 					<div className="mt-4">
 						<Progress value={pct} />
 						<p className="text-xs text-slate-500 mt-1">
-							{filled} of {limit} filled
+							{filled} of {limit} registered
 						</p>
 					</div>
 				) : null}

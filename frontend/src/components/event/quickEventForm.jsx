@@ -1,4 +1,8 @@
-import { createEvent, getAllTeachers } from "../../services/eventServices";
+import {
+	createEvent,
+	getAllTeachers,
+	patchEvent,
+} from "../../services/eventServices";
 import toast from "react-hot-toast";
 import {
 	Calendar,
@@ -193,6 +197,7 @@ const QuickEventForm = ({
 		try {
 			setCreating(true);
 			if (isEditing) {
+				await patchEvent(eventData.id, eventData);
 				toast.success("Event updated successfully 🎉");
 			} else {
 				await createEvent(eventData);

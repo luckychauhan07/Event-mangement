@@ -4,6 +4,7 @@ import AuthRoutes from "./routes/authRoutes";
 import AdminRoutes from "./routes/adminRoutes";
 import TeacherRoutes from "./routes/teacherRoutes";
 import StudentRoutes from "./routes/studentRoutes";
+import UserRoutes from "./routes/userRoutes";
 
 function App() {
 	return (
@@ -43,6 +44,7 @@ function App() {
 
 					<Route path="/teacher/*" element={<TeacherRoutes />} />
 
+					<Route path="/user/*" element={<UserRoutes />} />
 					<Route path="/student/*" element={<StudentRoutes />} />
 				</Routes>
 			</BrowserRouter>

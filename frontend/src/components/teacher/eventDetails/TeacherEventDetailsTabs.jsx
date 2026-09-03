@@ -1,12 +1,17 @@
-const TeacherEventDetailsTabs = ({ activeTab, onTabChange }) => {
+const TeacherEventDetailsTabs = ({
+	activeTab,
+	onTabChange,
+	showParticipants,
+}) => {
+	const tabs = [
+		{ key: "overview", label: "Overview" },
+		{ key: "registration", label: "Registration" },
+		...(showParticipants ? [{ key: "people", label: "Participants" }] : []),
+	];
+
 	return (
 		<div className="flex gap-2 border-b">
-			{[
-				{ key: "overview", label: "Overview" },
-				{ key: "registration", label: "Registration" },
-				{ key: "team", label: "Student Coordinators" },
-				{ key: "people", label: "Participants" },
-			].map((tab) => (
+			{tabs.map((tab) => (
 				<button
 					key={tab.key}
 					onClick={() => onTabChange(tab.key)}

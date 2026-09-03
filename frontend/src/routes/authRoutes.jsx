@@ -16,6 +16,15 @@ const AuthRoutes = () => {
 			/>
 
 			<Route
+				path="/login"
+				element={
+					<GuestRoute>
+						<Login />
+					</GuestRoute>
+				}
+			/>
+
+			<Route
 				path="/signup"
 				element={
 					<GuestRoute>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
-import { getAllEvents } from "../../services/eventServices";
+import { getAdminEvents } from "../../services/eventServices";
 import DisplayEventList from "../../components/admin/displayEventList";
 import { getEventTimelinePhase } from "../../utils/eventStatus";
 
@@ -89,7 +89,7 @@ const EventList = () => {
 		const fetchEvents = async () => {
 			setLoading(true);
 			try {
-				const data = await getAllEvents();
+				const data = await getAdminEvents();
 				setAllEvents(data?.events || []);
 				console.log("Fetched events:", data?.events || []);
 			} catch {

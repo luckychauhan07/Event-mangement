@@ -7,6 +7,9 @@ const { adminMiddleware } = require("../middlewares/adminMiddleware");
 
 router.use(authMiddleware, adminMiddleware);
 
+router.get("/dashboard", adminController.getDashboardSummary);
+router.get("/events", adminController.getAllEvents);
+
 // ADMIN PROFILE ROUTES
 router.get("/profile/incomplete", adminController.getAdminProfileSummary);
 router.get("/profile", adminController.getAdminProfile);

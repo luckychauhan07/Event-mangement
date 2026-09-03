@@ -39,12 +39,32 @@ const EventDetailsCoordinators = ({ event }) => {
 								No custom fields
 							</div>
 						) : (
-							event.formFields.map((f, i) => (
-								<div key={i} className="p-3 border rounded-xl">
-									<p className="font-semibold">{f.label}</p>
-									<p className="text-xs text-slate-500">
-										{f.type}
+							event.formFields.map((f) => (
+								<div
+									key={f.id}
+									className="rounded-xl border p-3"
+								>
+									<div className="flex items-center justify-between gap-3">
+										<p className="font-semibold">
+											{f.label}
+										</p>
+										<span
+											className={`text-xs font-medium ${f.required ? "text-rose-600" : "text-slate-400"}`}
+										>
+											{f.required
+												? "Required"
+												: "Optional"}
+										</span>
+									</div>
+									<p className="mt-1 text-xs capitalize text-slate-500">
+										Type: {f.type}
 									</p>
+									{Array.isArray(f.options) &&
+									f.options.length > 0 ? (
+										<p className="mt-1 text-xs text-slate-500">
+											Options: {f.options.join(", ")}
+										</p>
+									) : null}
 								</div>
 							))
 						)}

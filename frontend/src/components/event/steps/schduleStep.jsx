@@ -15,11 +15,20 @@ const ScheduleStep = forwardRef(({ eventData, setEventData }, ref) => {
 		eventMode === "offline" || eventMode === "hybrid";
 	const requiresOnlineLink = eventMode === "online" || eventMode === "hybrid";
 
+	const normalizeUrl = (value) => {
+		const trimmedValue = String(value || "").trim();
+		if (!trimmedValue) return "";
+		return /^https?:\/\//i.test(trimmedValue)
+			? trimmedValue
+			: `https://${trimmedValue}`;
+	};
+
 	const isValidHttpUrl = (value) => {
-		if (!value) return false;
+		const normalizedValue = normalizeUrl(value);
+		if (!normalizedValue) return false;
 
 		try {
-			const parsedUrl = new URL(String(value).trim());
+			const parsedUrl = new URL(normalizedValue);
 			return (
 				parsedUrl.protocol === "http:" ||
 				parsedUrl.protocol === "https:"
@@ -58,7 +67,7 @@ const ScheduleStep = forwardRef(({ eventData, setEventData }, ref) => {
 				return "Online meeting link is required for online or hybrid events";
 			}
 			if (requiresOnlineLink && !isValidHttpUrl(eventData.onlineLink)) {
-				return "Please provide a valid online meeting URL (http/https)";
+				return "Please provide a valid online meeting URL";
 			}
 			return true;
 		},

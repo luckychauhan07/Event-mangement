@@ -35,7 +35,7 @@ const Register = () => {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex flex-col">
+		<div className="min-h-screen bg-gradient from-slate-50 via-blue-50 to-slate-100 flex flex-col">
 			{/* Topbar */}
 			<header className="bg-white/80 backdrop-blur border-b shadow-sm">
 				<div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">

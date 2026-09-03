@@ -26,3 +26,8 @@ export const updateUserDetails = async (id, userDetails) => {
 	const res = await api.put(`/admin/users/${id}`, userDetails);
 	return res.data;
 };
+
+export const getMyEventRegistrations = async () => {
+	const res = await api.get("/api/user/registrations");
+	return res.data;
+};

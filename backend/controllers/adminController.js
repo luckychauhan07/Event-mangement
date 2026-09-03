@@ -1,6 +1,83 @@
-
 const pool = require("../db/config");
 
+exports.getDashboardSummary = async (req, res) => {
+	try {
+		const [
+			users,
+			pendingTeachers,
+			events,
+			pendingEvents,
+			registrations,
+			recentEvents,
+		] = await Promise.all([
+			pool.query("SELECT COUNT(*)::int AS total FROM users"),
+			pool.query(
+				"SELECT COUNT(*)::int AS total FROM users WHERE role = 'teacher' AND status = 'pending'",
+			),
+			pool.query(
+				"SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE start_at > NOW() AND status NOT IN ('cancelled', 'rejected'))::int AS upcoming FROM events WHERE is_deleted = false",
+			),
+			pool.query(
+				"SELECT COUNT(*)::int AS total FROM events WHERE status = 'draft' AND is_deleted = false",
+			),
+			pool.query(
+				"SELECT COUNT(*)::int AS total FROM event_registrations WHERE status NOT IN ('rejected', 'cancelled')",
+			),
+			pool.query(`SELECT id, title, category, status, start_at
+					FROM events
+					WHERE is_deleted = false
+					ORDER BY created_at DESC
+					LIMIT 5`),
+		]);
+
+		return res.status(200).json({
+			success: true,
+			stats: {
+				totalUsers: users.rows[0].total,
+				pendingTeachers: pendingTeachers.rows[0].total,
+				totalEvents: events.rows[0].total,
+				upcomingEvents: events.rows[0].upcoming,
+				pendingEvents: pendingEvents.rows[0].total,
+				totalRegistrations: registrations.rows[0].total,
+			},
+			recentEvents: recentEvents.rows,
+		});
+	} catch (error) {
+		console.error("Error loading admin dashboard:", error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Failed to load dashboard data" });
+	}
+};
+
+exports.getAllEvents = async (req, res) => {
+	try {
+		const result = await pool.query(
+			`SELECT e.*,
+					COALESCE((
+						SELECT COUNT(*)::int
+						FROM event_registrations er
+						WHERE er.event_id = e.id
+						  AND er.status NOT IN ('rejected', 'cancelled')
+					), 0) AS total_registrations
+			 FROM events e
+			 WHERE e.is_deleted = false
+			 ORDER BY e.created_at DESC`,
+		);
+
+		return res.status(200).json({
+			success: true,
+			message: "All events fetched successfully",
+			events: result.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching admin events:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch events",
+		});
+	}
+};
 
 exports.getPendingTeachers = async (req, res) => {
 	try {
@@ -659,6 +736,258 @@ exports.patchAdminProfile = async (req, res) => {
 		return res.status(500).json({
 			success: false,
 			message: "Failed to patch admin profile",
+		});
+	}
+};
+
+exports.getEventParticipants = async (req, res) => {
+	const eventId = Number(req.params.eventId);
+	const requesterId = req.user?.user_id;
+	const requesterRole = req.user?.role;
+
+	if (!eventId || Number.isNaN(eventId)) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid event ID",
+		});
+	}
+
+	if (!requesterId) {
+		return res.status(401).json({
+			success: false,
+			message: "Unauthorized",
+		});
+	}
+
+	try {
+		/*
+		 * ---------------------------------------------------------
+		 * 1. Verify event exists
+		 * ---------------------------------------------------------
+		 */
+		const eventResult = await pool.query(
+			`
+			SELECT
+				id,
+				title,
+				start_at,
+				end_at,
+				status
+			FROM events
+			WHERE id = $1
+				AND is_deleted = false
+			LIMIT 1
+			`,
+			[eventId],
+		);
+
+		if (eventResult.rows.length === 0) {
+			return res.status(404).json({
+				success: false,
+				message: "Event not found",
+			});
+		}
+
+		const event = eventResult.rows[0];
+
+		/*
+		 * ---------------------------------------------------------
+		 * 2. Authorization
+		 *
+		 * Admin → any event
+		 * Coordinator → assigned event only
+		 * ---------------------------------------------------------
+		 */
+		if (requesterRole !== "admin") {
+			const coordinatorResult = await pool.query(
+				`
+				SELECT 1
+				FROM event_coordinators
+				WHERE event_id = $1
+					AND user_id = $2
+				LIMIT 1
+				`,
+				[eventId, requesterId],
+			);
+
+			if (coordinatorResult.rows.length === 0) {
+				return res.status(403).json({
+					success: false,
+					message:
+						"You are not authorized to view participants for this event.",
+				});
+			}
+		}
+
+		/*
+		 * ---------------------------------------------------------
+		 * 3. Get the event's dynamic form definition
+		 * ---------------------------------------------------------
+		 */
+		const fieldsResult = await pool.query(
+			`
+			SELECT
+				field_id,
+				label,
+				field_type,
+				is_required,
+				options,
+				display_order
+			FROM event_form_fields
+			WHERE event_id = $1
+			ORDER BY
+				COALESCE(display_order, 2147483647),
+				field_id
+			`,
+			[eventId],
+		);
+
+		/*
+		 * ---------------------------------------------------------
+		 * 4. Get registrations + users + custom responses
+		 * ---------------------------------------------------------
+		 *
+		 * IMPORTANT:
+		 * We do NOT hard-code any custom field names.
+		 *
+		 * Every response is connected through:
+		 *
+		 * registration_id → response
+		 * field_id        → field definition
+		 * ---------------------------------------------------------
+		 */
+		const participantsResult = await pool.query(
+			`
+			SELECT
+				er.registration_id,
+				er.event_id,
+				er.user_id,
+				er.status,
+				er.submitted_at,
+				er.approved_at,
+				er.cancelled_at,
+				er.team_id,
+
+				u.full_name,
+				u.email,
+				u.phone,
+				u.role,
+
+				t.team_name,
+
+				COALESCE(
+					(
+						SELECT jsonb_agg(
+							jsonb_build_object(
+								'fieldId', f.field_id,
+								'label', f.label,
+								'type', f.field_type,
+								'required', f.is_required,
+								'options', f.options,
+								'value', r.response_value
+							)
+							ORDER BY
+								COALESCE(f.display_order, 2147483647),
+								f.field_id
+						)
+						FROM registration_custom_responses r
+						INNER JOIN event_form_fields f
+							ON f.field_id = r.field_id
+						WHERE r.registration_id = er.registration_id
+							AND f.event_id = er.event_id
+					),
+					'[]'::jsonb
+				) AS responses,
+
+				COALESCE(
+					(
+						SELECT jsonb_agg(
+							jsonb_build_object(
+								'userId', member_user.user_id,
+								'name', member_user.full_name,
+								'email', member_user.email,
+								'phone', member_user.phone
+							)
+							ORDER BY member_user.full_name
+						)
+						FROM team_members tm
+						INNER JOIN users member_user
+							ON member_user.user_id = tm.user_id
+						WHERE tm.team_id = er.team_id
+					),
+					'[]'::jsonb
+				) AS team_members
+
+			FROM event_registrations er
+
+			INNER JOIN users u
+				ON u.user_id = er.user_id
+
+			LEFT JOIN teams t
+				ON t.id = er.team_id
+
+			WHERE er.event_id = $1
+
+			ORDER BY er.submitted_at DESC
+			`,
+			[eventId],
+		);
+
+		const participants = participantsResult.rows.map((row) => ({
+			registrationId: row.registration_id,
+			status: row.status,
+			submittedAt: row.submitted_at,
+			approvedAt: row.approved_at,
+			cancelledAt: row.cancelled_at,
+
+			user: {
+				userId: row.user_id,
+				name: row.full_name,
+				email: row.email,
+				phone: row.phone,
+				role: row.role,
+			},
+
+			team: row.team_id
+				? {
+						teamId: row.team_id,
+						name: row.team_name,
+						members: row.team_members || [],
+					}
+				: null,
+
+			responses: row.responses || [],
+		}));
+
+		return res.status(200).json({
+			success: true,
+
+			event: {
+				id: event.id,
+				title: event.title,
+				startAt: event.start_at,
+				endAt: event.end_at,
+				status: event.status,
+			},
+
+			formFields: fieldsResult.rows.map((field) => ({
+				fieldId: field.field_id,
+				label: field.label,
+				type: field.field_type,
+				required: field.is_required,
+				options: field.options || [],
+				displayOrder: field.display_order,
+			})),
+
+			participants,
+			total: participants.length,
+		});
+	} catch (error) {
+		console.error("Error fetching event participants:", error);
+
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch event participants",
 		});
 	}
 };

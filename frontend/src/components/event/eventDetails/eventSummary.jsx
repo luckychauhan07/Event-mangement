@@ -10,7 +10,6 @@ import {
 	Trash2,
 	Pencil,
 	XCircle,
-	UserPlus,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -113,8 +112,8 @@ const EventSummary = ({ event }) => {
 									<div className="flex items-center gap-2 flex-wrap lg:justify-end">
 										<button
 											onClick={() =>
-												alert(
-													"Edit event functionality coming soon!",
+												navigate(
+													`/admin/events/${event.id}/edit`,
 												)
 											}
 											className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors shadow-sm"
@@ -151,7 +150,7 @@ const EventSummary = ({ event }) => {
 										</button>
 										{/* <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-sm font-semibold transition-colors">
 											<EyeOff className="w-3.5 h-3.5" />
-											Hide
+											View All Participants
 										</button> */}
 									</div>
 
@@ -200,19 +199,17 @@ const EventSummary = ({ event }) => {
 							{ month: "short", day: "numeric", year: "numeric" },
 						)}
 					</span>
-					{phase.label === "Upcoming" && (
-						<button
-							className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-700 font-semibold hover:bg-emerald-100 transition-colors shadow-sm"
-							onClick={() =>
-								navigate(
-									`/admin/events/${event.id}/assign-coordinator`,
-								)
-							}
-						>
-							<UserPlus className="w-3.5 h-3.5" />
-							Assign Coordinator
-						</button>
-					)}
+
+					<button
+						type="button"
+						className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-blue-200 bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-colors hover:border-blue-700 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 sm:flex-none"
+						onClick={() =>
+							navigate(`/admin/events/${event.id}/participants`)
+						}
+					>
+						<Users className="w-3.5 h-3.5" />
+						View All Participants
+					</button>
 				</div>
 
 				{/* STATS GRID */}

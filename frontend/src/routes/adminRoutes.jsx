@@ -16,6 +16,7 @@ import CompleteAdminProfile from "@/pages/admin/completeAdminProfile";
 import EditAdminProfile from "@/pages/admin/editAdminProfile";
 import EditEvent from "@/pages/admin/editEvent";
 import EventCoordinator from "@/pages/admin/eventCoordinator";
+import EventParticipants from "@/pages/admin/eventParticipants";
 
 const AdminRoutes = () => {
 	return (
@@ -30,8 +31,8 @@ const AdminRoutes = () => {
 					<Route path="users" element={<Users />} />
 					<Route path="users/:id" element={<UserDetails />} />
 					<Route
-						path="events/:id/assign-coordinator"
-						element={<EventCoordinator />}
+						path="events/:id/participants"
+						element={<EventParticipants />}
 					/>
 					<Route path="users/:id/edit" element={<EditUser />} />
 					<Route path="notifications" element={<Notifications />} />
@@ -39,7 +40,10 @@ const AdminRoutes = () => {
 						path="teacher-approvals"
 						element={<AdminTeacherApprovals />}
 					/>
-					<Route path="event-approvals" element={<EventApprovals />} />
+					<Route
+						path="event-approvals"
+						element={<EventApprovals />}
+					/>
 					<Route
 						path="reports"
 						element={<div>Admin Reports Page (Coming Soon)</div>}

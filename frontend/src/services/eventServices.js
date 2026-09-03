@@ -13,7 +13,17 @@ export const getAllTeachers = async () => {
 };
 
 export const getAllEvents = async () => {
-	const res = await api.get("/event");
+	const res = await api.get("/api/user/events");
+	return res.data;
+};
+
+export const getAdminEvents = async () => {
+	const res = await api.get("/admin/events");
+	return res.data;
+};
+
+export const getUserEventById = async (id) => {
+	const res = await api.get(`/api/user/events/${id}`);
 	return res.data;
 };
 
@@ -42,8 +52,28 @@ export const getTeacherEvents = async () => {
 	return res.data;
 };
 
+export const getTeacherProfile = async () => {
+	const res = await api.get("/event/teacher/profile");
+	return res.data;
+};
+
+export const updateTeacherProfile = async (profileData) => {
+	const res = await api.patch("/event/teacher/profile", profileData);
+	return res.data;
+};
+
+export const getAllTeacherEvents = async () => {
+	const res = await api.get("/event/teacher/all-events");
+	return res.data;
+};
+
 export const getEventById = async (id) => {
 	const res = await api.get(`/event/${id}`);
+	return res.data;
+};
+
+export const getTeacherEventById = async (id) => {
+	const res = await api.get(`/event/teacher/events/${id}`);
 	return res.data;
 };
 
@@ -76,5 +106,11 @@ export const getEventRegistrations = async (eventId) => {
 
 export const getEventTeams = async (eventId) => {
 	const response = await api.get(`/event/${eventId}/teams`);
+	return response.data;
+};
+
+export const getEventParticipants = async (eventId) => {
+	console.log("Fetching participants for event ID:", eventId);
+	const response = await api.get(`/event/${eventId}/participants`);
 	return response.data;
 };

@@ -6,9 +6,13 @@ const {
 	addEvent,
 	getAllTeachers,
 	getEventDetails,
+	getTeacherEventDetails,
 	getAllDetailsForEvent,
 	getAllEvents,
 	getTeacherEvents,
+	getTeacherProfile,
+	updateTeacherProfile,
+	getAllTeacherEvents,
 	getTeacherDashboard,
 	deleteEvent,
 	cancelEvent,
@@ -19,12 +23,14 @@ const {
 	getEventTeams,
 	createEventResult,
 	getEventResults,
+	updateEvent,
 } = require("../controllers/eventController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const {
 	adminMiddleware,
 	adminTeacherMiddleware,
 } = require("../middlewares/adminMiddleware");
+const { getEventParticipants } = require("../controllers/adminController");
 
 const eventRouter = express.Router();
 
@@ -53,9 +59,25 @@ eventRouter.patch(
 
 // All routes here are protected and require either admin or teacher access
 eventRouter.post("/", authMiddleware, adminTeacherMiddleware, addEvent);
+eventRouter.patch("/:id", authMiddleware, adminTeacherMiddleware, updateEvent);
+eventRouter.get(
+	"/:eventId/participants",
+	authMiddleware,
+	adminTeacherMiddleware,
+	(req, res, next) => {
+		req.eventId = req.params.eventId;
+		console.log("Event ID set in request object:", req.eventId);
+		next();
+	},
+	getEventParticipants,
+);
 
 // no admin middleware here since teachers and coordinators should be able to view event details
 eventRouter.get("/teacher/events", authMiddleware, getTeacherEvents);
+eventRouter.get("/teacher/profile", authMiddleware, getTeacherProfile);
+eventRouter.patch("/teacher/profile", authMiddleware, updateTeacherProfile);
+eventRouter.get("/teacher/all-events", authMiddleware, getAllTeacherEvents);
+eventRouter.get("/teacher/events/:id", authMiddleware, getTeacherEventDetails);
 eventRouter.get("/teacher/dashboard", authMiddleware, getTeacherDashboard);
 
 // Registration list

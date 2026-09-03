@@ -18,4 +18,5 @@ const StudentDashboard = () => {
 		</>
 	);
 };
+
 export default StudentDashboard;

@@ -38,14 +38,17 @@ const EditEvent = () => {
 		endAt: formatDateTimeLocal(event.schedule?.endAt),
 
 		coordinator: event.coordinators?.[0]?.userId || "",
+		primaryCoordinator: event.coordinators?.[0]?.name || "",
+		primaryCoordinatorEmail: event.coordinators?.[0]?.email || "",
+		primaryCoordinatorPhone: event.coordinators?.[0]?.phone || "",
+		primaryCoordinatorId: event.coordinators?.[0]?.userId || "",
 
-		registrationRequired: event.registration.config.required || false,
+		allowRegistration: event.registration?.config?.required || false,
 		registrationType: event.registration.config.type || "",
 		registrationStart: formatDateTimeLocal(event.registration.config.start),
 		registrationEnd: formatDateTimeLocal(event.registration.config.end),
-		registrationLimit: event.registration.config.limit || "",
-		registrationParticipationType:
-			event.registration.config.participationType || "",
+		participantLimit: event.registration.config.limit || "",
+		participationType: event.registration.config.participationType || "",
 		// totalRegitrations: event.registration.stats.totalRegistrations || 0,
 	});
 	const fetchEvent = async () => {

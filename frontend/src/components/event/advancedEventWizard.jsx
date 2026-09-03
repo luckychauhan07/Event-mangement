@@ -8,14 +8,21 @@ import OrganizersStep from "./steps/organizersStep";
 import ScheduleStep from "./steps/schduleStep";
 import RegistrationStep from "./steps/registrationStep";
 import ResourcesStep from "./steps/resourcesStep";
-import MediaStep from "./steps/mediaStep";
 import AudienceStep from "./steps/audienceStep";
 import FormBuilderStep from "./steps/formBuilderStep";
 import ResultStep from "./steps/resultStep";
-import { createEvent } from "../../services/eventServices";
+import { createEvent, patchEvent } from "../../services/eventServices";
 import toast from "react-hot-toast";
 
 const isBlank = (value) => !value || !String(value).trim();
+
+const getCurrentUserRole = () => {
+	try {
+		return JSON.parse(localStorage.getItem("user") || "null")?.role || "";
+	} catch {
+		return "";
+	}
+};
 
 const isPositiveNumber = (value) => {
 	if (value === "" || value === null || value === undefined) return false;
@@ -29,11 +36,20 @@ const isPositiveInteger = (value) => {
 	return Number.isInteger(parsedValue) && parsedValue > 0;
 };
 
+const normalizeUrl = (value) => {
+	const trimmedValue = String(value || "").trim();
+	if (!trimmedValue) return "";
+	return /^https?:\/\//i.test(trimmedValue)
+		? trimmedValue
+		: `https://${trimmedValue}`;
+};
+
 const isValidHttpUrl = (value) => {
-	if (!value) return false;
+	const normalizedValue = normalizeUrl(value);
+	if (!normalizedValue) return false;
 
 	try {
-		const parsedUrl = new URL(String(value).trim());
+		const parsedUrl = new URL(normalizedValue);
 		return (
 			parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:"
 		);
@@ -164,10 +180,6 @@ const validateEventBeforeSubmit = (eventData) => {
 		return "Please provide catering details";
 	}
 
-	if (eventData.promoVideo && !isValidHttpUrl(eventData.promoVideo)) {
-		return "Promo video link must be a valid URL (http/https)";
-	}
-
 	const audienceRoles = eventData.audienceRoles || [];
 	if (audienceRoles.length === 0) {
 		return "Select at least one target audience role";
@@ -178,10 +190,6 @@ const validateEventBeforeSubmit = (eventData) => {
 	) {
 		return "Select at least one student year for student audience";
 	}
-	if (!eventData.interCollege) {
-		return "Please choose inter-college participation preference";
-	}
-
 	if (eventData.allowRegistration === "yes") {
 		const customFields = eventData.registrationSchema || [];
 		const normalizedLabels = [];
@@ -251,7 +259,12 @@ const validateEventBeforeSubmit = (eventData) => {
 	return true;
 };
 
-const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
+const AdvancedEventWizard = ({
+	eventData,
+	setEventData,
+	setAdvancedMode,
+	isEditing = false,
+}) => {
 	const [step, setStep] = useState(0);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const refStep = useRef();
@@ -260,6 +273,9 @@ const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
 	};
 
 	const handleSubmit = async (data) => {
+		if (data.onlineLink) {
+			data.onlineLink = normalizeUrl(data.onlineLink);
+		}
 		if (data.eventRecurrence === "No Recurrence" && !data.eventRecurrence) {
 			data.eventRecurrence = "";
 		}
@@ -298,13 +314,24 @@ const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
 
 		try {
 			setIsSubmitting(true);
-			const response = await createEvent(data);
+			const response = isEditing
+				? await patchEvent(data.id, data)
+				: await createEvent(data);
 			toast.success(`${response.message} 🎉`, {
 				id: "advanced-event-submit",
 			});
-			if (response.eventId && response.status === "success") {
+			const role = getCurrentUserRole();
+			const eventId = response.eventId || response.event?.id || data.id;
+			const eventBasePath =
+				role === "teacher" ? "/teacher/events" : "/admin/events";
+
+			if (isEditing && eventId) {
 				setTimeout(() => {
-					window.location.href = `/events/${response.eventId}`;
+					window.location.href = `${eventBasePath}/${eventId}`;
+				}, 1000);
+			} else if (!isEditing && eventId && response.status === "success") {
+				setTimeout(() => {
+					window.location.href = `${eventBasePath}/${eventId}`;
 				}, 1500);
 			}
 		} catch (err) {
@@ -333,7 +360,6 @@ const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
 		ScheduleStep,
 		RegistrationStep,
 		ResourcesStep,
-		MediaStep,
 		AudienceStep,
 		FormBuilderStep,
 		ResultStep,
@@ -400,7 +426,13 @@ const AdvancedEventWizard = ({ eventData, setEventData, setAdvancedMode }) => {
 							onClick={() => handleSubmit(eventData)}
 						>
 							<Check size={18} />
-							{isSubmitting ? "Creating..." : "Create Event"}
+							{isSubmitting
+								? isEditing
+									? "Updating..."
+									: "Creating..."
+								: isEditing
+									? "Update Event"
+									: "Create Event"}
 						</button>
 					)}
 				</div>

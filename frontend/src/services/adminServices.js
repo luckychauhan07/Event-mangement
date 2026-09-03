@@ -1,5 +1,10 @@
 import api from "../api/api";
 
+export const getAdminDashboardSummary = async () => {
+	const response = await api.get("/admin/dashboard");
+	return response.data;
+};
+
 export const getPendingTeachers = async () => {
 	const res = await api.get("/admin/teachers-approvals");
 

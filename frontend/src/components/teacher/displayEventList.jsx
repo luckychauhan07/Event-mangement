@@ -7,11 +7,12 @@ import {
 	Shapes,
 	ArrowUpRight,
 	SquarePen,
+	UserCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getEventStatusMeta } from "../../utils/eventStatus";
 
-const DisplayEventList = ({ events }) => {
+const DisplayEventList = ({ events, showAllEvents = false }) => {
 	const formatDateTime = (value) => {
 		if (!value) return "Not specified";
 
@@ -47,29 +48,63 @@ const DisplayEventList = ({ events }) => {
 		return (
 			<div className="rounded-2xl border border-dashed border-slate-300 bg-linear-to-br from-slate-50 to-white p-10 text-center">
 				<h2 className="text-lg font-semibold text-slate-800">
-	No events assigned
-</h2>
-<p className="mt-2 text-sm text-slate-500">
-	There are no events assigned to you yet.
-</p>
+					{showAllEvents ? "No active events" : "No events assigned"}
+				</h2>
+				<p className="mt-2 text-sm text-slate-500">
+					{showAllEvents
+						? "There are no upcoming or ongoing events available."
+						: "There are no events assigned to you yet."}
+				</p>
 			</div>
 		);
 	}
 
 	return (
 		<div className="space-y-5">
+			<div
+				className={`flex items-start gap-3 rounded-2xl border px-4 py-3 ${
+					showAllEvents
+						? "border-blue-200 bg-blue-50 text-blue-900"
+						: "border-amber-200 bg-amber-50 text-amber-950"
+				}`}
+			>
+				{showAllEvents ? (
+					<CalendarDays
+						className="mt-0.5 shrink-0 text-blue-600"
+						size={18}
+					/>
+				) : (
+					<UserCheck
+						className="mt-0.5 shrink-0 text-amber-600"
+						size={18}
+					/>
+				)}
+				<div>
+					<p className="text-sm font-semibold">
+						{showAllEvents
+							? "Browse active events"
+							: "Your coordinator assignments"}
+					</p>
+					<p className="mt-0.5 text-xs opacity-75">
+						{showAllEvents
+							? "Upcoming and ongoing events across the platform."
+							: "Events where you are responsible as coordinator. Past events remain available here."}
+					</p>
+				</div>
+			</div>
+
 			<div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
 				<h2 className="text-lg font-semibold text-slate-900">
-					My Events
+					{showAllEvents ? "All Events" : "Assigned To You"}
 				</h2>
 				<span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
-	{events.length} assigned
-</span>
+					{events.length} {showAllEvents ? "available" : "assigned"}
+				</span>
 			</div>
 
 			<div className="grid gap-4 xl:grid-cols-2">
 				{events.map((event) => {
-							const status = getEventStatusMeta(event);
+					const status = getEventStatusMeta(event);
 					const eventMode =
 						event.event_mode || event.eventMode || "-";
 					const eventType =
@@ -105,26 +140,38 @@ const DisplayEventList = ({ events }) => {
 								</div>
 
 								<div className="flex items-center gap-2">
-									{status.label === "Upcoming" && (
-	<button
-		className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition-all duration-300 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800"
-		onClick={() =>
-			navigate(`/teacher/events/${event.id}/edit`)
-		}
-	>
-		<SquarePen size={13} />
-		Edit
-	</button>
-)}
+									{!showAllEvents &&
+										status.label === "Upcoming" && (
+											<button
+												className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition-all duration-300 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800"
+												onClick={() =>
+													navigate(
+														`/teacher/events/${event.id}/edit`,
+													)
+												}
+											>
+												<SquarePen size={13} />
+												Edit
+											</button>
+										)}
 									<button
-	className="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-slate-800"
-	onClick={() =>
-		navigate(`/teacher/events/${event.id}`)
-	}
->
-	View Details
-	<ArrowUpRight size={13} />
-</button>
+										className="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-slate-800"
+										onClick={() =>
+											navigate(
+												`/teacher/events/${event.id}`,
+												{
+													state: {
+														from: showAllEvents
+															? "/teacher/events/all"
+															: "/teacher/events/assigned",
+													},
+												},
+											)
+										}
+									>
+										View Details
+										<ArrowUpRight size={13} />
+									</button>
 								</div>
 							</div>
 
@@ -178,8 +225,9 @@ const DisplayEventList = ({ events }) => {
 
 			<div className="pt-2">
 				<p className="text-xs text-slate-400">
-					Showing {events.length} assigned event
-{events.length === 1 ? "" : "s"}
+					Showing {events.length}{" "}
+					{showAllEvents ? "available" : "assigned"} event
+					{events.length === 1 ? "" : "s"}
 				</p>
 			</div>
 		</div>
