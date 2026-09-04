@@ -39,19 +39,19 @@ const Login = () => {
 				window.location.href = "/admin";
 			}
 			if (response.user.role === "teacher") {
-				window.location.href = "/teacher/dashboard";
+				window.location.href = "/teacher";
 			}
 			if (response.user.role === "student") {
 				window.location.href = "/user/dashboard";
 			}
-		}  catch (err) {
-    console.error("LOGIN ERROR:", err);
-    setError(
-        err.response?.data?.message ||
-        err.message ||
-        "Login failed. Please try again."
-    );
-} finally {
+		} catch (err) {
+			console.error("LOGIN ERROR:", err);
+			setError(
+				err.response?.data?.message ||
+					err.message ||
+					"Login failed. Please try again.",
+			);
+		} finally {
 			setLoading(false);
 		}
 	};

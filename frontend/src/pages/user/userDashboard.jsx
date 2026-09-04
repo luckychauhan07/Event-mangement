@@ -53,19 +53,23 @@ const UserDashboard = () => {
 	}, []);
 
 	const availableEvents = useMemo(
-		() => events.filter((event) => event.status !== "cancelled"),
+		() => events,
 		[events],
 	);
 
 	const registrations = useMemo(
-    () => availableEvents.filter((event) => isRegisteredByUser(event)),
-    [availableEvents],
-);
+		() => availableEvents.filter((event) => isRegisteredByUser(event)),
+		[availableEvents],
+	);
 
-	const nextEvent = useMemo(() => { // Find the single next upcoming event
+	const nextEvent = useMemo(() => {
+		// Find the next active event, including events already in progress.
 		return (
 			availableEvents
-				.filter((event) => getEventPhase(event) === "upcoming")
+				.filter((event) => {
+					const phase = getEventPhase(event);
+					return phase === "upcoming" || phase === "ongoing";
+				})
 				.sort(
 					(a, b) =>
 						new Date(a.start_at).getTime() -
@@ -77,11 +81,15 @@ const UserDashboard = () => {
 	const stats = useMemo(
 		() => ({
 			totalEvents: availableEvents.length,
-			registered: registrations.filter((event) =>
-				isRegisteredByUser(event) && getRegistrationLabel(event) === "Confirmed",
+			registered: registrations.filter(
+				(event) =>
+					isRegisteredByUser(event) &&
+					getRegistrationLabel(event) === "Confirmed",
 			).length,
-			pending: registrations.filter((event) =>
-				isRegisteredByUser(event) && getRegistrationLabel(event) === "Pending Approval",
+			pending: registrations.filter(
+				(event) =>
+					isRegisteredByUser(event) &&
+					getRegistrationLabel(event) === "Pending Approval",
 			).length,
 		}),
 		[availableEvents, registrations],
@@ -90,7 +98,10 @@ const UserDashboard = () => {
 	const upcomingPreview = useMemo(
 		() =>
 			availableEvents
-				.filter((event) => getEventPhase(event) === "upcoming")
+				.filter((event) => {
+					const phase = getEventPhase(event);
+					return phase === "upcoming" || phase === "ongoing";
+				})
 				.sort(
 					(a, b) =>
 						new Date(a.start_at).getTime() -
@@ -113,9 +124,10 @@ const UserDashboard = () => {
 								Welcome, {displayName}
 							</h1>
 							<p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-								Discover upcoming events, manage your registrations,
-								and keep your profile ready for participation.
-								</p>								
+								Discover upcoming events, manage your
+								registrations, and keep your profile ready for
+								participation.
+							</p>
 						</div>
 
 						<div className="flex flex-wrap gap-3">
@@ -136,14 +148,6 @@ const UserDashboard = () => {
 					</div>
 
 					<div className="grid gap-4 sm:grid-cols-3 lg:w-[440px]">
-						<div className="rounded-2xl bg-slate-50 p-4">
-							<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-								Total Events
-							</p>
-							<p className="mt-3 text-3xl font-bold text-slate-900">
-								{stats.totalEvents}
-							</p>
-						</div>
 						<div className="rounded-2xl bg-emerald-50 p-4">
 							<p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
 								Registered
@@ -190,8 +194,8 @@ const UserDashboard = () => {
 									No upcoming event yet
 								</h2>
 								<p className="mt-2 text-sm text-blue-100">
-									New events will appear here as soon as they are
-									available for users.
+									New events will appear here as soon as they
+									are available for users.
 								</p>
 							</>
 						)}
@@ -226,7 +230,8 @@ const UserDashboard = () => {
 						Browse Events
 					</h3>
 					<p className="mt-2 text-sm leading-6 text-slate-600">
-						See all upcoming events and open the full event details page.
+						See all upcoming events and open the full event details
+						page.
 					</p>
 				</Link>
 
@@ -252,7 +257,8 @@ const UserDashboard = () => {
 						Notifications
 					</h3>
 					<p className="mt-2 text-sm leading-6 text-slate-600">
-						Check announcements and updates when admin or teachers send them.
+						Check announcements and updates when admin or teachers
+						send them.
 					</p>
 				</Link>
 
@@ -265,7 +271,8 @@ const UserDashboard = () => {
 						My Profile
 					</h3>
 					<p className="mt-2 text-sm leading-6 text-slate-600">
-						Review your student information and participation summary.
+						Review your student information and participation
+						summary.
 					</p>
 				</Link>
 			</section>
@@ -289,7 +296,9 @@ const UserDashboard = () => {
 				</div>
 
 				{loading ? (
-					<p className="text-sm text-slate-500">Loading dashboard data...</p>
+					<p className="text-sm text-slate-500">
+						Loading dashboard data...
+					</p>
 				) : error ? (
 					<div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
 						{error}
@@ -309,14 +318,19 @@ const UserDashboard = () => {
 									<span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-700">
 										{event.category || "General"}
 									</span>
-									{isRegisteredByUser(event) && getRegistrationLabel(event) === "Pending Approval" ? (
+									{isRegisteredByUser(event) &&
+									getRegistrationLabel(event) ===
+										"Pending Approval" ? (
 										<span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
 											<CalendarClock size={12} />
 											Pending
 										</span>
-									) : isRegisteredByUser(event) && getRegistrationLabel(event) === "Confirmed" ? (
+									) : isRegisteredByUser(event) &&
+									  getRegistrationLabel(event) ===
+											"Confirmed" ? (
 										<span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-											<BadgeCheck size={12} /> {/* Using BadgeCheck for confirmed */}
+											<BadgeCheck size={12} />{" "}
+											{/* Using BadgeCheck for confirmed */}
 											Registered
 										</span>
 									) : null}

@@ -26,7 +26,6 @@ export const getEventPhase = (event) => {
 	const startDate = getEventStartDate(event);
 	const endDate = getEventEndDate(event);
 
-	if (event?.status === "cancelled") return "cancelled";
 	if (Number.isNaN(startDate.getTime())) return "Event timing unavailable";
 	if (now < startDate) return "upcoming";
 	if (!Number.isNaN(endDate.getTime()) && now <= endDate) return "ongoing";

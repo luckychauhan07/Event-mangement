@@ -14,6 +14,8 @@ import {
 	Users,
 	LogOut,
 	X,
+	LinkIcon,
+	Link2Icon,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../services/api";
@@ -85,10 +87,7 @@ const UserEvents = () => {
 		loadEvents();
 	}, []);
 
-	const visibleEvents = useMemo(
-		() => events.filter((event) => event.status !== "cancelled"),
-		[events],
-	);
+	const visibleEvents = useMemo(() => events, [events]);
 
 	const filteredEvents = useMemo(() => {
 		return visibleEvents
@@ -140,13 +139,12 @@ const UserEvents = () => {
 
 	const stats = useMemo(
 		() => ({
-			total: visibleEvents.length, // Total published events
+			ongoing: visibleEvents.filter(
+				(event) => getEventPhase(event) === "ongoing",
+			).length,
 			upcoming: visibleEvents.filter(
 				// Events in upcoming phase
 				(event) => getEventPhase(event) === "upcoming",
-			).length,
-			registered: visibleEvents.filter((event) =>
-				isRegisteredByUser(event),
 			).length,
 		}),
 		[visibleEvents],
@@ -468,14 +466,31 @@ const UserEvents = () => {
 
 						<div className="rounded-2xl bg-slate-50 p-4">
 							<div className="flex items-center gap-2 text-slate-400">
-								<MapPin size={15} />
+								{event.event_mode === "online" ? (
+									<Link2Icon size={15} />
+								) : (
+									<MapPin size={15} />
+								)}
 								<p className="text-[11px] font-semibold uppercase tracking-wide">
-									Venue
+									{event.event_mode === "online"
+										? "Online Link"
+										: "Venue"}
 								</p>
 							</div>
-							<p className="mt-2 text-sm font-medium text-slate-800">
-								{event.venue || "Not specified"}
-							</p>
+							{event.event_mode === "online" ? (
+								<a
+									href={event.online_link}
+									target="_blank"
+									rel="noreferrer"
+									className="mt-2 block break-all text-sm font-medium text-blue-600 hover:underline"
+								>
+									{event.online_link || "Not available"}
+								</a>
+							) : (
+								<p className="mt-2 text-sm font-medium text-slate-800">
+									{event.venue || "Not specified"}
+								</p>
+							)}
 						</div>
 
 						<div className="rounded-2xl bg-slate-50 p-4">
@@ -572,10 +587,10 @@ const UserEvents = () => {
 					<div className="grid gap-3 sm:grid-cols-3 lg:w-[420px]">
 						<div className="rounded-2xl bg-white/95 p-4 text-slate-900">
 							<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-								Available Events
+								Ongoing Events
 							</p>
 							<p className="mt-3 text-3xl font-bold">
-								{stats.total}
+								{stats.ongoing}
 							</p>
 						</div>
 						<div className="rounded-2xl bg-white/95 p-4 text-slate-900">
@@ -584,14 +599,6 @@ const UserEvents = () => {
 							</p>
 							<p className="mt-3 text-3xl font-bold">
 								{stats.upcoming}
-							</p>
-						</div>
-						<div className="rounded-2xl bg-white/95 p-4 text-slate-900">
-							<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-								Registered
-							</p>
-							<p className="mt-3 text-3xl font-bold">
-								{stats.registered}
 							</p>
 						</div>
 					</div>

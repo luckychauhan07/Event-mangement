@@ -22,9 +22,11 @@ const Register = () => {
 		setLoading(true);
 
 		try {
-			await registerUser(form);
-			navigate("/");
+			const response = await registerUser(form);
+			navigate("/verify", { state: { email: form.email } });
+			// navigate("/");
 		} catch (err) {
+			console.error("Registration error:", err);
 			setError(
 				err.response?.data?.message ||
 					"Registration failed. Please try again.",

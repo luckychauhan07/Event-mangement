@@ -28,11 +28,7 @@ exports.getAllEvents = async (req, res) => {
 					AND er.user_id = $1
 				WHERE e.is_deleted = false
 				  AND (
-					(e.status IN ('published', 'upcoming', 'ongoing')
-					 AND e.start_at <= NOW()
-					 AND e.end_at >= NOW())
-					OR (e.status IN ('published', 'upcoming', 'ongoing')
-					 AND e.start_at > NOW())
+					e.end_at >= NOW()
 					OR er.registration_id IS NOT NULL
 				  )
 				ORDER BY e.created_at DESC
@@ -64,11 +60,7 @@ exports.getAllEvents = async (req, res) => {
 					ON r.event_id = e.id
 				WHERE e.is_deleted = false
 				  AND (
-					(e.status IN ('published', 'upcoming', 'ongoing')
-					 AND e.start_at <= NOW()
-					 AND e.end_at >= NOW())
-					OR (e.status IN ('published', 'upcoming', 'ongoing')
-					 AND e.start_at > NOW())
+					e.end_at >= NOW()
 				  )
 				ORDER BY e.created_at DESC
 				`,

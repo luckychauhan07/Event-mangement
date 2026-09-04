@@ -188,12 +188,25 @@ export default function EventDetails() {
 				<div className="grid gap-5 border-t border-slate-200 bg-white p-6 md:grid-cols-3">
 					<div>
 						<p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-							Venue
+							{event.schedule.mode === "online"
+								? "Online Link"
+								: "Venue"}
 						</p>
 
-						<p className="mt-1 font-medium text-slate-700">
-							{event.schedule.venue || "Online"}
-						</p>
+						{event.schedule.mode === "online" ? (
+							<a
+								href={event.schedule.onlineLink}
+								target="_blank"
+								rel="noreferrer"
+								className="mt-1 block break-all font-medium text-blue-600 hover:underline"
+							>
+								{event.schedule.onlineLink || "Not available"}
+							</a>
+						) : (
+							<p className="mt-1 font-medium text-slate-700">
+								{event.schedule.venue || "Not specified"}
+							</p>
+						)}
 					</div>
 
 					<div>

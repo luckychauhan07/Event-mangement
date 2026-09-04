@@ -96,10 +96,8 @@ const UserEventDetails = () => {
 			};
 		}
 
-		if (
-			eventDetails.meta.status === "ongoing" ||
-			eventDetails.meta.status === "completed"
-		) {
+		const eventPhase = getEventPhase(eventDetails);
+		if (eventPhase === "ongoing" || eventPhase === "completed") {
 			return {
 				canRegister: false,
 				message: "Registration is closed because the event is ongoing.",
@@ -222,14 +220,31 @@ const UserEventDetails = () => {
 
 					<div className="rounded-3xl bg-slate-50 p-5">
 						<div className="flex items-center gap-2 text-slate-400">
-							<MapPin size={16} />
+							{schedule.mode === "online" ? (
+								<FileText size={16} />
+							) : (
+								<MapPin size={16} />
+							)}
 							<p className="text-xs font-semibold uppercase tracking-wide">
-								Venue
+								{schedule.mode === "online"
+									? "Online Link"
+									: "Venue"}
 							</p>
 						</div>
-						<p className="mt-3 text-sm font-medium text-slate-800">
-							{schedule.venue || "Not specified"}
-						</p>
+						{schedule.mode === "online" ? (
+							<a
+								href={schedule.onlineLink}
+								target="_blank"
+								rel="noreferrer"
+								className="mt-3 block break-all text-sm font-medium text-blue-600 hover:underline"
+							>
+								{schedule.onlineLink || "Not available"}
+							</a>
+						) : (
+							<p className="mt-3 text-sm font-medium text-slate-800">
+								{schedule.venue || "Not specified"}
+							</p>
+						)}
 					</div>
 				</div>
 			</section>

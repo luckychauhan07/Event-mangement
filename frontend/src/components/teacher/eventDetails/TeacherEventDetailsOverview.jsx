@@ -13,7 +13,6 @@ const InfoCard = ({ label, value }) => (
 const TeacherEventDetailsOverview = ({ event }) => {
 	return (
 		<div className="space-y-6">
-
 			{/* Description */}
 			<div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 				<h2 className="mb-4 text-xl font-semibold text-slate-800">
@@ -27,22 +26,21 @@ const TeacherEventDetailsOverview = ({ event }) => {
 
 			{/* Event Details */}
 			<div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+				<InfoCard label="Category" value={event.basic.category} />
+
+				<InfoCard label="Event Type" value={event.basic.eventType} />
 
 				<InfoCard
-					label="Category"
-					value={event.basic.category}
-				/>
-
-				<InfoCard
-					label="Event Type"
-					value={event.basic.eventType}
-				/>
-
-				
-
-				<InfoCard
-					label="Venue"
-					value={event.schedule.venue}
+					label={
+						event.schedule.mode === "online"
+							? "Online Link"
+							: "Venue"
+					}
+					value={
+						event.schedule.mode === "online"
+							? event.schedule.onlineLink
+							: event.schedule.venue
+					}
 				/>
 
 				<InfoCard
@@ -54,78 +52,59 @@ const TeacherEventDetailsOverview = ({ event }) => {
 					}
 				/>
 
-				<InfoCard
-					label="Status"
-					value={event.meta.status}
-				/>
+				<InfoCard label="Status" value={event.meta.status} />
 
 				<InfoCard
 					label="Start"
-					value={new Date(
-						event.schedule.startAt
-					).toLocaleString()}
+					value={new Date(event.schedule.startAt).toLocaleString()}
 				/>
 
 				<InfoCard
 					label="End"
-					value={new Date(
-						event.schedule.endAt
-					).toLocaleString()}
+					value={new Date(event.schedule.endAt).toLocaleString()}
 				/>
 
 				<InfoCard
 					label="Created On"
-					value={new Date(
-						event.meta.createdAt
-					).toLocaleDateString()}
+					value={new Date(event.meta.createdAt).toLocaleDateString()}
 				/>
-
 			</div>
 
 			{/* Statistics */}
 			<div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-
 				<div className="rounded-2xl bg-indigo-50 p-5 text-center">
 					<p className="text-3xl font-bold text-indigo-700">
 						{event.stats.totalRegistrations}
 					</p>
-					<p className="mt-2 text-sm text-slate-600">
-						Registrations
-					</p>
+					<p className="mt-2 text-sm text-slate-600">Registrations</p>
 				</div>
 
 				<div className="rounded-2xl bg-emerald-50 p-5 text-center">
-	<p className="text-lg font-bold text-emerald-700">
-		{event.registration.config.required ? "Open" : "Closed"}
-	</p>
+					<p className="text-lg font-bold text-emerald-700">
+						{event.registration.config.required ? "Open" : "Closed"}
+					</p>
 
-	<p className="mt-2 text-sm text-slate-600">
-		Registration
-	</p>
-</div>
+					<p className="mt-2 text-sm text-slate-600">Registration</p>
+				</div>
 
 				<div className="rounded-2xl bg-sky-50 p-5 text-center">
-	<p className="text-3xl font-bold text-sky-700">
-		{Math.max((event.coordinators?.length || 1) - 1, 0)}
-	</p>
+					<p className="text-3xl font-bold text-sky-700">
+						{Math.max((event.coordinators?.length || 1) - 1, 0)}
+					</p>
 
-	<p className="mt-2 text-sm text-slate-600">
-		Other Teacher Coordinators
-	</p>
-</div>
+					<p className="mt-2 text-sm text-slate-600">
+						Other Teacher Coordinators
+					</p>
+				</div>
 
 				<div className="rounded-2xl bg-amber-50 p-5 text-center">
-	<p className="text-xl font-bold capitalize text-amber-700">
-		{event.schedule.mode}
-	</p>
+					<p className="text-xl font-bold capitalize text-amber-700">
+						{event.schedule.mode}
+					</p>
 
-	<p className="mt-2 text-sm text-slate-600">
-		Event Mode
-	</p>
-</div>
-
+					<p className="mt-2 text-sm text-slate-600">Event Mode</p>
+				</div>
 			</div>
-
 		</div>
 	);
 };

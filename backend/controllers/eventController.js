@@ -2,14 +2,6 @@ const pool = require("../db/config");
 const { createEventSchema } = require("../validators/eventValidator");
 const { mapDatabaseError } = require("../utils/dbHelpers");
 
-const normalizeUrl = (value) => {
-	const trimmedValue = String(value || "").trim();
-	if (!trimmedValue) return null;
-	return /^https?:\/\//i.test(trimmedValue)
-		? trimmedValue
-		: `https://${trimmedValue}`;
-};
-
 const toNullableInteger = (value) => {
 	if (value === "" || value === null || value === undefined) {
 		return null;
@@ -51,7 +43,6 @@ exports.addEvent = async (req, res) => {
 	}
 
 	const eventData = parsed.data;
-	eventData.onlineLink = normalizeUrl(eventData.onlineLink);
 	const {
 		registrationSchema,
 		resultConfig,
