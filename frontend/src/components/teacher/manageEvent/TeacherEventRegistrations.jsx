@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { getEventRegistrations } from "@/services/eventServices";
+import { updateEventRegistrationStatus } from "@/services/eventServices";
+import toast from "react-hot-toast";
 
-const TeacherEventRegistrations = ({ eventId }) => {
+const TeacherEventRegistrations = ({ eventId, approvalBased = false }) => {
 	const [registrations, setRegistrations] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [processingId, setProcessingId] = useState(null);
 
 	useEffect(() => {
 		const fetchRegistrations = async () => {
@@ -19,6 +22,27 @@ const TeacherEventRegistrations = ({ eventId }) => {
 
 		fetchRegistrations();
 	}, [eventId]);
+
+	const updateStatus = async (registrationId, status) => {
+		setProcessingId(registrationId);
+		try {
+			await updateEventRegistrationStatus(eventId, registrationId, status);
+			setRegistrations((current) =>
+				current.map((registration) =>
+					registration.registration_id === registrationId
+						? { ...registration, status }
+						: registration,
+				),
+			);
+			toast.success(`Registration ${status}`);
+		} catch (error) {
+			toast.error(
+				error.response?.data?.message || "Failed to update registration",
+			);
+		} finally {
+			setProcessingId(null);
+		}
+	};
 
 	if (loading) {
 		return <p>Loading registrations...</p>;
@@ -54,6 +78,7 @@ const TeacherEventRegistrations = ({ eventId }) => {
 						<th className="p-4">Team</th>
 
 						<th className="p-4">Status</th>
+						{approvalBased && <th className="p-4">Action</th>}
 
 						<th className="p-4">Registered On</th>
 
@@ -85,6 +110,31 @@ const TeacherEventRegistrations = ({ eventId }) => {
 							<td className="p-4 capitalize">
 								{registration.status}
 							</td>
+
+							{approvalBased && (
+								<td className="p-4">
+									{registration.status === "pending" ? (
+										<div className="flex gap-2">
+											<button
+												disabled={processingId === registration.registration_id}
+												onClick={() => updateStatus(registration.registration_id, "approved")}
+												className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+											>
+												Approve
+											</button>
+											<button
+												disabled={processingId === registration.registration_id}
+												onClick={() => updateStatus(registration.registration_id, "rejected")}
+												className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+											>
+												Reject
+											</button>
+										</div>
+									) : (
+										<span className="text-xs text-slate-400">Processed</span>
+									)}
+								</td>
+							)}
 
 							<td className="p-4">
 								{new Date(

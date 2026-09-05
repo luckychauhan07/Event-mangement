@@ -63,7 +63,7 @@ This is the database table which stores the data about the events in the system 
     result_enabled BOOLEAN DEFAULT FALSE,
     result_config JSONB,
 
-    status VARCHAR(20) DEFAULT 'draft',
+    status VARCHAR(20) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     created_by BIGINT REFERENCES users(user_id)
 

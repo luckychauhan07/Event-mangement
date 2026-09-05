@@ -27,6 +27,7 @@ exports.getAllEvents = async (req, res) => {
 					ON er.event_id = e.id
 					AND er.user_id = $1
 				WHERE e.is_deleted = false
+				  AND e.status = 'published'
 				  AND (
 					e.end_at >= NOW()
 					OR er.registration_id IS NOT NULL
@@ -59,6 +60,7 @@ exports.getAllEvents = async (req, res) => {
 				LEFT JOIN event_registration_settings r
 					ON r.event_id = e.id
 				WHERE e.is_deleted = false
+				  AND e.status = 'published'
 				  AND (
 					e.end_at >= NOW()
 				  )
@@ -95,6 +97,7 @@ exports.getEventDetails = async (req, res) => {
       (SELECT json_agg(jsonb_build_object('userId', u.user_id, 'name', u.full_name, 'email', u.email, 'phone', u.phone, 'role', ec.role)) FROM event_coordinators ec JOIN users u ON u.user_id = ec.user_id WHERE ec.event_id = e.id) AS coordinators,
       (SELECT json_agg(jsonb_build_object('allow', r.allow_registration, 'type', r.registration_type, 'participation', r.participation_type, 'start', r.registration_start, 'end', r.registration_end, 'limit', r.participant_limit, 'teamMin', r.min_team_size, 'teamMax', r.max_team_size)) FROM event_registration_settings r WHERE r.event_id = e.id) AS registration_rules,
       (SELECT json_agg(jsonb_build_object('id', f.field_id, 'label', f.label, 'type', f.field_type, 'required', f.is_required, 'options', f.options, 'order', f.display_order) ORDER BY f.display_order) FROM event_form_fields f WHERE f.event_id = e.id) AS form_fields
+			,(SELECT row_to_json(rc) FROM event_result_config rc WHERE rc.event_id = e.id) AS result_config
 			,er.registration_id AS user_registration_id
 			,er.status AS user_registration_status
 			,er.submitted_at AS user_registration_submitted_at
@@ -156,6 +159,7 @@ exports.getEventDetails = async (req, res) => {
 			},
 			coordinators: event.coordinators || [],
 			formFields: event.form_fields || [],
+			resultConfig: event.result_config || null,
 			user_registration_id: event.user_registration_id,
 			user_registration_status: event.user_registration_status,
 			user_registration_submitted_at:

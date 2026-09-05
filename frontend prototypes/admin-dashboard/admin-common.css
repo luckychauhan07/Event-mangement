@@ -153,7 +153,8 @@ body {
 		font-size: 1.5rem;
 		color: white;
 		background: linear-gradient(135deg, var(--primary), #7c3aed);
-		box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1),
+		box-shadow:
+			0 4px 6px -1px rgba(79, 70, 229, 0.1),
 			0 2px 4px -1px rgba(79, 70, 229, 0.06);
 	}
 
@@ -363,7 +364,7 @@ body {
 			}
 
 			&.status-pending,
-			&.status-draft {
+			&.status-pending {
 				background: rgba(250, 204, 21, 0.12);
 				color: var(--warning);
 			}
@@ -392,7 +393,7 @@ body {
 			}
 
 			&.status-pending::before,
-			&.status-draft::before {
+			&.status-pending::before {
 				background: var(--warning);
 			}
 
@@ -500,7 +501,9 @@ body {
 		border: 1px solid var(--border);
 		border-radius: 8px;
 		font-size: 15px;
-		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 		background-color: var(--bg-surface);
 		color: var(--text-dark);
 
@@ -721,7 +724,9 @@ body {
 		border: 1px solid var(--border);
 		border-radius: var(--radius-sm);
 		font-size: 0.95rem;
-		transition: border-color 0.2s, box-shadow 0.2s;
+		transition:
+			border-color 0.2s,
+			box-shadow 0.2s;
 	}
 
 	.form-control:focus {
@@ -774,7 +779,9 @@ body {
 		font-size: 15px;
 		cursor: pointer;
 		border: 1px solid transparent;
-		transition: transform 0.06s ease, box-shadow 0.08s ease,
+		transition:
+			transform 0.06s ease,
+			box-shadow 0.08s ease,
 			background-color 0.15s ease;
 		white-space: nowrap;
 		position: relative;
@@ -1050,7 +1057,9 @@ body {
 		text-align: center;
 		white-space: nowrap;
 		vertical-align: baseline;
-		transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+		transition:
+			color 0.15s ease-in-out,
+			background-color 0.15s ease-in-out,
 			box-shadow 0.15s ease-in-out;
 
 		/* Badge variants */

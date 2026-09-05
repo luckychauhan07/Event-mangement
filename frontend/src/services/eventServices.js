@@ -52,6 +52,11 @@ export const getTeacherEvents = async () => {
 	return res.data;
 };
 
+export const getTeacherEventRequests = async () => {
+	const res = await api.get("/event/teacher/event-requests");
+	return res.data;
+};
+
 export const getTeacherProfile = async () => {
 	const res = await api.get("/event/teacher/profile");
 	return res.data;
@@ -104,8 +109,30 @@ export const getEventRegistrations = async (eventId) => {
 	return response.data;
 };
 
+export const updateEventRegistrationStatus = async (
+	eventId,
+	registrationId,
+	status,
+) => {
+	const response = await api.patch(
+		`/event/${eventId}/registrations/${registrationId}/status`,
+		{ status },
+	);
+	return response.data;
+};
+
 export const getEventTeams = async (eventId) => {
 	const response = await api.get(`/event/${eventId}/teams`);
+	return response.data;
+};
+
+export const getEventResults = async (eventId) => {
+	const response = await api.get(`/event/${eventId}/results`);
+	return response.data;
+};
+
+export const createEventResults = async (eventId, results) => {
+	const response = await api.post(`/event/${eventId}/results`, { results });
 	return response.data;
 };
 

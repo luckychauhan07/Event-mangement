@@ -9,6 +9,12 @@ export const isEventExpired = (event) => {
 };
 
 export const getEventTimelinePhase = (event) => {
+	if (event?.status === "cancelled") return "cancelled";
+	if (event?.status === "rejected") return "rejected";
+	if (event?.status === "pending") {
+		return "approval-required";
+	}
+
 	const now = new Date();
 	const startDate = new Date(event?.start_at || event?.startAt || "");
 	const endDate = new Date(event?.end_at || event?.endAt || "");
@@ -17,9 +23,6 @@ export const getEventTimelinePhase = (event) => {
 	if (now < startDate) return "upcoming";
 	if (!Number.isNaN(endDate.getTime()) && now <= endDate) return "ongoing";
 	if (!Number.isNaN(endDate.getTime()) && now > endDate) return "past";
-	if (event?.status === "cancelled") return "cancelled";
-	if (event?.status === "rejected") return "rejected";
-	if (event?.status === "draft") return "approval-required";
 };
 
 export const getEventStatusMeta = (event) => {

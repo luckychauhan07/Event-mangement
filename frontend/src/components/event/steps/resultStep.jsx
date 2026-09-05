@@ -133,14 +133,14 @@ const ResultStep = forwardRef(({ eventData, setEventData }, ref) => {
 
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 						<ToggleCard
-							active={config.type === "position"}
-							onClick={() => update("type", "position")}
+							active={config.type === "simple"}
+							onClick={() => update("type", "simple")}
 						>
 							<div className="flex flex-col items-center text-center gap-2">
 								<Trophy
 									size={24}
 									className={
-										config.type === "position"
+										config.type === "simple"
 											? "text-yellow-500"
 											: "text-slate-400"
 									}
@@ -154,7 +154,7 @@ const ResultStep = forwardRef(({ eventData, setEventData }, ref) => {
 							</div>
 						</ToggleCard>
 
-						<ToggleCard
+						{/* <ToggleCard
 							active={config.type === "score"}
 							onClick={() => update("type", "score")}
 						>
@@ -174,7 +174,7 @@ const ResultStep = forwardRef(({ eventData, setEventData }, ref) => {
 									Points & criteria
 								</span>
 							</div>
-						</ToggleCard>
+						</ToggleCard> */}
 
 						<ToggleCard
 							active={config.type === "participation"}

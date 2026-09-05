@@ -69,8 +69,8 @@ const EventSummary = ({ event }) => {
 		pct >= 90 ? "bg-rose-500" : pct >= 60 ? "bg-amber-500" : "bg-blue-500";
 
 	return (
-		<div className="min-h-screen bg-slate-50 p-6 font-sans">
-			<div className="max-w-4xl mx-auto space-y-4">
+		<div className="font-sans">
+			<div className="space-y-4">
 				{/* HEADER CARD */}
 				<div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
 					{/* Top accent bar */}

@@ -4,6 +4,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { getEventById } from "@/services/eventServices";
 import TeacherEventRegistrations from "@/components/teacher/manageEvent/TeacherEventRegistrations";
 import TeacherEventTeams from "@/components/teacher/manageEvent/TeacherEventTeams";
+import TeacherEventResults from "@/components/teacher/manageEvent/TeacherEventResults";
 
 export default function ManageEvent() {
 	const { id } = useParams();
@@ -183,13 +184,17 @@ export default function ManageEvent() {
 	<div className="p-6">
 
 		{activeTab === "registrations" && (
-	<TeacherEventRegistrations eventId={id} />
+	<TeacherEventRegistrations
+		eventId={id}
+		approvalBased={event.registration.config.type === "approval-based"}
+	/>
 )}
 
 {activeTab === "teams" && event.team.enabled && (
 	<TeacherEventTeams eventId={id} />
 )}
 		{activeTab === "announcements" && <div>Announcements</div>}
+				{activeTab === "results" && <TeacherEventResults event={event} />}
 
 		
 

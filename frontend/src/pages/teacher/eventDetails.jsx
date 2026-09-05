@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Settings2 } from "lucide-react";
 import { getTeacherEventById } from "../../services/eventServices";
 import EventSummary from "../../components/event/eventDetails/eventSummary";
 import TeacherEventDetailsTabs from "@/components/teacher/eventDetails/TeacherEventDetailsTabs";
@@ -133,7 +133,20 @@ export default function EventDetails() {
 					{returnLabel}
 				</Button>
 
-				<div className="flex gap-2">
+				<div className="flex flex-wrap items-center justify-end gap-2">
+					{event.meta.teacherIsCoordinator && (
+						<Button
+							onClick={() =>
+								navigate(`/teacher/events/${id}/manage`, {
+									state: { from: returnPath },
+								})
+							}
+							className="inline-flex items-center gap-2"
+						>
+							<Settings2 size={16} />
+							Manage Event
+						</Button>
+					)}
 					<Badge tone="slate">{event.meta.status}</Badge>
 					<Badge tone={phase.tone}>{phase.label}</Badge>
 				</div>

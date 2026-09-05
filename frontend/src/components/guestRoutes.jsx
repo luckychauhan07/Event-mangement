@@ -10,7 +10,7 @@ const GuestRoute = ({ children }) => {
 		}
 
 		if (user.role === "teacher") {
-			return <Navigate to="/teacher/dashboard" />;
+			return <Navigate to="/teacher" replace />;
 		}
 
 		return <Navigate to="/student/dashboard" />;

@@ -7,6 +7,7 @@ const EventDetailsTabs = ({ activeTab, onTabChange }) => {
 					{ key: "registration", label: "Registration" },
 					{ key: "team", label: "Team" },
 					{ key: "people", label: "Coordinators & Fields" },
+					{ key: "results", label: "Results" },
 				].map((t) => (
 					<button
 						key={t.key}

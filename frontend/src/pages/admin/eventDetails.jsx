@@ -8,15 +8,8 @@ import EventDetailsOverview from "@/components/event/eventDetails/eventDetailsOv
 import EventDetailsRegistration from "@/components/event/eventDetails/eventDetailsRegistration";
 import EventDetailsCoordinators from "@/components/event/eventDetails/eventDetailsCoordinators";
 import EventDetailsTeam from "@/components/event/eventDetails/eventDetailsTeam";
+import EventResultsPanel from "@/components/event/eventResultsPanel";
 
-// Lightweight UI primitives (no shadcn dependency)
-const Card = ({ children, className = "" }) => (
-	<div
-		className={`bg-white rounded-2xl shadow-sm border border-slate-200 ${className}`}
-	>
-		{children}
-	</div>
-);
 const Button = ({ children, variant = "primary", ...props }) => {
 	const base = "px-4 py-2 rounded-xl text-sm font-semibold transition";
 	const styles = {
@@ -91,8 +84,6 @@ export default function EventDetails() {
 		return { label: "Ongoing", tone: "green" };
 	})();
 
-	const limit = event.registration.config.limit || 0;
-	const filled = event.stats.totalRegistrations || 0;
 	return (
 		<div className="min-h-screen bg-slate-50 p-6 space-y-6">
 			{/* Header */}
@@ -107,18 +98,7 @@ export default function EventDetails() {
 			</div>
 
 			{/* Hero / Summary */}
-			<Card className="p-6 bg-gradient-to-br from-white to-blue-50">
-				<EventSummary event={event} />
-
-				{limit ? (
-					<div className="mt-4">
-						<Progress value={pct} />
-						<p className="text-xs text-slate-500 mt-1">
-							{filled} of {limit} registered
-						</p>
-					</div>
-				) : null}
-			</Card>
+			<EventSummary event={event} />
 			<EventDetailsTabs activeTab={tab} onTabChange={setTab} />
 
 			{/* Overview */}
@@ -134,6 +114,7 @@ export default function EventDetails() {
 
 			{/* Coordinators & Form Fields */}
 			{tab === "people" && <EventDetailsCoordinators event={event} />}
+			{tab === "results" && <EventResultsPanel eventId={id} />}
 		</div>
 	);
 }

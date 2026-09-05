@@ -6,6 +6,7 @@ import {
 	BarChart3,
 	Bell,
 	User,
+	CheckCircle,
 } from "lucide-react";
 
 export const adminMenu = [
@@ -83,6 +84,12 @@ export const teacherMenu = [
 		key: "notifications",
 		path: "/teacher/notifications",
 		icon: Bell,
+	},
+	{
+		title: "✅ Event Requests",
+		key: "event-requests",
+		path: "/teacher/event-requests",
+		icon: CheckCircle,
 	},
 	{
 		title: "👤 Profile",

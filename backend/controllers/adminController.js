@@ -15,10 +15,10 @@ exports.getDashboardSummary = async (req, res) => {
 				"SELECT COUNT(*)::int AS total FROM users WHERE role = 'teacher' AND status = 'pending'",
 			),
 			pool.query(
-				"SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE start_at > NOW() AND status NOT IN ('cancelled', 'rejected'))::int AS upcoming FROM events WHERE is_deleted = false",
+				"SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE start_at > NOW() AND status = 'published')::int AS upcoming FROM events WHERE is_deleted = false",
 			),
 			pool.query(
-				"SELECT COUNT(*)::int AS total FROM events WHERE status = 'draft' AND is_deleted = false",
+				"SELECT COUNT(*)::int AS total FROM events WHERE status = 'pending' AND is_deleted = false",
 			),
 			pool.query(
 				"SELECT COUNT(*)::int AS total FROM event_registrations WHERE status NOT IN ('rejected', 'cancelled')",

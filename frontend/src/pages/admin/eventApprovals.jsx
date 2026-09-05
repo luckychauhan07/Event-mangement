@@ -173,7 +173,7 @@ const EventApprovals = () => {
 								Review Status
 							</p>
 							<p className="mt-2 text-sm text-slate-700">
-								Teacher events arrive as draft until you act on
+								Teacher events arrive as pending until you act on
 								them.
 							</p>
 						</div>

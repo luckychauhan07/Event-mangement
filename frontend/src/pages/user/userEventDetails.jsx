@@ -14,6 +14,7 @@ import {
 import toast from "react-hot-toast";
 import { getUserEventById } from "../../services/eventServices";
 import api from "../../services/api"; // Assuming you have a configured axios instance
+import EventResultsPanel from "../../components/event/eventResultsPanel";
 import {
 	formatDateTime,
 	getCategoryTone,
@@ -519,6 +520,10 @@ const UserEventDetails = () => {
 					</div>
 				</div>
 			</section>
+
+			{eventDetails.user_registration_status === "approved" && (
+				<EventResultsPanel eventId={id} title="Results for participants" />
+			)}
 		</div>
 	);
 };

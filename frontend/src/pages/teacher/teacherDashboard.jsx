@@ -203,7 +203,7 @@ const TeacherDashboard = () => {
 															"published"
 																? "bg-green-100 text-green-700"
 																: event.status ===
-																	  "draft"
+																	  "pending"
 																	? "bg-gray-100 text-gray-700"
 																	: "bg-red-100 text-red-700"
 														}`}

@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { getEventResults } from "@/services/eventServices";
 import TeacherDeclareResults from "@/components/teacher/manageEvent/TeacherDeclareResults";
 const TeacherEventResults = ({ event }) => {
-
-    		const [results, setResults] = useState([]);
+	const [results, setResults] = useState([]);
 	const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+	const eventEnd = new Date(event.schedule?.endAt || "").getTime();
+	const eventCompleted =
+		event.meta?.status === "completed" ||
+		(Number.isFinite(eventEnd) && eventEnd <= Date.now());
 
 	useEffect(() => {
 		const fetchResults = async () => {
@@ -39,13 +42,19 @@ const TeacherEventResults = ({ event }) => {
 		</div>
 
 		<button
-	onClick={() => setShowForm(!showForm)}
-	className="rounded-lg bg-indigo-600 px-5 py-2 font-medium text-white hover:bg-indigo-700"
->
+			disabled={!eventCompleted}
+			onClick={() => setShowForm(!showForm)}
+			className="rounded-lg bg-indigo-600 px-5 py-2 font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+		>
 	{showForm ? "Close" : "Declare Results"}
 </button>
 
 	</div>
+	{!eventCompleted && (
+		<p className="mt-3 text-sm text-amber-700">
+			Results can be declared after the event end time.
+		</p>
+	)}
 
 </div>
 
@@ -57,7 +66,7 @@ const TeacherEventResults = ({ event }) => {
 					</p>
 
 					<p className="mt-2 text-lg font-semibold text-amber-600">
-						Not Declared
+						{results.length ? "Declared" : "Not Declared"}
 					</p>
 				</div>
 

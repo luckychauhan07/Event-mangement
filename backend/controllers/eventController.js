@@ -49,7 +49,7 @@ exports.addEvent = async (req, res) => {
 		primaryCoordinatorId,
 		...cleanEventData
 	} = eventData;
-	const eventStatus = req.user.role === "teacher" ? "draft" : "published";
+	const eventStatus = req.user.role === "teacher" ? "pending" : "published";
 	const client = await pool.connect();
 	try {
 		await client.query("BEGIN");
@@ -202,7 +202,9 @@ exports.addEvent = async (req, res) => {
 			VALUES ($1,$2,$3,$4,$5)`,
 				[
 					eventId,
-					resultConfig.type,
+					resultConfig.type === "position"
+						? "simple"
+						: resultConfig.type,
 					normalizedPositions,
 					normalizedJudgesCount,
 					resultConfig.criteria || [],
@@ -713,6 +715,7 @@ exports.getEventDetails = async (req, res) => {
         FROM event_form_fields f
         WHERE f.event_id = e.id
       ), '[]') AS form_fields
+	  ,(SELECT row_to_json(rc) FROM event_result_config rc WHERE rc.event_id = e.id) AS result_config
 	  ,COALESCE((
 		SELECT COUNT(*)::int
 		FROM event_registrations er
@@ -790,6 +793,7 @@ exports.getEventDetails = async (req, res) => {
 			coordinators: event.coordinators || [],
 
 			formFields: event.form_fields || [],
+			resultConfig: event.result_config || null,
 
 			stats: {
 				totalRegistrations: Number(event.total_registrations) || 0,
@@ -899,9 +903,9 @@ exports.getAllEvents = async (req, res) => {
 	try {
 		const response = await pool.query(
 			`SELECT *
-			 FROM events
+			 FROM events e
 			 WHERE is_deleted = false
-			 ORDER BY created_at DESC`,
+			 ORDER BY e.created_at DESC`,
 		);
 		console.log("Fetched events:", response.rows);
 		res.json({
@@ -918,15 +922,20 @@ exports.getPendingEventRequests = async (req, res) => {
 	console.log(req.body, "Fetching pending event requests");
 	try {
 		const response = await pool.query(
-			`SELECT *
-			 FROM events
-			 WHERE is_deleted = false
-			   AND status = 'draft'
-			 ORDER BY created_at DESC`,
+			`SELECT e.*,
+					ec.user_id AS teacher_id,
+					u.full_name AS teacher_name,
+					u.email AS teacher_email
+			 FROM events e
+			 JOIN event_coordinators ec ON ec.event_id = e.id
+			 JOIN users u ON u.user_id = ec.user_id
+			 WHERE e.is_deleted = false
+			   AND e.status = 'pending'
+			 ORDER BY e.created_at DESC`,
 		);
 
 		const activeRequests = response.rows.filter(
-			(event) => event.status === "draft" && !isEventExpired(event),
+			(event) => event.status === "pending" && !isEventExpired(event),
 		);
 
 		res.json({
@@ -954,7 +963,7 @@ exports.approveEventRequest = async (req, res) => {
 			 SET status = 'published', updated_at = NOW()
 			 WHERE id = $1
 			   AND is_deleted = false
-			   AND status = 'draft'
+			   AND status = 'pending'
 			 RETURNING id, title, status`,
 			[id],
 		);
@@ -994,10 +1003,10 @@ exports.rejectEventRequest = async (req, res) => {
 	try {
 		const result = await pool.query(
 			`UPDATE events
-			 SET status = 'rejected', updated_at = NOW()
+			   SET status = 'rejected', updated_at = NOW()
 			 WHERE id = $1
 			   AND is_deleted = false
-			   AND status = 'draft'
+			   AND status = 'pending'
 			 RETURNING id, title, status`,
 			[id],
 		);
@@ -1008,6 +1017,12 @@ exports.rejectEventRequest = async (req, res) => {
 				message: "Event not found or already processed",
 			});
 		}
+
+		await pool.query(
+			`INSERT INTO event_rejections (event_id, reason, rejected_by)
+			 VALUES ($1, $2, $3)`,
+			[id, reason?.trim() || "No reason provided", req.user.user_id],
+		);
 
 		return res.status(200).json({
 			success: true,
@@ -1030,13 +1045,23 @@ exports.getTeacherEvents = async (req, res) => {
 
 		const response = await pool.query(
 			`
-			SELECT e.*
+			SELECT e.*,
+					er.reason AS rejection_reason,
+					er.created_at AS rejected_at
 			FROM events e
 			INNER JOIN event_coordinators ec
 				ON e.id = ec.event_id
+			LEFT JOIN LATERAL (
+				SELECT reason, created_at
+				FROM event_rejections
+				WHERE event_id = e.id
+				ORDER BY created_at DESC
+				LIMIT 1
+			) er ON true
 			WHERE
 				ec.user_id = $1
 				AND e.is_deleted = false
+				AND e.status = 'published'
 			ORDER BY e.created_at DESC
 			`,
 			[teacherId],
@@ -1051,6 +1076,40 @@ exports.getTeacherEvents = async (req, res) => {
 
 		res.status(500).json({
 			message: "Error fetching teacher events",
+		});
+	}
+};
+
+exports.getTeacherEventRequests = async (req, res) => {
+	try {
+		const response = await pool.query(
+			`SELECT e.*,
+					er.reason AS rejection_reason,
+					er.created_at AS rejected_at
+			 FROM events e
+			 JOIN event_coordinators ec ON ec.event_id = e.id
+			 LEFT JOIN LATERAL (
+				 SELECT reason, created_at
+				 FROM event_rejections
+				 WHERE event_id = e.id
+				 ORDER BY created_at DESC
+				 LIMIT 1
+			 ) er ON true
+			 WHERE ec.user_id = $1
+			   AND e.is_deleted = false
+			   AND e.status IN ('pending', 'rejected')
+			 ORDER BY e.created_at DESC`,
+			[req.user.user_id],
+		);
+
+		return res.json({
+			message: "Teacher event requests fetched successfully",
+			events: response.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching teacher event requests:", error);
+		return res.status(500).json({
+			message: "Error fetching teacher event requests",
 		});
 	}
 };
@@ -1129,12 +1188,7 @@ exports.getAllTeacherEvents = async (req, res) => {
 			SELECT e.*
 			FROM events e
 			WHERE e.is_deleted = false
-				AND e.status NOT IN (
-					'completed',
-					'cancelled',
-					'rejected',
-					'pending_approval'
-				)
+				AND e.status = 'published'
 			ORDER BY e.start_at ASC
 			`,
 		);
@@ -1412,6 +1466,65 @@ ORDER BY er.submitted_at DESC;
 	}
 };
 
+exports.updateEventRegistrationStatus = async (req, res) => {
+	const eventId = Number(req.params.id);
+	const registrationId = Number(req.params.registrationId);
+	const status = req.body?.status;
+
+	if (!Number.isInteger(eventId) || !Number.isInteger(registrationId)) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid event or registration ID",
+		});
+	}
+	if (!["approved", "rejected"].includes(status)) {
+		return res.status(400).json({
+			success: false,
+			message: "Registration status must be approved or rejected",
+		});
+	}
+
+	try {
+		const result = await pool.query(
+			`UPDATE event_registrations er
+			 SET status = $1
+			 FROM event_registration_settings rs
+			 WHERE er.registration_id = $2
+			   AND er.event_id = $3
+			   AND rs.event_id = er.event_id
+			   AND rs.registration_type = 'approval-based'
+			   AND er.status = 'pending'
+			   AND EXISTS (
+				   SELECT 1
+				   FROM event_coordinators ec
+				   WHERE ec.event_id = er.event_id
+				     AND ec.user_id = $4
+			   )
+			 RETURNING er.registration_id, er.status`,
+			[status, registrationId, eventId, req.user.user_id],
+		);
+
+		if (!result.rows.length) {
+			return res.status(404).json({
+				success: false,
+				message: "Registration is not pending or you are not the event coordinator",
+			});
+		}
+
+		return res.json({
+			success: true,
+			message: `Registration ${status} successfully`,
+			registration: result.rows[0],
+		});
+	} catch (error) {
+		console.error("Error updating event registration status:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to update registration status",
+		});
+	}
+};
+
 exports.getEventTeams = async (req, res) => {
 	try {
 		const { id } = req.params;
@@ -1455,15 +1568,222 @@ ORDER BY t.created_at DESC;
 };
 
 exports.getEventResults = async (req, res) => {
-	return res.status(200).json({
-		success: true,
-		results: [],
-	});
+	const eventId = Number(req.params.id);
+	if (!Number.isInteger(eventId)) {
+		return res.status(400).json({ success: false, message: "Invalid event ID" });
+	}
+
+	try {
+		const access = await pool.query(
+			`SELECT e.id,
+				e.created_by,
+				EXISTS (
+					SELECT 1 FROM event_coordinators ec
+					WHERE ec.event_id = e.id AND ec.user_id = $2
+				) AS is_coordinator,
+				EXISTS (
+					SELECT 1 FROM event_registrations er
+					WHERE er.event_id = e.id
+					  AND er.user_id = $2
+					  AND er.status = 'approved'
+				) AS is_participant
+			 FROM events e
+			 WHERE e.id = $1 AND e.is_deleted = false`,
+			[eventId, req.user.user_id],
+		);
+		const event = access.rows[0];
+		if (!event) {
+			return res.status(404).json({ success: false, message: "Event not found" });
+		}
+
+		const canView =
+			req.user.role === "admin" ||
+			Boolean(event.is_coordinator) ||
+			Boolean(event.is_participant);
+		if (!canView) {
+			return res.status(403).json({
+				success: false,
+				message: "Only event participants, coordinators, and admins can view results",
+			});
+		}
+
+		const result = await pool.query(
+			`SELECT er.result_id, er.event_id, er.registration_id, er.team_id,
+				er.position, er.rank_label, er.score, er.max_score,
+				er.special_award, er.remarks, er.declared_at,
+				u.full_name,
+				t.team_name
+			 FROM event_results er
+			 LEFT JOIN event_registrations reg ON reg.registration_id = er.registration_id
+			 LEFT JOIN users u ON u.user_id = reg.user_id
+			 LEFT JOIN teams t ON t.id = er.team_id
+			 WHERE er.event_id = $1
+			 ORDER BY er.position ASC NULLS LAST, er.result_id ASC`,
+			[eventId],
+		);
+
+		return res.json({ success: true, results: result.rows });
+	} catch (error) {
+		console.error("Error fetching event results:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to fetch event results",
+		});
+	}
 };
 
 exports.createEventResult = async (req, res) => {
-	return res.status(501).json({
-		success: false,
-		message: "Result module is not implemented yet.",
-	});
+	const eventId = Number(req.params.id);
+	const results = Array.isArray(req.body?.results) ? req.body.results : [];
+	if (!Number.isInteger(eventId) || results.length === 0) {
+		return res.status(400).json({
+			success: false,
+			message: "Event ID and at least one result are required",
+		});
+	}
+
+	try {
+		const eventResult = await pool.query(
+			`SELECT e.id,
+				e.status,
+				e.end_at,
+				EXISTS (
+					SELECT 1 FROM event_coordinators ec
+					WHERE ec.event_id = e.id AND ec.user_id = $2
+				) AS is_coordinator
+			 FROM events e
+			 WHERE e.id = $1 AND e.is_deleted = false`,
+			[eventId, req.user.user_id],
+		);
+		if (!eventResult.rows[0]) {
+			return res.status(404).json({ success: false, message: "Event not found" });
+		}
+		if (req.user.role !== "teacher" || !eventResult.rows[0].is_coordinator) {
+			return res.status(403).json({
+				success: false,
+				message: "Only the event coordinator can declare results",
+			});
+		}
+		const eventHasCompleted =
+			eventResult.rows[0].status === "completed" ||
+			(eventResult.rows[0].end_at &&
+				new Date(eventResult.rows[0].end_at).getTime() <= Date.now());
+		if (!eventHasCompleted) {
+			return res.status(400).json({
+				success: false,
+				message: "Results can only be declared after the event is completed",
+			});
+		}
+
+		const config = await pool.query(
+			"SELECT positions, team_based FROM event_result_config WHERE event_id = $1",
+			[eventId],
+		);
+		if (!config.rows[0]) {
+			return res.status(400).json({
+				success: false,
+				message: "Result configuration is not enabled for this event",
+			});
+		}
+		if (config.rows[0].positions && results.length > config.rows[0].positions) {
+			return res.status(400).json({
+				success: false,
+				message: `This event allows only ${config.rows[0].positions} result positions`,
+			});
+		}
+
+		const positions = results.map((item) => Number(item.position));
+		if (new Set(positions).size !== positions.length) {
+			return res.status(400).json({
+				success: false,
+				message: "Each result must use a unique position",
+			});
+		}
+		const selectedParticipants = results.map((item) =>
+			item.registrationId
+				? `registration:${item.registrationId}`
+				: `team:${item.teamId}`,
+		);
+		if (new Set(selectedParticipants).size !== selectedParticipants.length) {
+			return res.status(400).json({
+				success: false,
+				message: "The same participant cannot receive multiple positions",
+			});
+		}
+
+		const client = await pool.connect();
+		try {
+			await client.query("BEGIN");
+			await client.query("DELETE FROM event_results WHERE event_id = $1", [eventId]);
+
+			for (const item of results) {
+				const position = toNullableInteger(item.position);
+				const registrationId = item.registrationId
+					? Number(item.registrationId)
+					: null;
+				const teamId = item.teamId ? Number(item.teamId) : null;
+				if (!position || (!registrationId && !teamId) || (registrationId && teamId)) {
+					throw new Error("Each result needs a position and one valid participant");
+				}
+
+				const ownership = await client.query(
+					`SELECT 1
+					 FROM event_registrations
+					 WHERE registration_id = $1
+					   AND event_id = $2
+					   AND status = 'approved'
+					 UNION ALL
+					 SELECT 1
+					 FROM teams t
+					 WHERE t.id = $3
+					   AND t.event_id = $2
+					   AND EXISTS (
+						   SELECT 1 FROM event_registrations er
+						   WHERE er.team_id = t.id
+							 AND er.event_id = $2
+							 AND er.status = 'approved'
+					   )`,
+					[registrationId, eventId, teamId],
+				);
+				if (ownership.rowCount === 0) {
+					throw new Error("Selected participant does not belong to this event");
+				}
+
+				await client.query(
+					`INSERT INTO event_results (
+						event_id, registration_id, team_id, position,
+						rank_label, score, max_score, special_award,
+						remarks, declared_by
+					) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+					[
+						eventId,
+						registrationId,
+						teamId,
+						position,
+						item.rankLabel || null,
+						item.score || null,
+						item.maxScore || null,
+						item.specialAward || null,
+						item.remarks || null,
+						req.user.user_id,
+					],
+				);
+			}
+
+			await client.query("COMMIT");
+		} catch (transactionError) {
+			await client.query("ROLLBACK");
+			throw transactionError;
+		} finally {
+			client.release();
+		}
+
+		return res.status(201).json({
+			success: true,
+			message: "Event results declared successfully",
+		});
+	} catch (error) {
+		console.error("Error creating event result:", error);
+		return res.status(400).json({ success: false, message: error.message });
+	}
 };

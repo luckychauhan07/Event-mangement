@@ -3,7 +3,9 @@ const resultConfigSchema = z
 	.object({
 		enabled: z.boolean(),
 
-		type: z.enum(["position", "score", "participation"]).optional(),
+		type: z
+			.enum(["simple", "position", "score", "round", "participation"])
+			.optional(),
 
 		positions: z.string().optional(),
 
@@ -26,7 +28,11 @@ const resultConfigSchema = z
 		// =========================
 		// POSITION TYPE
 		// =========================
-		if (data.type === "position") {
+		if (
+			data.type === "simple" ||
+			data.type === "position" ||
+			data.type === "round"
+		) {
 			if (!data.positions || data.positions <= 0) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,

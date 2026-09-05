@@ -17,10 +17,12 @@ const {
 	deleteEvent,
 	cancelEvent,
 	getPendingEventRequests,
+	getTeacherEventRequests,
 	approveEventRequest,
 	rejectEventRequest,
 	getEventRegistrations,
 	getEventTeams,
+	updateEventRegistrationStatus,
 	createEventResult,
 	getEventResults,
 	updateEvent,
@@ -74,11 +76,25 @@ eventRouter.get(
 
 // no admin middleware here since teachers and coordinators should be able to view event details
 eventRouter.get("/teacher/events", authMiddleware, getTeacherEvents);
+eventRouter.get(
+	"/teacher/event-requests",
+	authMiddleware,
+	getTeacherEventRequests,
+);
 eventRouter.get("/teacher/profile", authMiddleware, getTeacherProfile);
 eventRouter.patch("/teacher/profile", authMiddleware, updateTeacherProfile);
 eventRouter.get("/teacher/all-events", authMiddleware, getAllTeacherEvents);
 eventRouter.get("/teacher/events/:id", authMiddleware, getTeacherEventDetails);
 eventRouter.get("/teacher/dashboard", authMiddleware, getTeacherDashboard);
+
+eventRouter.get("/:id/results", authMiddleware, getEventResults);
+eventRouter.post("/:id/results", authMiddleware, createEventResult);
+
+eventRouter.patch(
+	"/:id/registrations/:registrationId/status",
+	authMiddleware,
+	updateEventRegistrationStatus,
+);
 
 // Registration list
 eventRouter.get("/:id/registrations", authMiddleware, getEventRegistrations);

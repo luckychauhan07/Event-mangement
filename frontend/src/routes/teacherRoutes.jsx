@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import EventRequests from "../pages/teacher/eventRequests";
+import { Navigate, Routes, Route } from "react-router-dom";
 
 import TeacherRoute from "../components/taecherProtectionRoutes";
 import TeacherDashboard from "../pages/teacher/teacherDashboard";
@@ -17,6 +18,10 @@ const TeacherRoutes = () => {
 			<Routes>
 				<Route element={<TeacherLayout />}>
 					<Route path="" element={<TeacherDashboard />} />
+					<Route
+						path="dashboard"
+						element={<Navigate to="/teacher" replace />}
+					/>
 					<Route path="events" element={<EventList />} />
 					<Route path="events/assigned" element={<EventList />} />
 					<Route
@@ -33,6 +38,7 @@ const TeacherRoutes = () => {
 					<Route path="events/:id/edit" element={<EditEvent />} />
 					<Route path="add-event" element={<AddEvent />} />
 					<Route path="profile" element={<TeacherProfile />} />
+										<Route path="event-requests" element={<EventRequests />} />
 					<Route path="*" element={<div>Page Not Found</div>} />
 				</Route>
 			</Routes>
