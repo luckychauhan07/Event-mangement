@@ -1507,7 +1507,8 @@ exports.updateEventRegistrationStatus = async (req, res) => {
 		if (!result.rows.length) {
 			return res.status(404).json({
 				success: false,
-				message: "Registration is not pending or you are not the event coordinator",
+				message:
+					"Registration is not pending or you are not the event coordinator",
 			});
 		}
 
@@ -1570,7 +1571,9 @@ ORDER BY t.created_at DESC;
 exports.getEventResults = async (req, res) => {
 	const eventId = Number(req.params.id);
 	if (!Number.isInteger(eventId)) {
-		return res.status(400).json({ success: false, message: "Invalid event ID" });
+		return res
+			.status(400)
+			.json({ success: false, message: "Invalid event ID" });
 	}
 
 	try {
@@ -1593,7 +1596,9 @@ exports.getEventResults = async (req, res) => {
 		);
 		const event = access.rows[0];
 		if (!event) {
-			return res.status(404).json({ success: false, message: "Event not found" });
+			return res
+				.status(404)
+				.json({ success: false, message: "Event not found" });
 		}
 
 		const canView =
@@ -1603,7 +1608,8 @@ exports.getEventResults = async (req, res) => {
 		if (!canView) {
 			return res.status(403).json({
 				success: false,
-				message: "Only event participants, coordinators, and admins can view results",
+				message:
+					"Only event participants, coordinators, and admins can view results",
 			});
 		}
 
@@ -1656,9 +1662,14 @@ exports.createEventResult = async (req, res) => {
 			[eventId, req.user.user_id],
 		);
 		if (!eventResult.rows[0]) {
-			return res.status(404).json({ success: false, message: "Event not found" });
+			return res
+				.status(404)
+				.json({ success: false, message: "Event not found" });
 		}
-		if (req.user.role !== "teacher" || !eventResult.rows[0].is_coordinator) {
+		if (
+			req.user.role !== "teacher" ||
+			!eventResult.rows[0].is_coordinator
+		) {
 			return res.status(403).json({
 				success: false,
 				message: "Only the event coordinator can declare results",
@@ -1671,7 +1682,8 @@ exports.createEventResult = async (req, res) => {
 		if (!eventHasCompleted) {
 			return res.status(400).json({
 				success: false,
-				message: "Results can only be declared after the event is completed",
+				message:
+					"Results can only be declared after the event is completed",
 			});
 		}
 
@@ -1685,7 +1697,10 @@ exports.createEventResult = async (req, res) => {
 				message: "Result configuration is not enabled for this event",
 			});
 		}
-		if (config.rows[0].positions && results.length > config.rows[0].positions) {
+		if (
+			config.rows[0].positions &&
+			results.length > config.rows[0].positions
+		) {
 			return res.status(400).json({
 				success: false,
 				message: `This event allows only ${config.rows[0].positions} result positions`,
@@ -1704,17 +1719,23 @@ exports.createEventResult = async (req, res) => {
 				? `registration:${item.registrationId}`
 				: `team:${item.teamId}`,
 		);
-		if (new Set(selectedParticipants).size !== selectedParticipants.length) {
+		if (
+			new Set(selectedParticipants).size !== selectedParticipants.length
+		) {
 			return res.status(400).json({
 				success: false,
-				message: "The same participant cannot receive multiple positions",
+				message:
+					"The same participant cannot receive multiple positions",
 			});
 		}
 
 		const client = await pool.connect();
 		try {
 			await client.query("BEGIN");
-			await client.query("DELETE FROM event_results WHERE event_id = $1", [eventId]);
+			await client.query(
+				"DELETE FROM event_results WHERE event_id = $1",
+				[eventId],
+			);
 
 			for (const item of results) {
 				const position = toNullableInteger(item.position);
@@ -1722,8 +1743,14 @@ exports.createEventResult = async (req, res) => {
 					? Number(item.registrationId)
 					: null;
 				const teamId = item.teamId ? Number(item.teamId) : null;
-				if (!position || (!registrationId && !teamId) || (registrationId && teamId)) {
-					throw new Error("Each result needs a position and one valid participant");
+				if (
+					!position ||
+					(!registrationId && !teamId) ||
+					(registrationId && teamId)
+				) {
+					throw new Error(
+						"Each result needs a position and one valid participant",
+					);
 				}
 
 				const ownership = await client.query(
@@ -1746,7 +1773,9 @@ exports.createEventResult = async (req, res) => {
 					[registrationId, eventId, teamId],
 				);
 				if (ownership.rowCount === 0) {
-					throw new Error("Selected participant does not belong to this event");
+					throw new Error(
+						"Selected participant does not belong to this event",
+					);
 				}
 
 				await client.query(

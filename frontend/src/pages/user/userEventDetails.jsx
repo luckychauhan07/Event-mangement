@@ -522,7 +522,10 @@ const UserEventDetails = () => {
 			</section>
 
 			{eventDetails.user_registration_status === "approved" && (
-				<EventResultsPanel eventId={id} title="Results for participants" />
+				<EventResultsPanel
+					eventId={id}
+					title="Results for participants"
+				/>
 			)}
 		</div>
 	);
