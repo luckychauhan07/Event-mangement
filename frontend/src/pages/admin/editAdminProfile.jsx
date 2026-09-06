@@ -33,7 +33,6 @@ const EditAdminProfile = () => {
 		const fetchAdminProfile = async () => {
 			try {
 				const response = await getAdminProfileIncomplete();
-				console.log("Admin Profile Data:", response.data);
 				setAdminData(response.data);
 				setOriginalData(response.data);
 			} catch (error) {
@@ -49,7 +48,6 @@ const EditAdminProfile = () => {
 
 			const changedFields = getChangedFields(originalData, formData);
 			const response = await patchAdminProfile(changedFields);
-			console.log("Edit Profile Submit:", response);
 
 			toast.success("Profile updated successfully!");
 			navigate("/admin/profile");

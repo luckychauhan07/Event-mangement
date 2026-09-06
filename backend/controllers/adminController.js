@@ -153,7 +153,6 @@ exports.teacherAction = async (req, res) => {
 };
 
 exports.getUsers = async (req, res) => {
-	console.log("Fetching all users...", req.user, req.url); // Debug log to check if user info is available
 	try {
 		const result = await pool.query(
 			`SELECT user_id, full_name, email, phone, role, status
@@ -175,7 +174,7 @@ exports.getUsers = async (req, res) => {
 
 exports.getUserDetails = async (req, res) => {
 	const { id } = req.params;
-	console.log(`Fetching details for user ID: ${id}`); // Debug log to check incoming ID
+
 	try {
 		const result = await pool.query(
 			`SELECT user_id, full_name, email, phone, role, status
@@ -183,7 +182,7 @@ exports.getUserDetails = async (req, res) => {
 			WHERE user_id = $1`,
 			[id],
 		);
-		console.log("Fetched user details for ID:", id, result.rows); // Debug log to check fetched data
+
 		if (result.rows.length === 0) {
 			return res.status(404).json({
 				success: false,
@@ -602,7 +601,6 @@ exports.updateAdminProfile = async (req, res) => {
 				message: "Access denied. Only admins can update this profile.",
 			});
 		}
-		console.log(user_id);
 
 		const full_name = req.body.full_name?.trim() || "";
 		const phone = req.body.phone?.trim() || null;

@@ -23,7 +23,6 @@ const isEventExpired = (event) => {
 };
 
 exports.addEvent = async (req, res) => {
-	console.log("Received request to add event:", req.user);
 	if (!req.user || !req.user.user_id) {
 		return res.status(401).json({
 			message: "Unauthorized: User information is missing.",
@@ -33,7 +32,6 @@ exports.addEvent = async (req, res) => {
 	if (!parsed.success) {
 		// Zod's .flatten() method perfectly formats the errors for React
 		const flattened = parsed.error.flatten();
-		console.log("Validation errors:", flattened);
 
 		return res.status(401).json({
 			message: "Please check the form for errors.",
@@ -142,7 +140,7 @@ exports.addEvent = async (req, res) => {
 				const serializedOptions = JSON.stringify(
 					Array.isArray(field.options) ? field.options : [],
 				);
-				console.log("OPTIONS:", field.options);
+
 				values.push(
 					eventId,
 					field.label,
@@ -639,7 +637,7 @@ exports.getAllTeachers = async (req, res) => {
 				AND status = 'active'
 			 ORDER BY full_name ASC`,
 		);
-		console.log("Fetched teachers:", teachers.rows);
+
 		res.json({
 			message: "Teachers fetched successfully",
 			teachers: teachers.rows,
@@ -652,7 +650,6 @@ exports.getAllTeachers = async (req, res) => {
 
 exports.getEventDetails = async (req, res) => {
 	const { id } = req.params;
-	console.log(req.body, `Fetching details for event ID: ${id}`);
 	if (!id || isNaN(id)) {
 		return res.status(400).json({
 			success: false,
@@ -742,7 +739,6 @@ exports.getEventDetails = async (req, res) => {
 		}
 
 		const event = result.rows[0];
-		console.log("Raw event data from DB:", event);
 		// 🔥 Normalize safely
 		const formattedEvent = {
 			id: event.id,
@@ -809,7 +805,6 @@ exports.getEventDetails = async (req, res) => {
 				}),
 			},
 		};
-		console.log("Formatted event data:", formattedEvent);
 		return res.status(200).json({
 			success: true,
 			event: formattedEvent,
@@ -899,7 +894,6 @@ exports.getTeacherEventDetails = async (req, res) => {
 };
 
 exports.getAllEvents = async (req, res) => {
-	console.log(req.body, "Fetching all events");
 	try {
 		const response = await pool.query(
 			`SELECT *
@@ -907,7 +901,6 @@ exports.getAllEvents = async (req, res) => {
 			 WHERE is_deleted = false
 			 ORDER BY e.created_at DESC`,
 		);
-		console.log("Fetched events:", response.rows);
 		res.json({
 			message: "Events fetched successfully",
 			events: response.rows,
@@ -919,7 +912,6 @@ exports.getAllEvents = async (req, res) => {
 };
 
 exports.getPendingEventRequests = async (req, res) => {
-	console.log(req.body, "Fetching pending event requests");
 	try {
 		const response = await pool.query(
 			`SELECT e.*,
@@ -1293,7 +1285,6 @@ exports.getTeacherDashboard = async (req, res) => {
 
 exports.deleteEvent = async (req, res) => {
 	const { id } = req.params;
-	console.log("Request to delete event with ID:", id);
 	if (!id || isNaN(id)) {
 		return res.status(400).json({
 			success: false,
@@ -1326,7 +1317,6 @@ exports.deleteEvent = async (req, res) => {
 
 exports.cancelEvent = async (req, res) => {
 	const { id } = req.params;
-	console.log("Request to cancel event with ID:", id);
 	if (!id || isNaN(id)) {
 		return res.status(400).json({
 			success: false,
@@ -1405,7 +1395,6 @@ exports.getAllDetailsForEvent = async (req, res) => {
 			FROM events e
 			WHERE e.id = $1`,
 		);
-		console.log(details);
 		// return res.status(200).json({
 		// 	success: true,
 		// 	details,

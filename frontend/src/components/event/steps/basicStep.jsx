@@ -13,13 +13,10 @@ const BasicStep = forwardRef(({ eventData, setEventData }, ref) => {
 	};
 
 	const update = (field, value) => {
-		console.log(field, value);
 		setEventData({ ...eventData, [field]: value });
-		console.log("Updated event data:", { ...eventData, [field]: value });
 	};
 	const handleTags = (value) => {
 		const tagsArray = value.split(",").map((tag) => tag.trim());
-		console.log("Tags array:", tagsArray);
 		setEventData({ ...eventData, tags: tagsArray });
 	};
 	useImperativeHandle(ref, () => ({

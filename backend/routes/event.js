@@ -68,7 +68,7 @@ eventRouter.get(
 	adminTeacherMiddleware,
 	(req, res, next) => {
 		req.eventId = req.params.eventId;
-		console.log("Event ID set in request object:", req.eventId);
+		// console.log(`Event ID set in request object: ${req.eventId}`);
 		next();
 	},
 	getEventParticipants,
@@ -105,6 +105,6 @@ eventRouter.get("/:id/teams", authMiddleware, getEventTeams);
 eventRouter.get("/", authMiddleware, getAllEvents);
 
 eventRouter.get("/:id", authMiddleware, getEventDetails);
-eventRouter.get("/:id/details", authMiddleware, getAllDetailsForEvent);
+// eventRouter.get("/:id/details", authMiddleware, getAllDetailsForEvent);
 
 module.exports = eventRouter;

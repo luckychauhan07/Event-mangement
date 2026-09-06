@@ -411,7 +411,6 @@ const AdvancedEventWizard = ({
 					{step < steps.length - 1 ? (
 						<button
 							onClick={() => {
-								console.log(eventData);
 								handleNext();
 							}}
 							className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 hover:-translate-y-0.5"

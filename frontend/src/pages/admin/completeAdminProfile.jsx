@@ -19,7 +19,6 @@ const CompleteAdminProfile = () => {
 		const fetchAdminProfile = async () => {
 			try {
 				const response = await getAdminProfileIncomplete();
-				console.log("Admin Profile Data:", response.data);
 				setAdminData(response.data);
 			} catch (error) {
 				toast.error("Failed to load profile. Please try again.");

@@ -43,6 +43,5 @@ export const updateAdminProfile = async (profileData) => {
 
 export const patchAdminProfile = async (data) => {
 	const res = await api.patch("/admin/profile", data);
-	console.log("Patch Admin Profile Response:", res);
 	return res.data;
 };

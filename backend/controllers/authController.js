@@ -103,7 +103,6 @@ exports.register = async (req, res) => {
 				status,
 			],
 		);
-		console.log(`Generated OTP for ${email}: ${otp}`);
 		await pool.query(
 			`INSERT INTO email_verifications (user_id, otp, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '10 minutes')`,
 			[result.rows[0].user_id, otp],
@@ -167,7 +166,7 @@ exports.verifyOtp = async (req, res) => {
 			AND verified_at IS NULL;`,
 			[user.user_id, otp],
 		);
-		console.log(result.rows[0], otp);
+
 		if (otp !== result.rows[0]?.otp) {
 			return res.status(400).json({
 				success: false,
@@ -219,11 +218,6 @@ exports.verifyOtp = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-	console.log("LOGIN HANDLER START", {
-		path: req.path,
-		body: req.body,
-		envDatabaseUrl: !!process.env.DATABASE_URL,
-	});
 	try {
 		const email = req.body.email?.trim().toLowerCase();
 		const password = req.body.password;
@@ -243,7 +237,7 @@ exports.login = async (req, res) => {
 			"SELECT * FROM users WHERE email=$1",
 			[email],
 		);
-		console.log("DB user:", userResult.rows[0]);
+
 		if (userResult.rows.length === 0) {
 			return res.status(401).json({
 				success: false,
@@ -350,7 +344,7 @@ exports.resendOtp = async (req, res) => {
 			`INSERT INTO email_verifications (user_id, otp, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '10 minutes')`,
 			[user.user_id, otp],
 		);
-		console.log(`Resent OTP for ${email}: ${otp}`);
+
 		res.json({
 			success: true,
 			message: "OTP resent successfully",
@@ -407,7 +401,7 @@ exports.requestPasswordReset = async (req, res) => {
 			 VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL '10 minutes')`,
 			[userResult.rows[0].user_id, otp],
 		);
-		console.log(`Password reset OTP generated for ${email}: ${otp}`);
+
 		return res.json({
 			success: true,
 			message: "A password reset OTP has been sent to your email.",

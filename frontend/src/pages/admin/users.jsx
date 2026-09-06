@@ -1,11 +1,6 @@
 import { getAllUsers } from "@/services/userServices";
 import { useEffect, useState, useMemo } from "react";
-import {
-	Search,
-	SlidersHorizontal,
-	Users as UsersIcon,
-	
-} from "lucide-react";
+import { Search, SlidersHorizontal, Users as UsersIcon } from "lucide-react";
 import UserHeader from "@/components/admin/user/userHeader";
 import UserTable from "@/components/admin/user/userTable";
 
@@ -22,7 +17,6 @@ const Users = () => {
 		const fetchUsers = async () => {
 			try {
 				const response = await getAllUsers();
-				console.log("Fetched users:", response);
 				setAllUsers(response.data || []);
 			} catch (error) {
 				console.error("Error fetching users:", error);
@@ -83,8 +77,6 @@ const Users = () => {
 		}
 		return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 	}, [currentPage, totalPages]);
-
-	
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-slate-100 p-6">

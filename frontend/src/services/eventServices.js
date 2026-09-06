@@ -2,13 +2,11 @@ import api from "../api/api";
 
 export const createEvent = async (data) => {
 	const res = await api.post("/event", data);
-	console.log("Event created:", res);
 	return res.data;
 };
 
 export const getAllTeachers = async () => {
 	const res = await api.get("/event/teachers");
-	console.log("Fetched teachers:", res.data);
 	return res.data;
 };
 
@@ -88,7 +86,6 @@ export const patchEvent = async (id, data) => {
 };
 
 export const deleteEvent = async (id) => {
-	console.log("Attempting to delete event with ID:", id);
 	const res = await api.delete(`/event/${id}`);
 	return res.data;
 };
@@ -137,7 +134,6 @@ export const createEventResults = async (eventId, results) => {
 };
 
 export const getEventParticipants = async (eventId) => {
-	console.log("Fetching participants for event ID:", eventId);
 	const response = await api.get(`/event/${eventId}/participants`);
 	return response.data;
 };

@@ -96,7 +96,6 @@ const EventList = ({ showAllEvents = false }) => {
 					? getAllTeacherEvents()
 					: getTeacherEvents());
 				setAllEvents(data?.events || []);
-				console.log("Fetched events:", data?.events || []);
 			} catch {
 				setAllEvents([]);
 			} finally {

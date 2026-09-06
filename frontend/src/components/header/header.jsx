@@ -3,7 +3,6 @@ import { logout } from "../../utils/auth";
 
 const AdminHeader = ({ toggleSidebar }) => {
 	const user = JSON.parse(localStorage.getItem("user"));
-	console.log("AdminHeader user:", user); // Debugging line to check the user object
 	return (
 		<header className="bg-white/80 backdrop-blur border-b border-blue-200 px-6 py-3 flex items-center justify-between">
 			<div className="flex items-center gap-4">

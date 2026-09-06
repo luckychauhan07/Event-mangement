@@ -18,8 +18,29 @@ const notificationRouter = require("./routes/notificationRoutes"); // Added for 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
+const allowedOrigins = [
+	"http://localhost:5173",
+	process.env.FRONTEND_URL,
+].filter(Boolean);
 
-app.use(cors());
+app.use(
+	cors({
+		origin: (origin, callback) => {
+			// Allow requests without an Origin header
+			// (useful for Postman/server-to-server requests)
+			if (!origin) {
+				return callback(null, true);
+			}
+
+			if (allowedOrigins.includes(origin)) {
+				return callback(null, true);
+			}
+
+			return callback(new Error("Not allowed by CORS"));
+		},
+		credentials: true,
+	}),
+);
 
 app.use(express.json()); // for parsing application/json
 
@@ -41,22 +62,6 @@ app.use("/auth", authRouter);
 app.use("/api/user/events", userEventRoutes); // Mount user event routes (MUST be before /api/user)
 app.use("/api/user", userRoutes); // Mount user profile/registration routes
 app.use("/notifications", notificationRouter);
-
-// --- SERVE FRONTEND IN PRODUCTION ---
-// This block should come AFTER your API routes.
-if (process.env.NODE_ENV === "production") {
-	// 1. Define the path to the built frontend assets
-	const buildPath = path.join(__dirname, "..", "frontend", "dist");
-
-	// 2. Serve the static files (JS, CSS, images, etc.)
-	app.use(express.static(buildPath));
-
-	// 3. For any other request, serve the frontend's index.html
-	// This is crucial for client-side routing (React Router) to work.
-	app.get("*", (req, res) => {
-		res.sendFile(path.join(buildPath, "index.html"));
-	});
-}
 
 app.listen(PORT, () => {
 	console.log("server is running at the port ", PORT);

@@ -4,11 +4,7 @@ const dotenv = require("dotenv");
 dotenv.config({
 	path: path.resolve(__dirname, "../.env"),
 });
-console.log(
-	"[Email Verification] MAIL_USER exists:",
-	!!process.env.MAIL_USER,
-	!!process.env.MAIL_PASSWORD,
-);
+
 const transporter = nodemailer.createTransport({
 	host: "smtp.gmail.com",
 	port: 465,
@@ -88,8 +84,6 @@ const sendVerificationOTP = async (email, otp) => {
 
 		const info = await transporter.sendMail(mailOptions);
 
-		console.log("Verification email sent:", info.messageId);
-
 		return {
 			success: true,
 			messageId: info.messageId,
@@ -123,7 +117,7 @@ const sendPasswordResetOTP = async (email, otp) => {
 		};
 
 		const info = await transporter.sendMail(mailOptions);
-		console.log("Password reset OTP sent:", info.messageId);
+
 		return { success: true, messageId: info.messageId };
 	} catch (error) {
 		console.error("Error sending password reset OTP:", error);

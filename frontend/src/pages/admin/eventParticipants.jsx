@@ -39,9 +39,7 @@ const EventParticipants = ({ eventId: eventIdProp }) => {
 		try {
 			setLoading(true);
 			setError("");
-			console.log("Loading participants for event ID:", eventId); // Debugging log
 			const result = await getEventParticipants(eventId);
-			console.log("Fetched participants data:", result); // Debugging log
 
 			if (!result?.success) {
 				throw new Error("Unable to load participant information.");

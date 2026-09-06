@@ -110,10 +110,6 @@ const DisplayEventList = ({ events }) => {
 										<button
 											className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition-all duration-300 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800"
 											onClick={() => {
-												console.log(
-													"Edit event with ID:",
-													event.id,
-												);
 												navigate(
 													`/admin/events/${event.id}/edit`,
 												);

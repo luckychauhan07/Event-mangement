@@ -91,7 +91,6 @@ const EventList = () => {
 			try {
 				const data = await getAdminEvents();
 				setAllEvents(data?.events || []);
-				console.log("Fetched events:", data?.events || []);
 			} catch {
 				setAllEvents([]);
 			} finally {

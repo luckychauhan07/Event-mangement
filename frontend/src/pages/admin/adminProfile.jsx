@@ -29,7 +29,6 @@ const AdminProfile = () => {
 			document.title = "My Profile - Admin Panel";
 			try {
 				const response = await getAdminProfile();
-				console.log("Admin Profile Data:", response.data);
 				setAdmin(response.data);
 			} catch (error) {
 				toast.error("Failed to load profile. Please try again.");
